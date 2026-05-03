@@ -1,0 +1,304 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600;700;800&family=Cormorant+SC:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Raj Mandir — Royal Rajasthani Palace Design System
+   Light = Royal Ivory + Gold
+   Dark  = Deep Palace Night Blue + Glowing Gold
+*/
+
+@layer base {
+  :root {
+    /* Ivory palace canvas */
+    --background: 38 44% 94%;
+    --foreground: 224 60% 14%;
+
+    --card: 36 40% 96%;
+    --card-foreground: 224 60% 14%;
+
+    --popover: 36 40% 96%;
+    --popover-foreground: 224 60% 14%;
+
+    /* Royal Indigo */
+    --primary: 224 70% 22%;
+    --primary-foreground: 40 60% 96%;
+
+    /* Antique Gold */
+    --secondary: 40 65% 52%;
+    --secondary-foreground: 224 70% 14%;
+
+    --muted: 36 30% 88%;
+    --muted-foreground: 224 25% 35%;
+
+    /* Saffron accent */
+    --accent: 28 75% 55%;
+    --accent-foreground: 40 60% 98%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 40 60% 98%;
+
+    --border: 40 35% 78%;
+    --input: 40 35% 78%;
+    --ring: 40 65% 52%;
+
+    /* Brand tokens */
+    --gold: 42 75% 55%;
+    --gold-glow: 45 90% 70%;
+    --royal: 224 70% 22%;
+    --royal-deep: 226 75% 12%;
+    --ivory: 38 50% 95%;
+    --saffron: 28 80% 55%;
+
+    --gradient-royal: linear-gradient(135deg, hsl(224 70% 22%), hsl(226 75% 12%));
+    --gradient-gold: linear-gradient(135deg, hsl(42 75% 55%), hsl(45 90% 70%), hsl(38 70% 48%));
+    --gradient-ivory: radial-gradient(ellipse at top, hsl(40 55% 96%), hsl(36 35% 88%));
+    --gradient-night: radial-gradient(ellipse at center, hsl(224 70% 22%), hsl(226 80% 8%));
+
+    --shadow-royal: 0 30px 80px -20px hsl(224 70% 22% / 0.35);
+    --shadow-gold: 0 0 60px hsl(42 75% 55% / 0.35), 0 20px 40px -15px hsl(42 75% 35% / 0.4);
+    --shadow-frame: 0 20px 60px -25px hsl(224 60% 14% / 0.5), inset 0 0 0 1px hsl(42 75% 55% / 0.4);
+
+    --transition-cinematic: cubic-bezier(0.77, 0, 0.175, 1);
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 226 60% 6%;
+    --foreground: 40 50% 92%;
+
+    --card: 226 55% 10%;
+    --card-foreground: 40 50% 92%;
+
+    --popover: 226 55% 10%;
+    --popover-foreground: 40 50% 92%;
+
+    --primary: 42 80% 62%;
+    --primary-foreground: 226 70% 8%;
+
+    --secondary: 224 60% 22%;
+    --secondary-foreground: 40 60% 92%;
+
+    --muted: 226 40% 14%;
+    --muted-foreground: 40 25% 70%;
+
+    --accent: 28 80% 58%;
+    --accent-foreground: 226 70% 8%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 40 60% 98%;
+
+    --border: 224 40% 22%;
+    --input: 224 40% 22%;
+    --ring: 42 80% 62%;
+
+    --gold: 45 90% 65%;
+    --gold-glow: 48 100% 78%;
+    --royal: 224 65% 28%;
+    --royal-deep: 226 75% 6%;
+    --ivory: 40 50% 92%;
+
+    --gradient-royal: linear-gradient(135deg, hsl(226 70% 14%), hsl(226 80% 5%));
+    --gradient-gold: linear-gradient(135deg, hsl(45 90% 65%), hsl(48 100% 78%), hsl(38 80% 55%));
+    --gradient-ivory: radial-gradient(ellipse at top, hsl(226 55% 12%), hsl(226 70% 5%));
+    --gradient-night: radial-gradient(ellipse at center, hsl(226 60% 14%), hsl(226 80% 4%));
+
+    --shadow-royal: 0 30px 80px -20px hsl(0 0% 0% / 0.7);
+    --shadow-gold: 0 0 80px hsl(45 90% 65% / 0.45), 0 20px 50px -15px hsl(45 90% 50% / 0.5);
+    --shadow-frame: 0 20px 60px -25px hsl(0 0% 0% / 0.8), inset 0 0 0 1px hsl(45 90% 65% / 0.5);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    background-image:
+      radial-gradient(ellipse at top, hsl(var(--gold) / 0.08), transparent 60%),
+      radial-gradient(ellipse at bottom, hsl(var(--royal) / 0.06), transparent 60%);
+  }
+
+  .dark body {
+    background-image:
+      radial-gradient(ellipse at top, hsl(var(--gold) / 0.06), transparent 60%),
+      radial-gradient(ellipse at bottom, hsl(var(--royal) / 0.18), transparent 60%);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.02em;
+  }
+}
+
+@layer components {
+  /* Jharokha — palace arched frame */
+  .jharokha {
+    border-radius: 50% 50% 12px 12px / 60% 60% 12px 12px;
+  }
+
+  .jharokha-frame {
+    position: relative;
+    border-radius: 50% 50% 8px 8px / 55% 55% 8px 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-frame);
+  }
+
+  .jharokha-frame::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: var(--gradient-gold);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Gold gradient text */
+  .text-gold-gradient {
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* Decorative gold divider with center motif */
+  .divider-gold {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: hsl(var(--gold));
+  }
+
+  .divider-gold::before,
+  .divider-gold::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(var(--gold) / 0.7), transparent);
+  }
+
+  /* Carved stone texture overlay */
+  .stone-texture {
+    background-image:
+      radial-gradient(circle at 20% 30%, hsl(var(--gold) / 0.04) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, hsl(var(--royal) / 0.06) 0%, transparent 40%);
+  }
+
+  /* Royal curtain (used in opening animation) */
+  .royal-curtain {
+    background: linear-gradient(180deg,
+      hsl(var(--royal-deep)) 0%,
+      hsl(var(--royal)) 50%,
+      hsl(var(--royal-deep)) 100%);
+    background-image:
+      repeating-linear-gradient(90deg,
+        hsl(var(--royal-deep) / 0.6) 0px,
+        hsl(var(--royal) / 0.4) 18px,
+        hsl(var(--royal-deep) / 0.6) 36px),
+      var(--gradient-royal);
+    box-shadow: inset 0 0 120px hsl(0 0% 0% / 0.6), 0 0 80px hsl(0 0% 0% / 0.5);
+  }
+
+  .curtain-edge {
+    background: linear-gradient(90deg, transparent, hsl(var(--gold) / 0.6), hsl(var(--gold-glow)));
+  }
+
+  /* Glow on hover for room frames */
+  .glow-hover {
+    transition: all 0.8s var(--transition-cinematic);
+  }
+
+  .glow-hover:hover {
+    box-shadow: var(--shadow-gold);
+    transform: translateY(-6px);
+  }
+
+  /* Floating dust particle */
+  .dust-particle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, hsl(var(--gold-glow) / 0.9), hsl(var(--gold) / 0));
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+
+  /* Marble veined surface */
+  .marble-texture {
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(ellipse at 10% 20%, hsl(var(--gold) / 0.06), transparent 55%),
+      radial-gradient(ellipse at 90% 80%, hsl(var(--royal) / 0.08), transparent 55%),
+      repeating-linear-gradient(115deg, hsl(var(--foreground) / 0.025) 0 1px, transparent 1px 90px),
+      repeating-linear-gradient(65deg, hsl(var(--foreground) / 0.02) 0 1px, transparent 1px 140px);
+  }
+
+  /* Sandstone carved pattern */
+  .sandstone-texture {
+    background-color: hsl(28 35% 78%);
+    background-image:
+      radial-gradient(circle at 20% 30%, hsl(28 50% 60% / 0.35) 0%, transparent 45%),
+      radial-gradient(circle at 80% 70%, hsl(40 60% 45% / 0.25) 0%, transparent 50%),
+      repeating-radial-gradient(circle at 50% 50%, hsl(28 40% 50% / 0.06) 0 2px, transparent 2px 14px);
+  }
+
+  /* Carved jharokha lattice pattern */
+  .lattice-pattern {
+    background-image:
+      linear-gradient(45deg, hsl(var(--gold) / 0.12) 25%, transparent 25%, transparent 75%, hsl(var(--gold) / 0.12) 75%),
+      linear-gradient(45deg, hsl(var(--gold) / 0.12) 25%, transparent 25%, transparent 75%, hsl(var(--gold) / 0.12) 75%);
+    background-size: 28px 28px;
+    background-position: 0 0, 14px 14px;
+  }
+
+  /* Volumetric light rays */
+  .light-rays {
+    background: conic-gradient(from 200deg at 50% -10%,
+      transparent 0deg,
+      hsl(var(--gold) / 0.18) 18deg,
+      transparent 36deg,
+      hsl(var(--gold) / 0.12) 54deg,
+      transparent 72deg);
+    mix-blend-mode: screen;
+    filter: blur(8px);
+    pointer-events: none;
+  }
+
+  /* Royal section eyebrow */
+  .eyebrow {
+    @apply font-serif-sc text-gold tracking-[0.5em] text-xs;
+  }
+
+  /* Vertical gold thread */
+  .gold-thread {
+    background: linear-gradient(180deg, transparent, hsl(var(--gold) / 0.7), transparent);
+  }
+}
+
+@layer utilities {
+  .font-display { font-family: 'Cinzel', serif; }
+  .font-serif-sc { font-family: 'Cormorant SC', serif; }
+
+  .bg-gradient-royal { background-image: var(--gradient-royal); }
+  .bg-gradient-gold { background-image: var(--gradient-gold); }
+  .bg-gradient-night { background-image: var(--gradient-night); }
+
+  .shadow-royal { box-shadow: var(--shadow-royal); }
+  .shadow-gold { box-shadow: var(--shadow-gold); }
+  .shadow-frame { box-shadow: var(--shadow-frame); }
+}
