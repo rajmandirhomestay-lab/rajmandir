@@ -3,116 +3,167 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PageShell } from "@/components/palace/PageShell";
 import { PageHero } from "@/components/palace/PageHero";
-import { DustParticles } from "@/components/palace/DustParticles";
-import heroImg from "@/assets/page-stories-hero.jpg";
-import bluecity from "@/assets/story-bluecity.jpg";
-import stepwell from "@/assets/story-stepwell.jpg";
-import bazaar from "@/assets/story-bazaar.jpg";
+import { useStories, useHomepageSections, useSliderSettings } from "@/lib/api";
+import { ContentSlider } from "@/components/palace/ContentSlider";
+
+import heroImgFallback from "@/assets/page-stories-hero.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const stories = [
-  {
-    n: "I",
-    chapter: "OF INDIGO LANES",
-    title: "The Blue City at Dawn",
-    image: bluecity,
-    body: [
-      "Long before the sun reaches Mehrangarh, the lanes of the old city are already awake — woodsmoke, cardamom, the slap of dough on iron.",
-      "We rise with the milk-sellers, take the narrow alley behind the haveli, and lose ourselves in walls the colour of midday sky. Every doorway is a brushstroke. Every turn, a small painting.",
-      "By the time the muezzin and the temple bell sound together, you are no longer a guest in this city. You are a quiet thread in its morning.",
-    ],
-  },
-  {
-    n: "II",
-    chapter: "OF STILL WATERS",
-    title: "Toorji's Forgotten Stepwell",
-    image: stepwell,
-    body: [
-      "Sandstone descending in geometry — stairs that fold into stairs, opening to a square of green water at the bottom. Toorji ki Jhalra was built in 1740 by a queen, and forgotten for two centuries.",
-      "We sit on its top step at noon when the shadows are most precise. Pigeons cross the well in long arcs. Children leap from the parapet, laughing.",
-      "It is the kind of place that asks for silence — not the silence of empty rooms, but the silence that comes after a long, beautiful sentence.",
-    ],
-  },
-  {
-    n: "III",
-    chapter: "OF SPICE AND COLOUR",
-    title: "Sardar Bazaar After Sunset",
-    image: bazaar,
-    body: [
-      "By dusk the clock tower glows amber and the bazaar opens like a flower — chilli mountains, brass bells, marigold garlands strung overhead.",
-      "Our cook walks ahead, tasting jaggery from one stall, weighing saffron at another. He does not bargain. He simply nods, and the shopkeeper nods back.",
-      "We carry our small parcels home through a side lane that smells of jasmine and frying onions, and the palace doors close behind us with a soft, ancient sound.",
-    ],
-  },
-];
+const Stories = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { data: dbStories, isLoading } = useStories();
+  const { data: sections } = useHomepageSections();
+  const { data: sliderSettings } = useSliderSettings('stories');
 
-const StoryBlock = ({ s, i }: { s: typeof stories[number]; i: number }) => {
-  const ref = useRef<HTMLElement>(null);
-  const reverse = i % 2 === 1;
+  const heroImg = sections?.find(s => s.section_key === 'stories')?.content?.image_url || heroImgFallback;
+
+  const entries = dbStories?.map((s: any) => ({
+    id: s.slug || s.id,
+    title: s.title,
+    category: "HERITAGE",
+    date: new Date(s.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+    excerpt: s.short_description || s.full_description,
+    images: s.travel_story_images?.map((img: any) => img.image_url) || [],
+    readTime: "5 MIN READ",
+    isFeatured: s.featured
+  })) || [];
+
+  const featuredStory = entries.find(e => e.isFeatured) || entries[0];
 
   useEffect(() => {
+    if (isLoading) return;
     const ctx = gsap.context(() => {
-      const trig = { trigger: ref.current, start: "top 75%" };
-      gsap.from(".st-img", { ...trig, scale: 1.15, opacity: 0, duration: 2, ease: "power3.out" } as any);
-      gsap.from(".st-num", { ...trig, opacity: 0, x: reverse ? 60 : -60, duration: 1.4, ease: "power3.out" } as any);
-      gsap.from(".st-text > *", { ...trig, y: 40, opacity: 0, duration: 1.1, stagger: 0.15, ease: "power3.out" } as any);
-      gsap.to(".st-img img", {
-        yPercent: -12, ease: "none",
-        scrollTrigger: { trigger: ref.current, start: "top bottom", end: "bottom top", scrub: true },
+      gsap.from(".featured-card", {
+        scrollTrigger: { trigger: ".featured-card", start: "top 80%" },
+        y: 60,
+        opacity: 0,
+        duration: 1.5,
+        ease: "power3.out",
       });
-    }, ref);
+
+      gsap.from(".story-card", {
+        scrollTrigger: { trigger: ".stories-grid", start: "top 80%" },
+        y: 40,
+        opacity: 0,
+        duration: 1.2,
+        stagger: 0.2,
+        ease: "power3.out",
+      });
+    }, containerRef);
     return () => ctx.revert();
-  }, [reverse]);
+  }, [isLoading, entries]);
 
-  return (
-    <section ref={ref} className="relative py-24 lg:py-36 px-6 overflow-hidden">
-      <div className="absolute inset-0 marble-texture" />
-      <div className={`relative max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center`}>
-        <div className={`lg:col-span-7 ${reverse ? "lg:order-2" : ""}`}>
-          <div className="st-img relative aspect-[4/5] jharokha-frame overflow-hidden">
-            <img src={s.image} alt={s.title} loading="lazy" className="absolute inset-0 h-full w-full object-cover" width={1600} height={1200} />
-            <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/60 to-transparent" />
-            <DustParticles count={10} />
-          </div>
-        </div>
-        <div className={`lg:col-span-5 st-text ${reverse ? "lg:order-1 lg:pr-10" : "lg:pl-10"}`}>
-          <div className="flex items-baseline gap-6 mb-6">
-            <div className="st-num font-display text-7xl md:text-8xl text-gold-gradient leading-none">{s.n}</div>
-            <div className="eyebrow">{s.chapter}</div>
-          </div>
-          <h2 className="font-display text-4xl md:text-5xl leading-tight italic">{s.title}</h2>
-          <div className="divider-gold mt-6 max-w-xs"><span className="text-gold">❖</span></div>
-          {s.body.map((p, idx) => (
-            <p key={idx} className={`mt-6 font-serif text-lg leading-relaxed ${idx === 0 ? "first-letter:font-display first-letter:text-5xl first-letter:text-gold-gradient first-letter:mr-2 first-letter:float-left first-letter:leading-none" : ""} text-foreground/85`}>
-              {p}
-            </p>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
+  if (isLoading) return <div className="min-h-screen bg-royal-deep flex items-center justify-center text-gold">Loading...</div>;
 
-const StoriesPage = () => {
   return (
     <PageShell
-      title="Travel Stories — Raj Mandir Guest House, Jodhpur"
-      description="Royal travel diaries of Jodhpur — the blue city at dawn, Toorji's stepwell, and Sardar Bazaar at dusk. Slow, cinematic stories from Raj Mandir."
+      title="Travel Stories — Raj Mandir Jodhpur"
+      description="Royal chronicles, architectural guides, and culinary secrets from the heart of the Blue City."
     >
       <PageHero
-        eyebrow="TRAVEL DIARIES"
+        eyebrow="PALACE JOURNALS"
         title="The Royal"
-        accent="Diaries"
-        subtitle="Slow chapters from the blue city — kept by the keepers of Raj Mandir."
+        accent="Chronicles"
+        subtitle="Stories of sandstone, indigo, and the enduring romance of Marwar."
         image={heroImg}
-        alt="Open travel journal with brass compass overlooking Jodhpur at dusk"
+        alt="Ancient books and scrolls"
       />
-      {stories.map((s, i) => (
-        <StoryBlock key={s.n} s={s} i={i} />
-      ))}
+
+      <div ref={containerRef} className="bg-background relative">
+        <div className="absolute inset-0 marble-texture pointer-events-none" />
+        
+        {/* Featured Story */}
+        {featuredStory && (
+          <section className="relative py-24 px-6 overflow-hidden">
+            <div className="max-w-7xl mx-auto">
+              <div className="featured-card relative grid lg:grid-cols-2 bg-card border border-gold/20 shadow-frame overflow-hidden">
+                <div className="relative h-[500px] lg:h-auto overflow-hidden">
+                  <ContentSlider 
+                    images={featuredStory.images} 
+                    settings={sliderSettings}
+                    className="w-full h-full"
+                    autoPlay={true}
+                  />
+                </div>
+                <div className="p-8 md:p-16 flex flex-col justify-center bg-background/50 backdrop-blur-sm relative z-10">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="font-serif-sc text-gold tracking-[0.4em] text-xs uppercase">{featuredStory.category}</div>
+                    <div className="h-px w-8 bg-gold/30" />
+                    <div className="font-serif-sc text-muted-foreground tracking-[0.2em] text-[10px] uppercase">{featuredStory.readTime}</div>
+                  </div>
+                  <h2 className="font-display text-4xl md:text-5xl text-foreground mb-6 leading-tight uppercase tracking-tight">{featuredStory.title}</h2>
+                  <p className="font-serif text-lg text-muted-foreground leading-relaxed mb-10 italic">
+                    "{featuredStory.excerpt}"
+                  </p>
+                  <a href={`/stories/${featuredStory.id}`} className="group inline-flex items-center gap-4 font-serif-sc tracking-[0.3em] text-xs text-foreground hover:text-gold transition-colors">
+                    READ THE FULL CHAPTER <span className="text-xl group-hover:translate-x-2 transition-transform">→</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Stories Grid */}
+        <section className="relative py-24 px-6 border-t border-gold/10">
+          <div className="max-w-7xl mx-auto">
+            <div className="stories-grid grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+              {entries.filter(e => e.id !== featuredStory?.id).map((entry) => (
+                <article key={entry.id} className="story-card group">
+                  <div className="relative aspect-[4/5] overflow-hidden jharokha-frame mb-8 border border-gold/10 bg-muted/20">
+                     <ContentSlider 
+                        images={entry.images} 
+                        settings={sliderSettings}
+                        className="w-full h-full"
+                     />
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between font-serif-sc text-[10px] tracking-[0.3em] text-gold uppercase">
+                      <span>{entry.category}</span>
+                      <span className="text-muted-foreground/60">{entry.readTime}</span>
+                    </div>
+                    <h3 className="font-display text-3xl text-foreground group-hover:text-gold transition-colors duration-500 leading-tight uppercase">
+                      {entry.title}
+                    </h3>
+                    <p className="font-serif text-muted-foreground line-clamp-3 leading-relaxed italic">
+                      {entry.excerpt}
+                    </p>
+                    <div className="pt-4 border-t border-gold/10 flex items-center justify-between">
+                      <span className="font-serif-sc text-[9px] tracking-widest text-muted-foreground uppercase">{entry.date}</span>
+                      <a href={`/stories/${entry.id}`} className="font-serif-sc text-[10px] tracking-widest text-gold hover:underline">DISCOVER →</a>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Dispatch CTA */}
+        <section className="relative py-32 px-6 bg-muted/5 border-t border-gold/5">
+           <div className="absolute inset-0 lattice-pattern opacity-5" />
+           <div className="max-w-3xl mx-auto text-center relative z-10">
+             <div className="divider-gold mb-12 max-w-xs mx-auto"><span className="text-gold">❖</span></div>
+             <h3 className="font-display text-4xl mb-6">The Royal Dispatch</h3>
+             <p className="font-serif text-lg text-muted-foreground mb-10 italic">
+               Subscribe to receive our seasonal travel journals, architectural insights, and special heritage offers directly in your inbox.
+             </p>
+             <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+               <input 
+                 type="email" 
+                 placeholder="YOUR ROYAL EMAIL" 
+                 className="flex-grow bg-background border border-gold/20 focus:border-gold px-6 py-4 font-serif text-sm outline-none transition-all"
+               />
+               <button className="bg-gold text-royal-deep font-serif-sc tracking-widest text-xs px-10 py-4 hover:bg-gold-glow transition-all">
+                 SUBSCRIBE
+               </button>
+             </form>
+           </div>
+        </section>
+      </div>
     </PageShell>
   );
 };
 
-export default StoriesPage;
+export default Stories;

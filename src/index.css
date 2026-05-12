@@ -13,13 +13,13 @@
   :root {
     /* Ivory palace canvas */
     --background: 38 44% 94%;
-    --foreground: 224 60% 14%;
+    --foreground: 224 70% 12%; /* Deeper royal navy */
 
     --card: 36 40% 96%;
-    --card-foreground: 224 60% 14%;
+    --card-foreground: 224 70% 12%;
 
     --popover: 36 40% 96%;
-    --popover-foreground: 224 60% 14%;
+    --popover-foreground: 224 70% 12%;
 
     /* Royal Indigo */
     --primary: 224 70% 22%;
@@ -30,7 +30,7 @@
     --secondary-foreground: 224 70% 14%;
 
     --muted: 36 30% 88%;
-    --muted-foreground: 224 25% 35%;
+    --muted-foreground: 220 20% 30%; /* Rich dark gray */
 
     /* Saffron accent */
     --accent: 28 75% 55%;
@@ -44,15 +44,15 @@
     --ring: 40 65% 52%;
 
     /* Brand tokens */
-    --gold: 42 75% 55%;
-    --gold-glow: 45 90% 70%;
+    --gold: 40 80% 45%; /* Darker, richer gold */
+    --gold-glow: 42 90% 60%;
     --royal: 224 70% 22%;
     --royal-deep: 226 75% 12%;
     --ivory: 38 50% 95%;
     --saffron: 28 80% 55%;
 
     --gradient-royal: linear-gradient(135deg, hsl(224 70% 22%), hsl(226 75% 12%));
-    --gradient-gold: linear-gradient(135deg, hsl(42 75% 55%), hsl(45 90% 70%), hsl(38 70% 48%));
+    --gradient-gold: linear-gradient(135deg, hsl(40 80% 45%), hsl(42 90% 55%), hsl(36 80% 40%));
     --gradient-ivory: radial-gradient(ellipse at top, hsl(40 55% 96%), hsl(36 35% 88%));
     --gradient-night: radial-gradient(ellipse at center, hsl(224 70% 22%), hsl(226 80% 8%));
 

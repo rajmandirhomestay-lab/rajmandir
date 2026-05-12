@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { format } from "date-fns";
+import { format, isWithinInterval, parseISO } from "date-fns";
 import { useSearchParams, Link } from "react-router-dom";
 import { PageShell } from "@/components/palace/PageShell";
 import { PageHero } from "@/components/palace/PageHero";
-import hero from "@/assets/page-booking-hero.jpg";
+import heroImgFallback from "@/assets/page-booking-hero.jpg";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check, ChevronLeft, ChevronRight, Sparkles, CalendarIcon, Minus, Plus, Tag, AlertCircle, X, Bed } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ROOMS } from "@/data/rooms";
+import { useRoomCategories, useHomepageSections, usePhysicalRooms, useAllBookings, useSettings } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
 
 const COUPONS: Record<string, { off: number; label: string; desc: string }> = {
   ROYAL10: { off: 0.1, label: "ROYAL10", desc: "10% courtier's discount" },
@@ -24,6 +26,14 @@ const Booking = () => {
   const [params] = useSearchParams();
   const ref = useRef<HTMLElement>(null);
   const presetId = params.get("room");
+  const { data: dbCategories } = useRoomCategories();
+  const { data: dbPhysicalRooms } = usePhysicalRooms();
+  const { data: dbBookings } = useAllBookings();
+  const { data: sections } = useHomepageSections();
+  const { data: globalSettings } = useSettings();
+
+  const bookingSection = sections?.find(s => s.section_key === 'booking');
+  const heroImg = bookingSection?.content?.image_url || heroImgFallback;
 
   const [step, setStep] = useState(presetId ? 1 : 0);
   const [roomId, setRoomId] = useState<string | null>(presetId);
@@ -38,13 +48,60 @@ const Booking = () => {
   const [couponError, setCouponError] = useState("");
   const [touched, setTouched] = useState(false);
   const [done, setDone] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const room = ROOMS.find((r) => r.id === roomId) || null;
+  // Helper: Calculate availability for a category on selected dates
+  const getAvailability = (categoryId: string) => {
+    if (!dbPhysicalRooms || !dbBookings) return 0;
+    
+    const totalPhysical = dbPhysicalRooms.filter(r => r.category_id === categoryId).length;
+    if (totalPhysical === 0) return 0;
+
+    if (!range.from || !range.to) return totalPhysical;
+
+    // Count bookings for this category that overlap with the selected range
+    const overlappingBookings = dbBookings.filter(b => {
+      if (b.room_id !== categoryId || b.status === 'canceled') return false;
+      const bStart = parseISO(b.start_date);
+      const bEnd = parseISO(b.end_date);
+      return range.from! <= bEnd && range.to! >= bStart;
+    });
+
+    return Math.max(0, totalPhysical - overlappingBookings.length);
+  };
+
+  // Helper: Get price for a category on selected month
+  const getPrice = (cat: any) => {
+    if (!cat) return 0;
+    if (!range.from) return Number(cat.price);
+
+    const month = range.from.getMonth() + 1; // 1-12
+    const seasonal = cat.room_seasonal_prices?.find((sp: any) => sp.month === month);
+    return seasonal && seasonal.price ? Number(seasonal.price) : Number(cat.price);
+  };
+
+  const activeRooms = dbCategories ? dbCategories.map((cat, i) => {
+    const avail = getAvailability(cat.id);
+    return {
+      id: cat.id,
+      name: cat.name,
+      tagline: `Capacity: ${cat.occupancy} Guests`,
+      price: getPrice(cat),
+      available: avail,
+      adults: cat.occupancy,
+      children: 1,
+      hero: cat.image_url || (ROOMS[i % ROOMS.length].hero)
+    };
+  }) : [];
+
+  const room = activeRooms.find((r) => r.id === roomId) || null;
   const nights = range.from && range.to ? Math.max(1, Math.ceil((+range.to - +range.from) / 86400000)) : 0;
   const baseSubtotal = room ? room.price * Math.max(nights, 1) * numRooms : 0;
-  const mattressTotal = extraMattress * EXTRA_MATTRESS_PRICE * Math.max(nights, 1);
+  const mattressPrice = room ? (dbCategories?.find(c => c.id === room.id)?.extra_mattress_price || 0) : 0;
+  const mattressTotal = extraMattress * Number(mattressPrice) * Math.max(nights, 1);
   const subtotal = baseSubtotal + mattressTotal;
-  const taxes = Math.round(subtotal * 0.12);
+  const gstRate = globalSettings?.gst_percentage ? Number(globalSettings.gst_percentage) / 100 : 0.12;
+  const taxes = Math.round(subtotal * gstRate);
   const discount = appliedCoupon ? Math.round(subtotal * appliedCoupon.off) : 0;
   const total = subtotal + taxes - discount;
 
@@ -73,9 +130,28 @@ const Booking = () => {
   };
   const canNext = validateStep();
 
-  const next = () => {
+  const next = async () => {
     setTouched(true);
-    if (step === 3) { setDone(true); return; }
+    if (step === 3) { 
+      setIsSubmitting(true);
+      try {
+        await supabase.from("bookings").insert({
+          room_id: roomId, // Now refers to category_id
+          guest_name: guest.name,
+          guest_email: guest.email,
+          start_date: range.from?.toISOString().split('T')[0],
+          end_date: range.to?.toISOString().split('T')[0],
+          total_price: total,
+          status: 'pending'
+        });
+        setDone(true); 
+      } catch (err) {
+        console.error("Booking error", err);
+      } finally {
+        setIsSubmitting(false);
+      }
+      return; 
+    }
     if (canNext) { setStep((s) => s + 1); setTouched(false); }
   };
 
@@ -97,7 +173,7 @@ const Booking = () => {
           title="A chamber"
           accent="awaits you"
           subtitle="Your reservation has been pressed into the palace ledger."
-          image={hero}
+          image={heroImg}
           alt="Royal palace chamber"
         />
         <div className="fixed inset-0 z-[100] bg-royal-deep/85 backdrop-blur-md flex items-center justify-center p-6 animate-fade-in">
@@ -149,7 +225,7 @@ const Booking = () => {
         title="Reserve your"
         accent="chamber"
         subtitle="Four small ceremonies stand between you and the palace gates."
-        image={hero}
+        image={heroImg}
         alt="Royal chamber interior"
       />
 
@@ -195,35 +271,44 @@ const Booking = () => {
                   <h3 className="step-anim font-display text-3xl text-foreground mb-2">Choose your chamber</h3>
                   <p className="step-anim font-serif italic text-muted-foreground mb-8">Each is a different mood of the palace.</p>
                   <div className="space-y-5">
-                    {ROOMS.map((r) => (
-                      <button
-                        key={r.id}
-                        onClick={() => setRoomId(r.id)}
-                        className={cn(
-                          "step-anim w-full text-left flex gap-5 p-4 border transition-all duration-700 hover:-translate-y-1",
-                          roomId === r.id ? "border-gold bg-gold/10 shadow-gold" : "border-gold/20 hover:border-gold/60"
-                        )}
-                      >
-                        <div className="w-28 h-24 overflow-hidden jharokha-frame shrink-0">
-                          <img src={r.hero} alt={r.name} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="font-display text-xl text-foreground">{r.name}</div>
-                          <div className="font-serif italic text-sm text-muted-foreground mt-1">{r.tagline}</div>
-                          <div className="flex items-center gap-3 mt-3">
-                            <span className="font-serif-sc text-gold tracking-[0.2em] text-xs">
-                              ₹ {r.price.toLocaleString("en-IN")} <span className="text-muted-foreground">/ NIGHT</span>
-                            </span>
-                            {r.available <= 2 && (
-                              <span className="text-[9px] px-2 py-0.5 border border-saffron text-saffron font-serif-sc tracking-[0.2em] bg-saffron/10">
-                                ONLY {r.available} LEFT
-                              </span>
-                            )}
+                    {activeRooms.map((r) => {
+                      const isNotAvailable = r.available === 0;
+                      return (
+                        <button
+                          key={r.id}
+                          disabled={isNotAvailable}
+                          onClick={() => setRoomId(r.id)}
+                          className={cn(
+                            "step-anim w-full text-left flex gap-5 p-4 border transition-all duration-700 hover:-translate-y-1",
+                            roomId === r.id ? "border-gold bg-gold/10 shadow-gold" : "border-gold/20 hover:border-gold/60",
+                            isNotAvailable && "opacity-50 grayscale cursor-not-allowed"
+                          )}
+                        >
+                          <div className="w-28 h-24 overflow-hidden jharokha-frame shrink-0">
+                            <img src={r.hero} alt={r.name} className="w-full h-full object-cover" />
                           </div>
-                        </div>
-                        {roomId === r.id && <Check className="text-gold self-center" size={22} />}
-                      </button>
-                    ))}
+                          <div className="flex-1">
+                            <div className="font-display text-xl text-foreground">{r.name}</div>
+                            <div className="font-serif italic text-sm text-muted-foreground mt-1">{r.tagline}</div>
+                            <div className="flex items-center gap-3 mt-3">
+                              <span className="font-serif-sc text-gold tracking-[0.2em] text-xs">
+                                ₹ {r.price.toLocaleString("en-IN")} <span className="text-muted-foreground">/ NIGHT</span>
+                              </span>
+                              {isNotAvailable ? (
+                                <span className="text-[9px] px-2 py-0.5 border border-red-500 text-red-500 font-serif-sc tracking-[0.2em] bg-red-500/10 uppercase">
+                                  Not Available
+                                </span>
+                              ) : r.available <= 2 && (
+                                <span className="text-[9px] px-2 py-0.5 border border-saffron text-saffron font-serif-sc tracking-[0.2em] bg-saffron/10">
+                                  ONLY {r.available} LEFT
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          {roomId === r.id && <Check className="text-gold self-center" size={22} />}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -268,7 +353,7 @@ const Booking = () => {
                         onChange={(e) => setRoomId(e.target.value)}
                         className="w-full appearance-none bg-transparent border-b border-gold/40 focus:border-gold outline-none px-1 py-3 pr-10 font-serif text-lg text-foreground cursor-pointer"
                       >
-                        {ROOMS.map((r) => (
+                        {activeRooms.map((r) => (
                           <option key={r.id} value={r.id} className="bg-card text-foreground">
                             {r.name} — ₹ {r.price.toLocaleString("en-IN")} / night
                           </option>
@@ -415,21 +500,22 @@ const Booking = () => {
                 <div className="mt-8 flex gap-3">
                   <button
                     onClick={() => { setStep((s) => Math.max(0, s - 1)); setTouched(false); }}
-                    disabled={step === 0}
+                    disabled={step === 0 || isSubmitting}
                     className="flex-1 px-4 py-3 border border-gold/40 text-ivory font-serif-sc tracking-[0.2em] text-[11px] hover:border-gold disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-500 flex items-center justify-center gap-2"
                   >
                     <ChevronLeft size={14} /> BACK
                   </button>
                   <button
                     onClick={next}
+                    disabled={isSubmitting || !canNext}
                     className={cn(
                       "flex-1 px-4 py-3 font-serif-sc tracking-[0.2em] text-[11px] transition-all duration-500 flex items-center justify-center gap-2",
-                      canNext
+                      canNext && !isSubmitting
                         ? "bg-gradient-gold text-royal-deep shadow-gold hover:scale-[1.02]"
                         : "bg-gold/30 text-royal-deep/60 cursor-not-allowed"
                     )}
                   >
-                    {step === 3 ? <><Sparkles size={14} /> SEAL</> : <>NEXT <ChevronRight size={14} /></>}
+                    {isSubmitting ? "SEALING..." : step === 3 ? <><Sparkles size={14} /> SEAL</> : <>NEXT <ChevronRight size={14} /></>}
                   </button>
                 </div>
               </div>

@@ -5,14 +5,20 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ChevronLeft, ChevronRight, Users, BedDouble, Maximize, Eye, Sparkles, X } from "lucide-react";
 import { PageShell } from "@/components/palace/PageShell";
 import { DustParticles } from "@/components/palace/DustParticles";
-import { ROOMS, getRoom } from "@/data/rooms";
+import { ROOMS } from "@/data/rooms";
 import { cn } from "@/lib/utils";
+import { useRoomCategory, useRoomCategories } from "@/lib/api";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const RoomDetail = () => {
   const { id = "" } = useParams();
-  const room = getRoom(id);
+  const { data: dbRoom, isLoading } = useRoomCategory(id);
+  const { data: allRooms } = useRoomCategories();
+  
+  // Find a fallback from hardcoded to keep images/stories if missing in DB
+  const fallbackRoom = ROOMS.find(r => r.id === id) || ROOMS[0];
+
   const heroRef = useRef<HTMLElement>(null);
   const heroImgRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -21,8 +27,30 @@ const RoomDetail = () => {
   const [activeImg, setActiveImg] = useState(0);
   const [lightbox, setLightbox] = useState<number | null>(null);
 
+  const room = dbRoom ? {
+    id: dbRoom.id,
+    name: dbRoom.name,
+    sanskrit: fallbackRoom.sanskrit,
+    tagline: `Max Occupancy: ${dbRoom.occupancy} Guests`,
+    story: dbRoom.description || fallbackRoom.story,
+    price: Number(dbRoom.price),
+    oldPrice: undefined,
+    size: "48 sq.m",
+    bed: "King Bed",
+    view: "City View",
+    adults: dbRoom.occupancy,
+    children: 1,
+    available: dbRoom.is_featured ? 5 : 0, 
+    hero: dbRoom.image_url || fallbackRoom.hero,
+    gallery: dbRoom.room_category_images?.length 
+      ? dbRoom.room_category_images.map((img: any) => img.image_url)
+      : fallbackRoom.gallery,
+    highlights: ["Heritage Stay", "Butler Service", "Premium Amenities"],
+    amenities: fallbackRoom.amenities
+  } : fallbackRoom;
+
   useEffect(() => {
-    if (!room) return;
+    if (isLoading || !room || !heroRef.current) return;
     const ctx = gsap.context(() => {
       // Hero
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
@@ -53,13 +81,23 @@ const RoomDetail = () => {
         scrollTrigger: { trigger: amenRef.current, start: "top 80%" },
         y: 50, opacity: 0, scale: 0.95, duration: 0.9, stagger: 0.06, ease: "power3.out",
       });
-    });
+    }, heroRef);
     return () => ctx.revert();
-  }, [room]);
+  }, [dbRoom, fallbackRoom, isLoading, room]);
 
-  if (!room) return <Navigate to="/rooms" replace />;
+  if (isLoading) return <div className="min-h-screen bg-royal-deep flex items-center justify-center text-gold">Loading...</div>;
+  if (!dbRoom && !fallbackRoom) return <Navigate to="/rooms" replace />;
 
-  const related = ROOMS.filter((r) => r.id !== room.id);
+  const related = allRooms 
+    ? allRooms.filter(r => r.id !== id).slice(0, 2).map((r, i) => ({
+        id: r.id,
+        name: r.name,
+        sanskrit: "कक्षा",
+        tagline: `Occupancy: ${r.occupancy}`,
+        price: Number(r.price),
+        hero: r.image_url || ROOMS[i % ROOMS.length].hero
+      }))
+    : ROOMS.filter((r) => r.id !== id).slice(0, 2);
 
   return (
     <PageShell
@@ -68,10 +106,11 @@ const RoomDetail = () => {
     >
       {/* HERO */}
       <section ref={heroRef} className="relative min-h-[100vh] w-full overflow-hidden flex items-end pt-32 pb-20">
-        <div ref={heroImgRef} className="absolute inset-0 will-change-transform">
-          <img src={room.hero} alt={`${room.name} cinematic view`} className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-b from-royal-deep/40 via-royal-deep/20 to-background" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_25%,hsl(var(--royal-deep)/0.85))]" />
+        <div ref={heroImgRef} className="absolute inset-0 will-change-transform bg-black">
+          <img src={room.hero} alt={`${room.name} cinematic view`} className="h-full w-full object-cover opacity-80" />
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-royal-deep/60 via-royal-deep/30 to-background" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_25%,hsl(var(--royal-deep)/0.9))]" />
         </div>
         <div className="absolute inset-0 light-rays opacity-50" aria-hidden />
         <DustParticles count={26} />
@@ -87,13 +126,13 @@ const RoomDetail = () => {
               </span>
             ))}
           </h1>
-          <p className="rd-meta mt-6 font-serif italic text-xl md:text-2xl text-ivory/85 max-w-2xl">{room.tagline}</p>
+          <p className="rd-meta mt-6 font-serif italic text-xl md:text-2xl text-ivory max-w-2xl drop-shadow-md">{room.tagline}</p>
 
-          <div className="rd-meta mt-10 flex flex-wrap items-center gap-x-10 gap-y-4 text-ivory/90">
-            <Stat icon={<Maximize size={18} />} k="SIZE" v={room.size} />
-            <Stat icon={<BedDouble size={18} />} k="BED" v={room.bed} />
-            <Stat icon={<Eye size={18} />} k="VIEW" v={room.view} />
-            <Stat icon={<Users size={18} />} k="GUESTS" v={`${room.adults} adults · ${room.children} children`} />
+          <div className="rd-meta mt-10 inline-flex flex-wrap items-center gap-x-10 gap-y-6 bg-black/40 backdrop-blur-sm border border-gold/20 px-8 py-5 rounded-sm shadow-xl">
+            <Stat icon={<Maximize size={20} />} k="SIZE" v={room.size} />
+            <Stat icon={<BedDouble size={20} />} k="BED" v={room.bed} />
+            <Stat icon={<Eye size={20} />} k="VIEW" v={room.view} />
+            <Stat icon={<Users size={20} />} k="GUESTS" v={`${room.adults} adults · ${room.children} children`} />
           </div>
 
           <div className="rd-meta mt-8 flex flex-wrap items-center gap-4">
@@ -125,9 +164,14 @@ const RoomDetail = () => {
           </div>
 
           {/* Featured image */}
-          <div className="rd-gal-thumb relative w-full aspect-[16/8] jharokha-frame mb-6 cursor-zoom-in" onClick={() => setLightbox(activeImg)}>
-            <img src={room.gallery[activeImg]} alt={`${room.name} feature ${activeImg + 1}`} className="absolute inset-0 w-full h-full object-cover transition-all duration-1000" key={activeImg} />
-            <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/40 to-transparent pointer-events-none" />
+          <div className="rd-gal-thumb relative w-full max-w-5xl mx-auto h-[50vh] md:h-[65vh] jharokha-frame mb-8 bg-black/40 overflow-hidden cursor-zoom-in group" onClick={() => setLightbox(activeImg)}>
+            {/* Blurry background wrapper to maintain aspect ratio/frame filling */}
+            <img src={room.gallery[activeImg]} alt="" className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-110 transition-all duration-1000" key={`bg-${activeImg}`} />
+            
+            {/* Sharp foreground image */}
+            <img src={room.gallery[activeImg]} alt={`${room.name} feature ${activeImg + 1}`} className="absolute inset-0 w-full h-full object-contain transition-transform duration-1000 group-hover:scale-105" key={activeImg} />
+            
+            <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/60 to-transparent pointer-events-none" />
           </div>
 
           {/* Thumbnail strip */}
@@ -293,11 +337,11 @@ const RoomDetail = () => {
 };
 
 const Stat = ({ icon, k, v }: { icon: React.ReactNode; k: string; v: string }) => (
-  <div className="flex items-center gap-3">
-    <span className="text-gold">{icon}</span>
+  <div className="flex items-center gap-4">
+    <span className="text-gold drop-shadow-md">{icon}</span>
     <div>
-      <div className="font-serif-sc text-[10px] tracking-[0.4em] text-gold/80">{k}</div>
-      <div className="font-serif italic text-base">{v}</div>
+      <div className="font-serif-sc text-[11px] tracking-[0.3em] font-semibold text-gold mb-1 drop-shadow-sm">{k}</div>
+      <div className="font-serif italic text-lg text-ivory drop-shadow-sm">{v}</div>
     </div>
   </div>
 );

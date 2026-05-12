@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { useReviews } from "@/lib/api";
 
-const reviews = [
+const initialReviews = [
   {
     quote:
       "Stepping into Raj Mandir felt like entering a painting. Every arch, every shadow, every brass lamp told a story older than the city itself.",
@@ -25,11 +26,20 @@ const reviews = [
 export const Reviews = () => {
   const [i, setI] = useState(0);
   const quoteRef = useRef<HTMLDivElement>(null);
+  const { data: dbReviews } = useReviews();
+
+  const reviews = dbReviews && dbReviews.length > 0
+    ? dbReviews.map((r) => ({
+        quote: r.content,
+        name: r.author_name,
+        place: r.author_location || "Guest",
+      }))
+    : initialReviews;
 
   useEffect(() => {
     const id = setInterval(() => setI((p) => (p + 1) % reviews.length), 6500);
     return () => clearInterval(id);
-  }, []);
+  }, [reviews.length]);
 
   useEffect(() => {
     if (!quoteRef.current) return;

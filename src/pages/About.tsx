@@ -4,7 +4,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PageShell } from "@/components/palace/PageShell";
 import { PageHero } from "@/components/palace/PageHero";
 import { DustParticles } from "@/components/palace/DustParticles";
-import heroImg from "@/assets/page-about-hero.jpg";
+import { useTimelineEras, useHomepageSections } from "@/lib/api";
+
+import heroImgFallback from "@/assets/page-about-hero.jpg";
 import era1 from "@/assets/about-1894.jpg";
 import era2 from "@/assets/about-restore.jpg";
 import era3 from "@/assets/about-today.jpg";
@@ -81,6 +83,21 @@ const TimelineEra = ({ e, i }: { e: typeof eras[number]; i: number }) => {
 
 const AboutPage = () => {
   const introRef = useRef<HTMLElement>(null);
+  const { data: dbEras } = useTimelineEras();
+  const { data: sections } = useHomepageSections();
+
+  const aboutSection = sections?.find(s => s.section_key === 'about');
+  const heroImg = aboutSection?.content?.image_url || heroImgFallback;
+
+  const displayEras = dbEras && dbEras.length > 0
+    ? dbEras.map((e, i) => ({
+        year: e.year,
+        title: e.title,
+        image: e.image_url || eras[i % eras.length].image,
+        body: e.body
+      }))
+    : eras;
+
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(".intro > *", { scrollTrigger: { trigger: introRef.current, start: "top 75%" }, y: 40, opacity: 0, duration: 1.2, stagger: 0.15, ease: "power3.out" });
@@ -124,8 +141,8 @@ const AboutPage = () => {
         <div className="absolute inset-0 lattice-pattern opacity-[0.05]" />
         <DustParticles count={24} />
         <div className="relative">
-          {eras.map((e, i) => (
-            <TimelineEra key={e.year} e={e} i={i} />
+          {displayEras.map((e, i) => (
+            <TimelineEra key={e.year + i} e={e} i={i} />
           ))}
         </div>
 
