@@ -38,6 +38,11 @@ export default function ExperiencesCMS() {
 
       const formatted = data?.map((item: any) => ({
         ...item,
+        short_description: item.description || "",
+        full_description: "",
+        type: "ROYAL EXPERIENCE",
+        featured: false,
+        active: item.is_available !== false,
         images: item.experience_images?.map((img: any) => img.image_url) || []
       })) || [];
 
@@ -56,12 +61,8 @@ export default function ExperiencesCMS() {
     try {
       const mainData = {
         title: editingItem.title,
-        slug: editingItem.slug,
-        short_description: editingItem.short_description,
-        full_description: editingItem.full_description,
-        type: editingItem.type,
-        featured: editingItem.featured || false,
-        active: editingItem.active !== false,
+        description: editingItem.short_description,
+        is_available: editingItem.active !== false,
         sort_order: editingItem.sort_order ?? items.length,
       };
 

@@ -46,9 +46,9 @@ export const About = () => {
         </div>
 
         <div className="about-text">
-          <div className="font-serif-sc text-gold tracking-[0.5em] text-xs mb-4">★ OUR HERITAGE ★</div>
+          <div className="font-serif-sc text-gold tracking-[0.5em] text-xs mb-4">★ OUR STORY ★</div>
           <h2 className="font-display text-5xl md:text-6xl leading-tight">
-            A century of <span className="text-gold-gradient italic">whispered</span> stories.
+            A Legacy of <span className="text-gold-gradient italic">Warm Welcome</span>.
           </h2>
           <div className="divider-gold mt-6 max-w-xs">
             <span className="font-display text-gold text-xl">❖</span>

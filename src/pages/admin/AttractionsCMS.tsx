@@ -185,7 +185,7 @@ export default function AttractionsCMS() {
                   images={editingItem.images || []} 
                   onChange={imgs => setEditingItem({...editingItem, images: imgs})} 
                   folder="attractions" 
-                  bucket="gallery-images"
+                  bucket="attraction-images"
                />
             </div>
           </form>

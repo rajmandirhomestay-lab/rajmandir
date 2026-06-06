@@ -12,8 +12,7 @@ type Story = {
   full_description: string;
   featured: boolean;
   active: boolean;
-  seo_title: string;
-  seo_description: string;
+  sort_order: number;
   images: string[];
 };
 
@@ -38,6 +37,11 @@ export default function StoriesCMS() {
 
       const formatted = data?.map((s: any) => ({
         ...s,
+        short_description: s.excerpt || "",
+        full_description: s.content?.text || s.content || "",
+        featured: s.is_featured || false,
+        active: true,
+        sort_order: s.sort_order || 0,
         images: s.travel_story_images?.map((img: any) => img.image_url) || []
       })) || [];
 
@@ -58,12 +62,10 @@ export default function StoriesCMS() {
       const payload = {
         title: editingStory.title,
         slug: editingStory.slug,
-        short_description: editingStory.short_description,
-        full_description: editingStory.full_description,
-        featured: editingStory.featured || false,
-        active: editingStory.active !== false,
-        seo_title: editingStory.seo_title,
-        seo_description: editingStory.seo_description,
+        excerpt: editingStory.short_description,
+        content: { text: editingStory.full_description },
+        is_featured: editingStory.featured || false,
+        sort_order: editingStory.sort_order || 0,
         updated_at: new Date().toISOString(),
       };
 
@@ -111,7 +113,7 @@ export default function StoriesCMS() {
           <p className="font-serif text-muted-foreground">Manage your royal chronicles with multiple image sliders.</p>
         </div>
         {!editingStory && (
-          <button onClick={() => setEditingStory({ featured: false, active: true, images: [] })} className="bg-gold text-royal-deep font-serif-sc text-xs px-6 py-3 flex items-center gap-2 hover:bg-gold-glow">
+          <button onClick={() => setEditingStory({ featured: false, active: true, images: [], sort_order: 0 })} className="bg-gold text-royal-deep font-serif-sc text-xs px-6 py-3 flex items-center gap-2 hover:bg-gold-glow">
             <Plus size={16} /> WRITE NEW STORY
           </button>
         )}
@@ -125,7 +127,7 @@ export default function StoriesCMS() {
            </div>
            <form onSubmit={handleSave} className="grid lg:grid-cols-2 gap-12">
               <div className="space-y-6">
-                 <div className="grid md:grid-cols-2 gap-6">
+                  <div className="grid md:grid-cols-3 gap-6">
                     <div>
                        <label className="font-serif-sc text-[10px] tracking-widest text-gold block mb-2">STORY TITLE</label>
                        <input required type="text" value={editingStory.title || ""} onChange={e => setEditingStory({ ...editingStory, title: e.target.value, slug: generateSlug(e.target.value) })} className="w-full bg-background border border-gold/20 p-3 font-serif text-sm" />
@@ -134,17 +136,11 @@ export default function StoriesCMS() {
                        <label className="font-serif-sc text-[10px] tracking-widest text-gold block mb-2">URL SLUG</label>
                        <input required type="text" value={editingStory.slug || ""} onChange={e => setEditingStory({ ...editingStory, slug: generateSlug(e.target.value) })} className="w-full bg-background border border-gold/20 p-3 font-serif text-sm" />
                     </div>
-                 </div>
-                 <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                       <label className="font-serif-sc text-[10px] tracking-widest text-gold block mb-2">SEO TITLE</label>
-                       <input value={editingStory.seo_title || ""} onChange={e => setEditingStory({...editingStory, seo_title: e.target.value})} className="w-full bg-background border border-gold/20 p-3 font-serif text-sm" />
+                       <label className="font-serif-sc text-[10px] tracking-widest text-gold block mb-2">ORDER (1 shows first)</label>
+                       <input type="number" value={editingStory.sort_order || 0} onChange={e => setEditingStory({ ...editingStory, sort_order: parseInt(e.target.value) })} className="w-full bg-background border border-gold/20 p-3 font-serif text-sm" />
                     </div>
-                    <div>
-                       <label className="font-serif-sc text-[10px] tracking-widest text-gold block mb-2">SEO DESCRIPTION</label>
-                       <input value={editingStory.seo_description || ""} onChange={e => setEditingStory({...editingStory, seo_description: e.target.value})} className="w-full bg-background border border-gold/20 p-3 font-serif text-sm" />
-                    </div>
-                 </div>
+                  </div>
                  <div>
                     <label className="font-serif-sc text-[10px] tracking-widest text-gold block mb-2">SHORT DESCRIPTION / EXCERPT</label>
                     <textarea rows={2} required value={editingStory.short_description || ""} onChange={e => setEditingStory({...editingStory, short_description: e.target.value})} className="w-full bg-background border border-gold/20 p-3 font-serif text-sm resize-none" />
@@ -181,12 +177,12 @@ export default function StoriesCMS() {
               <div key={story.id} className="bg-card border border-gold/20 p-4 flex gap-6 group hover:shadow-gold transition-all shadow-frame">
                  <div className="w-48 h-32 shrink-0 border border-gold/10 overflow-hidden relative">
                     {story.images[0] ? <img src={story.images[0]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" /> : <div className="w-full h-full bg-gold/5 flex items-center justify-center text-gold/20"><ImageIcon size={32}/></div>}
-                    {story.featured && <div className="absolute top-2 left-2 bg-gold text-royal-deep text-[8px] font-serif-sc px-2 py-0.5 tracking-tighter">FEATURED</div>}
-                    {!story.active && <div className="absolute top-2 right-2 bg-red-900/80 text-white text-[8px] font-serif-sc px-2 py-0.5 tracking-tighter">DRAFT</div>}
+                    {story.is_featured && <div className="absolute top-2 left-2 bg-gold text-royal-deep text-[8px] font-serif-sc px-2 py-0.5 tracking-tighter">FEATURED</div>}
+
                  </div>
                  <div className="flex-grow flex flex-col justify-center">
                     <h3 className="font-display text-2xl mb-1">{story.title}</h3>
-                    <p className="font-serif text-xs text-muted-foreground line-clamp-2 italic mt-2">{story.short_description}</p>
+                    <p className="font-serif text-xs text-muted-foreground line-clamp-2 italic mt-2">{story.short_description || story.excerpt}</p>
                  </div>
                  <div className="flex flex-col gap-2 justify-center">
                     <button onClick={() => setEditingStory(story)} className="p-3 border border-gold/20 text-gold hover:bg-gold hover:text-royal-deep transition-all"><Edit2 size={16} /></button>

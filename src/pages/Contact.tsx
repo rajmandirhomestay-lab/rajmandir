@@ -5,7 +5,7 @@ import { PageShell } from "@/components/palace/PageShell";
 import { PageHero } from "@/components/palace/PageHero";
 import heroImgFallback from "@/assets/page-contact-hero.jpg";
 import { MapPin, Phone, Mail, MessageCircle, Instagram, Facebook, Twitter, Globe } from "lucide-react";
-import { useHomepageSections, useSettings } from "@/lib/api";
+import { useHomepageSections, useSettings, usePageHero } from "@/lib/api";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,9 +15,10 @@ const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
   const { data: sections } = useHomepageSections();
   const { data: settings } = useSettings();
+  const { data: pageHero } = usePageHero('contact');
 
   const contactSection = sections?.find(s => s.section_key === 'contact');
-  const heroImg = contactSection?.content?.image_url || heroImgFallback;
+  const heroImgFallbackCurrent = contactSection?.content?.image_url || heroImgFallback;
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -59,15 +60,15 @@ const Contact = () => {
 
   return (
     <PageShell
-      title="Contact Us — Raj Mandir"
+      title="Reach Raj Mandir"
       description="Reach out to us to plan your royal stay in Jodhpur. We are here to assist you with bookings and inquiries."
     >
       <PageHero
-        eyebrow="REACH THE PALACE"
-        title="Send a"
-        accent="Message"
-        subtitle="We await your correspondence. Let us tailor your journey into the heart of Marwar."
-        image={heroImg}
+        eyebrow={pageHero?.eyebrow || "CONNECT WITH US"}
+        title={pageHero?.title || "Reach Raj"}
+        accent={pageHero?.accent || "Mandir"}
+        subtitle={pageHero?.subtitle || "We await your correspondence. Let us tailor your journey into the heart of Marwar."}
+        image={pageHero?.image_url || heroImgFallbackCurrent}
         alt="Royal door"
       />
 

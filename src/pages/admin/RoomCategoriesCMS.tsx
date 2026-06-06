@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Loader2, Plus, Edit2, Trash2, Save, X, LayoutGrid, Image as ImageIcon, Sparkles } from "lucide-react";
-import { ImageSelector } from "@/components/admin/ImageSelector";
+import { SingleImageUploader } from "@/components/admin/SingleImageUploader";
+import { MultiImageUploader } from "@/components/admin/MultiImageUploader";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
+type DateRange = { from: Date | undefined; to?: Date | undefined };
 type RoomCategoryImage = {
   id: string;
   image_url: string;
@@ -13,6 +17,14 @@ type RoomCategoryImage = {
 type SeasonalPrice = {
   month: number;
   price: number;
+};
+
+type CalendarPrice = {
+  id?: string;
+  start_date: string;
+  end_date: string;
+  price: number;
+  price_type: "date" | "range" | "month";
 };
 
 type Category = {
@@ -28,6 +40,7 @@ type Category = {
   sort_order: number;
   room_category_images?: RoomCategoryImage[];
   room_seasonal_prices?: SeasonalPrice[];
+  room_calendar_prices?: CalendarPrice[];
 };
 
 export default function RoomCategoriesCMS() {
@@ -36,9 +49,12 @@ export default function RoomCategoriesCMS() {
   const [editing, setEditing] = useState<Partial<Category> | null>(null);
   const [saving, setSaving] = useState(false);
   
-  // Image Selector States
-  const [selectorTarget, setSelectorTarget] = useState<'featured' | 'hover' | 'gallery' | null>(null);
-
+  // Advanced Calendar Pricing State
+  const [calTab, setCalTab] = useState<"date" | "range">("date");
+  const [calDate, setCalDate] = useState<Date | undefined>(undefined);
+  const [calRange, setCalRange] = useState<DateRange | undefined>(undefined);
+  const [calPrice, setCalPrice] = useState<number>(0);
+  
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -47,7 +63,7 @@ export default function RoomCategoriesCMS() {
     try {
       const { data, error } = await supabase
         .from("room_categories")
-        .select("*, room_category_images(*), room_seasonal_prices(*)")
+        .select("*, room_category_images(*), room_seasonal_prices(*), room_calendar_prices(*)")
         .order("sort_order", { ascending: true });
       if (error) throw error;
       setCategories(data as Category[]);
@@ -127,6 +143,25 @@ export default function RoomCategoriesCMS() {
         if (sError) throw sError;
       }
 
+      // Handle Calendar Prices
+      const calendarPrices = (editing as any).room_calendar_prices;
+      if (calendarPrices) {
+        // First delete existing calendar prices
+        await supabase.from("room_calendar_prices").delete().eq("category_id", categoryId);
+        
+        if (calendarPrices.length > 0) {
+          const calPayload = calendarPrices.map((cp: any) => ({
+            category_id: categoryId,
+            start_date: cp.start_date,
+            end_date: cp.end_date,
+            price: cp.price,
+            price_type: cp.price_type
+          }));
+          const { error: cError } = await supabase.from("room_calendar_prices").insert(calPayload);
+          if (cError) throw cError;
+        }
+      }
+
       setEditing(null);
       fetchCategories();
     } catch (e: any) {
@@ -169,7 +204,7 @@ export default function RoomCategoriesCMS() {
         {!editing && (
           <button
             onClick={() =>
-              setEditing({ is_featured: false, sort_order: categories.length, occupancy: 2, price: 0, room_category_images: [] })
+              setEditing({ is_featured: false, sort_order: categories.length, occupancy: 2, price: 0, room_category_images: [], room_calendar_prices: [] })
             }
             className="bg-gold text-royal-deep font-serif-sc tracking-widest text-xs px-6 py-3 flex items-center gap-2 hover:bg-gold-glow transition-all duration-300"
           >
@@ -320,24 +355,15 @@ export default function RoomCategoriesCMS() {
                     <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-3">
                       FEATURED IMAGE
                     </label>
-                    {editing.image_url ? (
-                      <div className="relative aspect-[4/3] border border-gold/30 group overflow-hidden jharokha-frame">
-                        <img src={editing.image_url} className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-royal-deep/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm">
-                          <button type="button" onClick={() => setSelectorTarget('featured')} className="p-2 bg-gold text-royal-deep rounded-full"><Edit2 size={14} /></button>
-                          <button type="button" onClick={() => setEditing({...editing, image_url: null})} className="p-2 bg-red-500 text-white rounded-full"><Trash2 size={14} /></button>
-                        </div>
-                      </div>
-                    ) : (
-                      <button 
-                        type="button"
-                        onClick={() => setSelectorTarget('featured')}
-                        className="w-full aspect-[4/3] border-2 border-dashed border-gold/20 hover:border-gold/50 transition-colors flex flex-col items-center justify-center gap-2 bg-gold/5 jharokha-frame"
-                      >
-                        <ImageIcon className="text-gold/20" size={32} />
-                        <span className="text-[9px] font-serif-sc tracking-widest text-gold/40">SELECT IMAGE</span>
-                      </button>
-                    )}
+                    <div className="aspect-[4/3]">
+                      <SingleImageUploader
+                        bucket="room-categories"
+                        folder="featured"
+                        value={editing.image_url || null}
+                        onChange={(url) => setEditing({...editing, image_url: url})}
+                        label="UPLOAD FEATURED"
+                      />
+                    </div>
                   </div>
 
                   {/* Hover Image */}
@@ -345,65 +371,126 @@ export default function RoomCategoriesCMS() {
                     <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-3">
                       HOVER PREVIEW
                     </label>
-                    {editing.hover_image_url ? (
-                      <div className="relative aspect-[4/3] border border-gold/30 group overflow-hidden jharokha-frame">
-                        <img src={editing.hover_image_url} className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-royal-deep/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm">
-                          <button type="button" onClick={() => setSelectorTarget('hover')} className="p-2 bg-gold text-royal-deep rounded-full"><Edit2 size={14} /></button>
-                          <button type="button" onClick={() => setEditing({...editing, hover_image_url: null})} className="p-2 bg-red-500 text-white rounded-full"><Trash2 size={14} /></button>
-                        </div>
-                      </div>
-                    ) : (
-                      <button 
-                        type="button"
-                        onClick={() => setSelectorTarget('hover')}
-                        className="w-full aspect-[4/3] border-2 border-dashed border-gold/20 hover:border-gold/50 transition-colors flex flex-col items-center justify-center gap-2 bg-gold/5 jharokha-frame"
-                      >
-                        <ImageIcon className="text-gold/20" size={32} />
-                        <span className="text-[9px] font-serif-sc tracking-widest text-gold/40">SELECT IMAGE</span>
-                      </button>
-                    )}
+                    <div className="aspect-[4/3]">
+                      <SingleImageUploader
+                        bucket="room-categories"
+                        folder="hover"
+                        value={editing.hover_image_url || null}
+                        onChange={(url) => setEditing({...editing, hover_image_url: url})}
+                        label="UPLOAD HOVER PREVIEW"
+                      />
+                    </div>
                   </div>
                 </div>
 
                 {/* Gallery */}
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground">
-                      CHAMBER GALLERY
-                    </label>
-                    <button 
-                      type="button"
-                      onClick={() => setSelectorTarget('gallery')}
-                      className="text-gold flex items-center gap-2 font-serif-sc text-[10px] tracking-widest hover:underline"
-                    >
-                      <Plus size={12} /> ADD GALLERY PHOTO
-                    </button>
-                  </div>
-                  
-                  <div className="grid grid-cols-4 gap-3">
-                    {editing.room_category_images?.map((img, idx) => (
-                      <div key={idx} className="relative aspect-square border border-gold/20 group overflow-hidden jharokha-frame shadow-sm">
-                        <img src={img.image_url} className="w-full h-full object-cover" />
-                        <button 
-                          type="button"
-                          onClick={() => {
-                            const newGallery = editing.room_category_images?.filter((_, i) => i !== idx);
-                            setEditing({...editing, room_category_images: newGallery});
-                          }}
-                          className="absolute top-1 right-1 p-1 bg-red-500/80 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X size={10} />
-                        </button>
-                      </div>
-                    ))}
-                    {(!editing.room_category_images || editing.room_category_images.length === 0) && (
-                      <div className="col-span-4 py-8 text-center border border-gold/10 bg-gold/5 font-serif text-xs text-muted-foreground italic">
-                        No gallery photos added yet.
-                      </div>
+                  <MultiImageUploader
+                    images={editing.room_category_images?.map(img => img.image_url) || []}
+                    onChange={(urls) => {
+                      const newGallery = urls.map((url, i) => ({ id: '', image_url: url, sort_order: i }));
+                      setEditing({...editing, room_category_images: newGallery});
+                    }}
+                    bucket="room-categories"
+                    folder="gallery"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Advanced Calendar Pricing (Full Width) */}
+            <div className="pt-8 mt-8 border-t border-gold/20">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <label className="font-display text-2xl text-gold">
+                    Calendar Pricing <span className="italic text-muted-foreground text-xl">(Advanced)</span>
+                  </label>
+                  <p className="font-serif text-sm text-muted-foreground mt-1">Override the base price for specific dates or ranges (e.g. festivals, peak season).</p>
+                </div>
+              </div>
+              
+              <div className="bg-background border border-gold/20 p-6 mb-6 shadow-inner">
+                <div className="flex border-b border-gold/10 mb-6">
+                  <button type="button" onClick={() => setCalTab("date")} className={`px-6 py-3 text-xs tracking-[0.2em] font-serif-sc transition-colors ${calTab === "date" ? "text-gold border-b-2 border-gold bg-gold/5" : "text-muted-foreground hover:bg-gold/5"}`}>SPECIFIC DATE</button>
+                  <button type="button" onClick={() => setCalTab("range")} className={`px-6 py-3 text-xs tracking-[0.2em] font-serif-sc transition-colors ${calTab === "range" ? "text-gold border-b-2 border-gold bg-gold/5" : "text-muted-foreground hover:bg-gold/5"}`}>DATE RANGE</button>
+                </div>
+                
+                <div className="grid lg:grid-cols-[1fr_300px] gap-8">
+                  <div className="border border-gold/10 p-4 bg-card rounded-md shadow-sm flex justify-center overflow-x-auto custom-scrollbar">
+                    {calTab === "date" ? (
+                      <Calendar mode="single" selected={calDate} onSelect={setCalDate} className="bg-transparent text-foreground scale-110 origin-top" />
+                    ) : (
+                      <Calendar mode="range" selected={calRange as any} onSelect={setCalRange as any} numberOfMonths={2} className="bg-transparent text-foreground" />
                     )}
                   </div>
+                  <div className="space-y-6 bg-card border border-gold/10 p-6 flex flex-col justify-center">
+                    <div>
+                      <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-3">
+                        SET PRICE FOR SELECTED DATES (₹)
+                      </label>
+                      <input
+                        type="number"
+                        value={calPrice || ""}
+                        onChange={e => setCalPrice(Number(e.target.value))}
+                        className="w-full bg-background border border-gold/30 focus:border-gold outline-none px-4 py-3 font-serif text-xl text-foreground text-center"
+                        placeholder="e.g. 5000"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!calPrice) return toast.error("Enter a price");
+                        const newRules = [...(editing.room_calendar_prices || [])];
+                        if (calTab === "date" && calDate) {
+                          const d = format(calDate, 'yyyy-MM-dd');
+                          newRules.push({ start_date: d, end_date: d, price: calPrice, price_type: "date" });
+                        } else if (calTab === "range" && calRange?.from && calRange?.to) {
+                          newRules.push({ start_date: format(calRange.from, 'yyyy-MM-dd'), end_date: format(calRange.to, 'yyyy-MM-dd'), price: calPrice, price_type: "range" });
+                        } else {
+                          return toast.error("Select dates first");
+                        }
+                        setEditing({ ...editing, room_calendar_prices: newRules });
+                        setCalDate(undefined); setCalRange(undefined); setCalPrice(0);
+                        toast.success("Calendar rule added");
+                      }}
+                      className="w-full bg-gradient-gold text-royal-deep font-serif-sc text-xs tracking-widest py-4 hover:shadow-gold transition-all"
+                    >
+                      + ADD CALENDAR RULE
+                    </button>
+                  </div>
                 </div>
+              </div>
+
+              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                {editing.room_calendar_prices?.map((rule, idx) => (
+                  <div key={idx} className="flex items-center justify-between bg-card border-l-4 border-l-gold border-y border-r border-gold/20 px-6 py-4 shadow-sm hover:shadow-gold/20 transition-all">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center text-gold font-serif-sc text-[10px]">
+                        {rule.price_type === 'date' ? 'DAY' : 'RNG'}
+                      </div>
+                      <div>
+                        <div className="font-serif text-lg text-foreground">
+                          {rule.price_type === 'date' ? format(new Date(rule.start_date), 'dd MMMM yyyy') : `${format(new Date(rule.start_date), 'dd MMM yyyy')} — ${format(new Date(rule.end_date), 'dd MMM yyyy')}`}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground font-serif-sc tracking-widest mt-1">APPLIED RULE</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-6">
+                      <span className="font-display text-2xl text-gold">₹{rule.price.toLocaleString()}</span>
+                      <button type="button" onClick={() => {
+                        const newRules = editing.room_calendar_prices!.filter((_, i) => i !== idx);
+                        setEditing({ ...editing, room_calendar_prices: newRules });
+                      }} className="w-8 h-8 rounded-full border border-red-900/30 text-red-400 flex items-center justify-center hover:bg-red-900/20 hover:text-red-300 transition-colors" title="Remove rule">
+                        <X size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {!editing.room_calendar_prices?.length && (
+                  <div className="text-center font-serif italic text-muted-foreground text-sm py-8 border border-dashed border-gold/30 bg-gold/5">
+                    No custom calendar pricing rules set yet. Select dates above to add one.
+                  </div>
+                )}
               </div>
             </div>
 
@@ -487,22 +574,7 @@ export default function RoomCategoriesCMS() {
         ))}
       </div>
 
-      {/* Image Selector Overlay */}
-      {selectorTarget && (
-        <ImageSelector
-          bucketId="room-categories"
-          onClose={() => setSelectorTarget(null)}
-          onSelect={(url) => {
-            if (selectorTarget === 'featured') setEditing({...editing!, image_url: url});
-            if (selectorTarget === 'hover') setEditing({...editing!, hover_image_url: url});
-            if (selectorTarget === 'gallery') {
-              const gallery = editing?.room_category_images || [];
-              setEditing({...editing!, room_category_images: [...gallery, { id: '', image_url: url, sort_order: gallery.length }]});
-            }
-            setSelectorTarget(null);
-          }}
-        />
-      )}
+      
     </div>
   );
 }

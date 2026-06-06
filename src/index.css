@@ -22,7 +22,7 @@
     --popover-foreground: 224 70% 12%;
 
     /* Royal Indigo */
-    --primary: 224 70% 22%;
+    --primary: 224 70% 32%;
     --primary-foreground: 40 60% 96%;
 
     /* Antique Gold */
@@ -46,8 +46,8 @@
     /* Brand tokens */
     --gold: 40 80% 45%; /* Darker, richer gold */
     --gold-glow: 42 90% 60%;
-    --royal: 224 70% 22%;
-    --royal-deep: 226 75% 12%;
+    --royal: 224 70% 32%;
+    --royal-deep: 226 75% 22%;
     --ivory: 38 50% 95%;
     --saffron: 28 80% 55%;
 
@@ -96,8 +96,8 @@
 
     --gold: 45 90% 65%;
     --gold-glow: 48 100% 78%;
-    --royal: 224 65% 28%;
-    --royal-deep: 226 75% 6%;
+    --royal: 224 65% 38%;
+    --royal-deep: 226 75% 16%;
     --ivory: 40 50% 92%;
 
     --gradient-royal: linear-gradient(135deg, hsl(226 70% 14%), hsl(226 80% 5%));
@@ -301,4 +301,19 @@
   .shadow-royal { box-shadow: var(--shadow-royal); }
   .shadow-gold { box-shadow: var(--shadow-gold); }
   .shadow-frame { box-shadow: var(--shadow-frame); }
+}
+
+/* Hide Google Translate Banner and Popups */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
+}
+#goog-gt-tt {
+  display: none !important;
 }

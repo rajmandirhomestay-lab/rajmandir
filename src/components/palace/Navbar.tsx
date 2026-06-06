@@ -7,11 +7,11 @@ import { supabase } from "@/lib/supabase";
 
 const defaultLinks = [
   { to: "/rooms", label: "Chambers" },
-  { to: "/dining", label: "Dining" },
-  { to: "/experiences", label: "Experiences" },
-  { to: "/stories", label: "Stories" },
-  { to: "/about", label: "Heritage" },
-  { to: "/contact", label: "Contact" },
+  { to: "/dining", label: "Feasts" },
+  { to: "/experiences", label: "Journeys" },
+  { to: "/attractions", label: "Wonders" },
+  { to: "/stories", label: "Chronicles" },
+  { to: "/about", label: "Legacy" },
 ];
 
 export const Navbar = () => {
@@ -26,11 +26,40 @@ export const Navbar = () => {
   const itemsRef = useRef<HTMLDivElement>(null);
 
   const languages = [
-    { code: "EN", name: "English" },
-    { code: "HI", name: "Hindi" },
-    { code: "FR", name: "Français" },
-    { code: "ES", name: "Español" }
+    { code: "EN", name: "English", gtCode: "en" },
+    { code: "HI", name: "Hindi", gtCode: "hi" },
+    { code: "FR", name: "Français", gtCode: "fr" },
+    { code: "ES", name: "Español", gtCode: "es" },
+    { code: "DE", name: "Deutsch", gtCode: "de" },
+    { code: "JA", name: "日本語", gtCode: "ja" }
   ];
+
+  useEffect(() => {
+    const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
+    if (match && match[1]) {
+      const gtCode = match[1];
+      const lang = languages.find(l => l.gtCode === gtCode);
+      if (lang) setCurrentLang(lang.code);
+    } else {
+      setCurrentLang("EN");
+    }
+  }, []);
+
+  const handleLanguageChange = (langCode: string, gtCode: string) => {
+    setCurrentLang(langCode);
+    setLangOpen(false);
+    setOpen(false);
+    
+    if (gtCode === 'en') {
+      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname}`;
+    } else {
+      document.cookie = `googtrans=/en/${gtCode}; path=/;`;
+      document.cookie = `googtrans=/en/${gtCode}; path=/; domain=${window.location.hostname}`;
+    }
+    
+    window.location.reload();
+  };
 
   useEffect(() => {
     const fetchLinks = async () => {
@@ -127,7 +156,7 @@ export const Navbar = () => {
                   {languages.map(lang => (
                     <button
                       key={lang.code}
-                      onClick={() => { setCurrentLang(lang.code); setLangOpen(false); }}
+                      onClick={() => handleLanguageChange(lang.code, lang.gtCode)}
                       className={`text-left px-4 py-2 font-serif text-sm transition-colors ${currentLang === lang.code ? "text-gold bg-gold/5" : "text-foreground hover:text-gold hover:bg-gold/5"}`}
                     >
                       {lang.name}
@@ -197,7 +226,7 @@ export const Navbar = () => {
               {languages.map(lang => (
                 <button
                   key={lang.code}
-                  onClick={() => setCurrentLang(lang.code)}
+                  onClick={() => handleLanguageChange(lang.code, lang.gtCode)}
                   className={`font-serif-sc text-[10px] tracking-widest transition-colors ${currentLang === lang.code ? "text-gold border-b border-gold" : "text-muted-foreground hover:text-gold"}`}
                 >
                   {lang.code}

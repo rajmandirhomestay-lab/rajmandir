@@ -5,7 +5,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ChevronLeft, ChevronRight, Users, BedDouble, Maximize, Eye, Sparkles, X } from "lucide-react";
 import { PageShell } from "@/components/palace/PageShell";
 import { DustParticles } from "@/components/palace/DustParticles";
-import { ROOMS } from "@/data/rooms";
 import { cn } from "@/lib/utils";
 import { useRoomCategory, useRoomCategories } from "@/lib/api";
 
@@ -16,9 +15,6 @@ const RoomDetail = () => {
   const { data: dbRoom, isLoading } = useRoomCategory(id);
   const { data: allRooms } = useRoomCategories();
   
-  // Find a fallback from hardcoded to keep images/stories if missing in DB
-  const fallbackRoom = ROOMS.find(r => r.id === id) || ROOMS[0];
-
   const heroRef = useRef<HTMLElement>(null);
   const heroImgRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -27,30 +23,8 @@ const RoomDetail = () => {
   const [activeImg, setActiveImg] = useState(0);
   const [lightbox, setLightbox] = useState<number | null>(null);
 
-  const room = dbRoom ? {
-    id: dbRoom.id,
-    name: dbRoom.name,
-    sanskrit: fallbackRoom.sanskrit,
-    tagline: `Max Occupancy: ${dbRoom.occupancy} Guests`,
-    story: dbRoom.description || fallbackRoom.story,
-    price: Number(dbRoom.price),
-    oldPrice: undefined,
-    size: "48 sq.m",
-    bed: "King Bed",
-    view: "City View",
-    adults: dbRoom.occupancy,
-    children: 1,
-    available: dbRoom.is_featured ? 5 : 0, 
-    hero: dbRoom.image_url || fallbackRoom.hero,
-    gallery: dbRoom.room_category_images?.length 
-      ? dbRoom.room_category_images.map((img: any) => img.image_url)
-      : fallbackRoom.gallery,
-    highlights: ["Heritage Stay", "Butler Service", "Premium Amenities"],
-    amenities: fallbackRoom.amenities
-  } : fallbackRoom;
-
   useEffect(() => {
-    if (isLoading || !room || !heroRef.current) return;
+    if (isLoading || !dbRoom || !heroRef.current) return;
     const ctx = gsap.context(() => {
       // Hero
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
@@ -83,10 +57,36 @@ const RoomDetail = () => {
       });
     }, heroRef);
     return () => ctx.revert();
-  }, [dbRoom, fallbackRoom, isLoading, room]);
+  }, [dbRoom, isLoading]);
 
   if (isLoading) return <div className="min-h-screen bg-royal-deep flex items-center justify-center text-gold">Loading...</div>;
-  if (!dbRoom && !fallbackRoom) return <Navigate to="/rooms" replace />;
+  if (!dbRoom) return <Navigate to="/rooms" replace />;
+
+  const room = {
+    id: dbRoom.id,
+    name: dbRoom.name,
+    sanskrit: "कक्षा",
+    tagline: `Max Occupancy: ${dbRoom.occupancy} Guests`,
+    story: dbRoom.description || "",
+    price: Number(dbRoom.price),
+    size: "48 sq.m",
+    bed: "King Bed",
+    view: "City View",
+    adults: dbRoom.occupancy,
+    children: 1,
+    available: dbRoom.is_featured ? 5 : 0, 
+    hero: dbRoom.image_url || "",
+    gallery: dbRoom.room_category_images?.length 
+      ? dbRoom.room_category_images.map((img: any) => img.image_url)
+      : [],
+    highlights: ["Heritage Stay", "Butler Service", "Premium Amenities"],
+    amenities: [
+      { icon: "✦", label: "Heritage Ambience", note: "Restored architecture" },
+      { icon: "❖", label: "Premium Bath", note: "Luxury amenities" }
+    ]
+  };
+
+
 
   const related = allRooms 
     ? allRooms.filter(r => r.id !== id).slice(0, 2).map((r, i) => ({
@@ -95,9 +95,9 @@ const RoomDetail = () => {
         sanskrit: "कक्षा",
         tagline: `Occupancy: ${r.occupancy}`,
         price: Number(r.price),
-        hero: r.image_url || ROOMS[i % ROOMS.length].hero
+        hero: r.image_url || ""
       }))
-    : ROOMS.filter((r) => r.id !== id).slice(0, 2);
+    : [];
 
   return (
     <PageShell
@@ -164,14 +164,11 @@ const RoomDetail = () => {
           </div>
 
           {/* Featured image */}
-          <div className="rd-gal-thumb relative w-full max-w-5xl mx-auto h-[50vh] md:h-[65vh] jharokha-frame mb-8 bg-black/40 overflow-hidden cursor-zoom-in group" onClick={() => setLightbox(activeImg)}>
-            {/* Blurry background wrapper to maintain aspect ratio/frame filling */}
-            <img src={room.gallery[activeImg]} alt="" className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-110 transition-all duration-1000" key={`bg-${activeImg}`} />
-            
-            {/* Sharp foreground image */}
-            <img src={room.gallery[activeImg]} alt={`${room.name} feature ${activeImg + 1}`} className="absolute inset-0 w-full h-full object-contain transition-transform duration-1000 group-hover:scale-105" key={activeImg} />
-            
-            <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/60 to-transparent pointer-events-none" />
+          <div className="text-center mb-12">
+            <div className="rd-gal-thumb relative inline-block max-w-full max-h-[65vh] jharokha-frame bg-black/40 overflow-hidden cursor-zoom-in group" onClick={() => setLightbox(activeImg)}>
+              <img src={room.gallery[activeImg]} alt={`${room.name} feature ${activeImg + 1}`} className="w-auto h-auto max-w-full max-h-[65vh] object-contain transition-transform duration-1000 group-hover:scale-105" key={activeImg} />
+              <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/60 to-transparent pointer-events-none" />
+            </div>
           </div>
 
           {/* Thumbnail strip */}
@@ -222,29 +219,6 @@ const RoomDetail = () => {
         </div>
       </section>
 
-      {/* AMENITIES */}
-      <section ref={amenRef} className="relative py-24 px-6 marble-texture">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-14">
-            <div className="eyebrow mb-3">★ PALACE AMENITIES ★</div>
-            <h2 className="font-display text-4xl md:text-5xl">Every comfort, <span className="italic text-gold-gradient">royally arranged</span></h2>
-            <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold">❖</span></div>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {room.amenities.map((a, i) => (
-              <div key={i} className="rd-amen group relative p-7 bg-card/60 backdrop-blur-sm border border-gold/25 hover:border-gold transition-all duration-700 hover:-translate-y-1 hover:shadow-gold">
-                <span className="absolute top-0 left-0 w-4 h-4 border-t border-l border-gold" />
-                <span className="absolute top-0 right-0 w-4 h-4 border-t border-r border-gold" />
-                <span className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-gold" />
-                <span className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-gold" />
-                <div className="text-3xl text-gold-gradient mb-3 group-hover:scale-110 transition-transform duration-700">{a.icon}</div>
-                <div className="font-display text-lg text-foreground">{a.label}</div>
-                <div className="font-serif italic text-sm text-muted-foreground mt-1">{a.note}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* PRICING + BOOK CTA */}
       <section className="relative py-28 px-6 overflow-hidden">

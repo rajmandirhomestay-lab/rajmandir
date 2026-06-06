@@ -9,8 +9,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check, ChevronLeft, ChevronRight, Sparkles, CalendarIcon, Minus, Plus, Tag, AlertCircle, X, Bed } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ROOMS } from "@/data/rooms";
-import { useRoomCategories, useHomepageSections, usePhysicalRooms, useAllBookings, useSettings } from "@/lib/api";
+import { DustParticles } from "@/components/palace/DustParticles";
+import { useRoomCategories, useHomepageSections, usePhysicalRooms, useAllBookings, useSettings, usePageHero, usePaymentSettings } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
 
 const COUPONS: Record<string, { off: number; label: string; desc: string }> = {
@@ -31,9 +31,11 @@ const Booking = () => {
   const { data: dbBookings } = useAllBookings();
   const { data: sections } = useHomepageSections();
   const { data: globalSettings } = useSettings();
+  const { data: paymentSettings } = usePaymentSettings();
+  const { data: pageHero } = usePageHero('booking');
 
   const bookingSection = sections?.find(s => s.section_key === 'booking');
-  const heroImg = bookingSection?.content?.image_url || heroImgFallback;
+  const heroImgFallbackCurrent = bookingSection?.content?.image_url || heroImgFallback;
 
   const [step, setStep] = useState(presetId ? 1 : 0);
   const [roomId, setRoomId] = useState<string | null>(presetId);
@@ -67,18 +69,64 @@ const Booking = () => {
       return range.from! <= bEnd && range.to! >= bStart;
     });
 
-    return Math.max(0, totalPhysical - overlappingBookings.length);
+    const bookedRooms = overlappingBookings.reduce((sum, b) => sum + (b.num_rooms || 1), 0);
+    return Math.max(0, totalPhysical - bookedRooms);
   };
 
-  // Helper: Get price for a category on selected month
-  const getPrice = (cat: any) => {
+  // Helper: Get dynamic average nightly price for a category on selected dates
+  const getAverageNightlyPrice = (cat: any) => {
     if (!cat) return 0;
-    if (!range.from) return Number(cat.price);
+    if (!range.from || !range.to) return Number(cat.price);
 
-    const month = range.from.getMonth() + 1; // 1-12
-    const seasonal = cat.room_seasonal_prices?.find((sp: any) => sp.month === month);
-    return seasonal && seasonal.price ? Number(seasonal.price) : Number(cat.price);
+    const nights = Math.max(1, Math.ceil((+range.to - +range.from) / 86400000));
+    let totalPrice = 0;
+
+    for (let i = 0; i < nights; i++) {
+      const currentNight = new Date(range.from);
+      currentNight.setDate(currentNight.getDate() + i);
+      const currentDateString = format(currentNight, 'yyyy-MM-dd');
+      const month = currentNight.getMonth() + 1; // 1-12
+
+      // Check specific date calendar rule
+      const dateRule = cat.room_calendar_prices?.find((p: any) => p.price_type === 'date' && p.start_date === currentDateString);
+      if (dateRule) {
+        totalPrice += Number(dateRule.price);
+        continue;
+      }
+
+      // Check range rule
+      const rangeRule = cat.room_calendar_prices?.find((p: any) => p.price_type === 'range' && currentDateString >= p.start_date && currentDateString <= p.end_date);
+      if (rangeRule) {
+        totalPrice += Number(rangeRule.price);
+        continue;
+      }
+
+      // Check seasonal/month rule
+      const seasonal = cat.room_seasonal_prices?.find((sp: any) => sp.month === month);
+      if (seasonal && seasonal.price) {
+        totalPrice += Number(seasonal.price);
+        continue;
+      }
+
+      // Default base price
+      totalPrice += Number(cat.price);
+    }
+    return Math.round(totalPrice / nights);
   };
+
+  useEffect(() => {
+    // Load Razorpay script dynamically
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+    
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
 
   const activeRooms = dbCategories ? dbCategories.map((cat, i) => {
     const avail = getAvailability(cat.id);
@@ -86,11 +134,11 @@ const Booking = () => {
       id: cat.id,
       name: cat.name,
       tagline: `Capacity: ${cat.occupancy} Guests`,
-      price: getPrice(cat),
+      price: getAverageNightlyPrice(cat),
       available: avail,
       adults: cat.occupancy,
       children: 1,
-      hero: cat.image_url || (ROOMS[i % ROOMS.length].hero)
+      hero: cat.image_url || ""
     };
   }) : [];
 
@@ -135,18 +183,93 @@ const Booking = () => {
     if (step === 3) { 
       setIsSubmitting(true);
       try {
-        await supabase.from("bookings").insert({
+        const advancePerc = paymentSettings?.advance_percentage || 30;
+        const advanceAmount = Math.round(total * (advancePerc / 100));
+        
+        // 1. Create Pending Booking
+        const { data: bookingData, error: bookingError } = await supabase.from("bookings").insert({
           room_id: roomId, // Now refers to category_id
           guest_name: guest.name,
           guest_email: guest.email,
+          guest_phone: guest.phone,
           start_date: range.from?.toISOString().split('T')[0],
           end_date: range.to?.toISOString().split('T')[0],
+          num_rooms: numRooms,
+          adults,
+          children,
+          extra_mattress: extraMattress,
+          special_requests: guest.notes,
+          advance_amount: advanceAmount,
           total_price: total,
-          status: 'pending'
+          payment_status: 'pending',
+          booking_status: 'pending'
+        }).select().single();
+
+        if (bookingError || !bookingData) throw new Error(bookingError?.message || "Failed to create booking");
+
+        // If manual payment is enabled OR not yet configured, route to /payment page instead of Razorpay
+        if (!paymentSettings || paymentSettings.manual_payment_enabled !== false) {
+          window.location.href = `/payment?booking_id=${bookingData.id}`;
+          return;
+        }
+
+        // 2. Call Netlify Function for Razorpay Order
+        const res = await fetch("/.netlify/functions/create-razorpay-order", {
+          method: "POST",
+          body: JSON.stringify({
+            amount: advanceAmount,
+            receipt: bookingData.booking_number
+          })
         });
-        setDone(true); 
-      } catch (err) {
+
+        const orderData = await res.json();
+        if (!res.ok) throw new Error(orderData.error || "Failed to create payment order");
+
+        // 3. Open Razorpay
+        const options = {
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID || "", 
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: "Raj Mandir Guest House",
+          description: `Advance for ${bookingData.booking_number}`,
+          order_id: orderData.id,
+          handler: async function (response: any) {
+            try {
+              // We show loading state while verifying
+              document.body.style.cursor = 'wait';
+              const verifyRes = await fetch("/.netlify/functions/verify-razorpay-payment", {
+                method: "POST",
+                body: JSON.stringify({
+                  ...response,
+                  booking_id: bookingData.id,
+                  amount: advanceAmount
+                })
+              });
+              if (!verifyRes.ok) throw new Error("Payment verification failed");
+              window.location.href = `/booking-success?id=${response.razorpay_payment_id}`;
+            } catch (err: any) {
+              window.location.href = `/booking-failed?error=${encodeURIComponent(err.message)}`;
+            } finally {
+              document.body.style.cursor = 'default';
+            }
+          },
+          prefill: {
+            name: guest.name,
+            email: guest.email,
+            contact: guest.phone
+          },
+          theme: { color: "#D4AF37" }
+        };
+
+        const rzp1 = new (window as any).Razorpay(options);
+        rzp1.on('payment.failed', function (response: any){
+           window.location.href = `/booking-failed?error=${encodeURIComponent(response.error.description)}`;
+        });
+        rzp1.open();
+
+      } catch (err: any) {
         console.error("Booking error", err);
+        window.location.href = `/booking-failed?error=${encodeURIComponent(err.message)}`;
       } finally {
         setIsSubmitting(false);
       }
@@ -164,56 +287,6 @@ const Booking = () => {
     setCouponError("");
   };
 
-  // SUCCESS MODAL
-  if (done) {
-    return (
-      <PageShell title="Reservation Sealed — Raj Mandir" description="Your royal chamber has been reserved.">
-        <PageHero
-          eyebrow="THE GATES OPEN"
-          title="A chamber"
-          accent="awaits you"
-          subtitle="Your reservation has been pressed into the palace ledger."
-          image={heroImg}
-          alt="Royal palace chamber"
-        />
-        <div className="fixed inset-0 z-[100] bg-royal-deep/85 backdrop-blur-md flex items-center justify-center p-6 animate-fade-in">
-          <div className="relative max-w-xl w-full p-12 text-center bg-card backdrop-blur-md border border-gold/50 shadow-gold animate-scale-in">
-            <span className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-gold" />
-            <span className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-gold" />
-            <span className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-gold" />
-            <span className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-gold" />
-
-            <div className="mx-auto mb-6 w-20 h-20 jharokha bg-gradient-gold flex items-center justify-center shadow-gold">
-              <Check className="text-royal-deep" size={36} strokeWidth={3} />
-            </div>
-            <div className="eyebrow mb-3">★ RESERVATION SEALED ★</div>
-            <h2 className="font-display text-4xl text-foreground mb-4">
-              Welcome, <span className="text-gold-gradient italic">{guest.name.split(" ")[0]}</span>
-            </h2>
-            <div className="divider-gold max-w-xs mx-auto my-6"><span className="text-gold">❖</span></div>
-            <div className="font-serif text-lg text-foreground space-y-2">
-              <div>{room?.name} · {numRooms} {numRooms === 1 ? "room" : "rooms"} · {nights} {nights === 1 ? "night" : "nights"}</div>
-              <div className="text-muted-foreground italic">
-                {range.from && format(range.from, "PPP")} — {range.to && format(range.to, "PPP")}
-              </div>
-              <div className="font-display text-3xl text-gold-gradient mt-4">₹ {total.toLocaleString("en-IN")}</div>
-            </div>
-            <p className="font-serif italic text-muted-foreground mt-6 text-sm">
-              A confirmation parchment shall arrive at <span className="text-gold">{guest.email}</span>.
-            </p>
-            <div className="mt-8 flex gap-3 justify-center">
-              <Link to="/" className="px-6 py-3 border border-gold/50 text-foreground font-serif-sc tracking-[0.2em] text-[11px] hover:border-gold hover:bg-gold/5 transition-all">
-                RETURN TO PALACE
-              </Link>
-              <button onClick={() => window.print()} className="px-6 py-3 bg-gradient-gold text-royal-deep font-serif-sc tracking-[0.2em] text-[11px] shadow-gold hover:scale-105 transition-all">
-                PRINT PARCHMENT
-              </button>
-            </div>
-          </div>
-        </div>
-      </PageShell>
-    );
-  }
 
   return (
     <PageShell
@@ -221,11 +294,11 @@ const Booking = () => {
       description="A four-step royal reservation flow at Raj Mandir Guest House, Jodhpur."
     >
       <PageHero
-        eyebrow="ROYAL RESERVATION"
-        title="Reserve your"
-        accent="chamber"
-        subtitle="Four small ceremonies stand between you and the palace gates."
-        image={heroImg}
+        eyebrow={pageHero?.eyebrow || "ROYAL RESERVATION"}
+        title={pageHero?.title || "Reserve your"}
+        accent={pageHero?.accent || "chamber"}
+        subtitle={pageHero?.subtitle || "Four small ceremonies stand between you and the palace gates."}
+        image={pageHero?.image_url || heroImgFallbackCurrent}
         alt="Royal chamber interior"
       />
 

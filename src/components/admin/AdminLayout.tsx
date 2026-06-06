@@ -4,24 +4,31 @@ import { toast } from "sonner";
 import { 
   LayoutDashboard, BedDouble, CalendarCheck, Image as ImageIcon, 
   UtensilsCrossed, Compass, BookOpen, Star, MessageSquare, 
-  Tag, LayoutTemplate, Settings, LogOut, Navigation, MapPin, Sliders
+  LayoutTemplate, Settings, LogOut, Navigation, MapPin, Sliders, Coffee, ListTodo,
+  IndianRupee,
+  Wallet
 } from "lucide-react";
 
 const navItems = [
   { name: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
+  { name: "All Bookings", path: "/admin/bookings", icon: CalendarCheck },
   { name: "Homepage CMS", path: "/admin/homepage", icon: LayoutTemplate },
+  { name: "Page Heroes", path: "/admin/page-heroes", icon: LayoutTemplate },
   { name: "Rooms Management", path: "/admin/physical-rooms", icon: BedDouble },
   { name: "Room Categories", path: "/admin/room-categories", icon: LayoutTemplate },
   { name: "Gallery CMS", path: "/admin/gallery", icon: ImageIcon },
-  { name: "Media Library", path: "/admin/media", icon: ImageIcon },
   { name: "Dining CMS", path: "/admin/dining", icon: UtensilsCrossed },
   { name: "Special Dishes", path: "/admin/dining-dishes", icon: UtensilsCrossed },
   { name: "Experiences", path: "/admin/experiences", icon: Compass },
   { name: "Attractions", path: "/admin/attractions", icon: MapPin },
+  { name: "Amenities", path: "/admin/amenities", icon: ListTodo },
+  { name: "About CMS", path: "/admin/about", icon: BookOpen },
   { name: "Travel Stories", path: "/admin/stories", icon: BookOpen },
   { name: "Reviews CMS", path: "/admin/reviews", icon: Star },
   { name: "FAQ Management", path: "/admin/faq", icon: MessageSquare },
-  { name: "Seasonal Offers", path: "/admin/offers", icon: Tag },
+  { name: "Manual Payments", path: "/admin/manual-payments", icon: Wallet },
+  { name: "Payment Settings", path: "/admin/payment-settings", icon: IndianRupee },
+
   { name: "Navigation", path: "/admin/navigation", icon: Navigation },
   { name: "Global Settings", path: "/admin/settings", icon: Settings },
   { name: "Slider Settings", path: "/admin/sliders", icon: Sliders },
@@ -66,7 +73,7 @@ export const AdminLayout = () => {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-gold/10">
+        <div className="p-4 border-t border-gold/10 space-y-2">
           <button 
             onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-serif-sc tracking-widest text-red-400/80 hover:bg-red-900/20 hover:text-red-400 border border-transparent hover:border-red-900/30 transition-all duration-300"

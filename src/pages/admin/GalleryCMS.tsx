@@ -3,7 +3,6 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Loader2, UploadCloud, Trash2, Save, Image as ImageIcon, Plus } from "lucide-react";
 import { compressImage } from "@/lib/imageCompression";
-import { ImageSelector } from "@/components/admin/ImageSelector";
 import { useDropzone } from "react-dropzone";
 
 type GalleryItem = {
@@ -22,7 +21,6 @@ export default function GalleryCMS() {
   const [uploading, setUploading] = useState(false);
   const [category, setCategory] = useState("Heritage");
   const [title, setTitle] = useState("");
-  const [showSelector, setShowSelector] = useState(false);
 
   useEffect(() => {
     fetchGallery();
@@ -32,7 +30,11 @@ export default function GalleryCMS() {
     try {
       const { data, error } = await supabase.from("gallery").select("*").order("sort_order", { ascending: true });
       if (error) throw error;
-      setItems(data || []);
+      const mapped = (data || []).map(item => ({
+        ...item,
+        image_url: item.storage_path || item.image_url
+      }));
+      setItems(mapped);
     } catch (error: any) {
       toast.error("Failed to load gallery: " + error.message);
     } finally {
@@ -61,18 +63,10 @@ export default function GalleryCMS() {
           .from("gallery-images")
           .getPublicUrl(fileName);
 
-        // Also save to media_assets for the Media Library
-        await supabase.from("media_assets").insert({
-          bucket_id: "gallery-images",
-          storage_path: fileName,
-          url: publicUrl,
-          alt_text: title || file.name,
-          category: category,
-        });
-
+        
         // Save to gallery table
         await supabase.from("gallery").insert([{
-          image_url: publicUrl,
+          storage_path: publicUrl,
           category,
           title: title || file.name,
           sort_order: items.length
@@ -94,23 +88,7 @@ export default function GalleryCMS() {
     accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'] }
   });
 
-  const addFromLibrary = async (url: string) => {
-    try {
-      const { error } = await supabase.from("gallery").insert([{
-        image_url: url,
-        category,
-        title: title || "Gallery Image",
-        sort_order: items.length
-      }]);
-      if (error) throw error;
-      toast.success("Image added to gallery.");
-      setShowSelector(false);
-      fetchGallery();
-    } catch (e: any) {
-      toast.error("Failed: " + e.message);
-    }
-  };
-
+  
   const handleDelete = async (id: string) => {
     if (!window.confirm("Remove this image from the gallery?")) return;
     try {
@@ -174,12 +152,6 @@ export default function GalleryCMS() {
               </div>
             </div>
 
-            <button
-              onClick={() => setShowSelector(true)}
-              className="w-full border border-gold/30 text-gold font-serif-sc tracking-[0.2em] text-xs px-6 py-3 flex items-center justify-center gap-2 hover:bg-gold/10 transition-all"
-            >
-              <Plus size={14} /> ADD FROM MEDIA LIBRARY
-            </button>
           </div>
         </div>
       </div>
@@ -212,13 +184,7 @@ export default function GalleryCMS() {
         )}
       </div>
 
-      {showSelector && (
-        <ImageSelector
-          bucketId="gallery-images"
-          onClose={() => setShowSelector(false)}
-          onSelect={addFromLibrary}
-        />
-      )}
+      
     </div>
   );
 }

@@ -57,9 +57,9 @@ export const Reviews = () => {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--gold)/0.1),transparent_60%)]" />
 
       <div className="relative max-w-4xl mx-auto text-center">
-        <div className="font-serif-sc text-gold tracking-[0.5em] text-xs mb-4">★ VOICES OF GUESTS ★</div>
+        <div className="font-serif-sc text-gold tracking-[0.5em] text-xs mb-4">★ MEMORABLE MOMENTS SHARED ★</div>
         <h2 className="font-display text-5xl md:text-6xl text-foreground">
-          Words from the <span className="text-gold-gradient italic">courtyard</span>
+          Stories From Our <span className="text-gold-gradient italic">Guests</span>
         </h2>
         <div className="divider-gold mt-6 max-w-md mx-auto">
           <span className="font-display text-gold text-xl">❖</span>

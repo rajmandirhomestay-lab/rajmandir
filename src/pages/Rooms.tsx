@@ -1,58 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Link } from "react-router-dom";
 import { PageShell } from "@/components/palace/PageShell";
 import { PageHero } from "@/components/palace/PageHero";
 import { DustParticles } from "@/components/palace/DustParticles";
-import { useRoomCategories, useHomepageSections } from "@/lib/api";
+import { useRoomCategories, useHomepageSections, usePageHero } from "@/lib/api";
 import heroImgFallback from "@/assets/page-rooms-hero.jpg";
-import maharaja from "@/assets/room-maharaja.jpg";
-import rajwada from "@/assets/room-rajwada.jpg";
-import haveli from "@/assets/room-haveli.jpg";
-import about from "@/assets/about-palace.jpg";
+// Static chambers removed. Using dynamic data only.
 
 gsap.registerPlugin(ScrollTrigger);
 
-const chambers = [
-  {
-    name: "Maharaja Suite",
-    sanskrit: "महाराजा",
-    img: maharaja,
-    foreground: about,
-    price: "₹ 14,500",
-    tagline: "The chamber of kings.",
-    story:
-      "A canopied four-poster of carved sheesham presides beneath a frescoed ceiling of lapis and gold. Brass lanterns cast slow shadows; the desert wind enters through three jharokha balconies that have watched over Jodhpur for one hundred and thirty winters.",
-    details: ["72 sq.m · Private terrace", "King bed · Antique writing desk", "Marble bath · Copper tub", "Butler on call · Curated mini-bar"],
-    slug: "maharaja-suite",
-  },
-  {
-    name: "Rajwada Chamber",
-    sanskrit: "राजवाड़ा",
-    img: rajwada,
-    foreground: maharaja,
-    price: "₹ 9,800",
-    tagline: "Of indigo rooftops and morning light.",
-    story:
-      "Indigo walls washed by hand, a low divan layered in bandhani silk, and jharokha windows that frame the blue rooftops of the old city. Wake to temple bells; sleep to the call of a peacock from the courtyard below.",
-    details: ["48 sq.m · Jharokha alcove", "Queen bed · Hand-painted ceiling", "Marble bath", "Heritage breakfast"],
-    slug: "rajwada-chamber",
-  },
-  {
-    name: "Haveli Courtyard",
-    sanskrit: "हवेली",
-    img: haveli,
-    foreground: rajwada,
-    price: "₹ 7,200",
-    tagline: "Where the fountain still sings.",
-    story:
-      "A ground-floor sanctuary opening onto the inner courtyard — heirloom carpets, a quiet fountain at its centre, and a private veranda screened by carved sandstone jali. The painted ceiling above is original, restored leaf by leaf.",
-    details: ["38 sq.m · Courtyard veranda", "Twin or queen", "Sandstone bath", "Yoga at dawn"],
-    slug: "haveli-courtyard",
-  },
-];
-
-const RoomBlock = ({ room, index }: { room: typeof chambers[number]; index: number }) => {
+const RoomBlock = ({ room, index }: { room: any; index: number }) => {
   const ref = useRef<HTMLElement>(null);
   const reverse = index % 2 === 1;
 
@@ -113,9 +72,9 @@ const RoomBlock = ({ room, index }: { room: typeof chambers[number]; index: numb
               <div className="font-display text-3xl text-gold-gradient">{room.price}</div>
               <div className="font-serif-sc text-[10px] tracking-[0.3em] text-muted-foreground">PER NIGHT</div>
             </div>
-            <a href={`/rooms/${room.slug || room.name.toLowerCase().split(" ")[0].replace("haveli","haveli")}`} className="inline-block font-serif-sc tracking-[0.3em] text-xs px-7 py-4 bg-gradient-gold text-royal-deep rounded-sm hover:shadow-gold transition-all duration-700">
+            <Link to={`/rooms/${room.slug}`} className="inline-block font-serif-sc tracking-[0.3em] text-xs px-7 py-4 bg-gradient-gold text-royal-deep rounded-sm hover:shadow-gold transition-all duration-700">
               VIEW CHAMBER
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -126,38 +85,40 @@ const RoomBlock = ({ room, index }: { room: typeof chambers[number]; index: numb
 const RoomsPage = () => {
   const { data: dbRooms, isLoading } = useRoomCategories();
   const { data: sections } = useHomepageSections();
+  const { data: pageHero } = usePageHero('rooms');
 
   const roomsSection = sections?.find(s => s.section_key === 'rooms');
-  const heroImg = roomsSection?.content?.image_url || heroImgFallback;
+  const heroImgFallbackCurrent = roomsSection?.content?.image_url || heroImgFallback;
+
+  if (isLoading) return <div className="min-h-screen bg-royal-deep flex items-center justify-center text-gold">Loading...</div>;
 
   const activeChambers = dbRooms && dbRooms.length > 0 
     ? dbRooms.map((dbRoom, i) => {
-        const match = chambers[i % chambers.length];
         return {
           name: dbRoom.name,
-          sanskrit: dbRoom.name.includes("Maharaja") ? "महाराजा" : dbRoom.name.includes("Rajwada") ? "राजवाड़ा" : "हवेली",
-          img: dbRoom.image_url || match.img,
-          foreground: dbRoom.hover_image_url || match.foreground,
+          sanskrit: "कक्षा",
+          img: dbRoom.image_url || "",
+          foreground: dbRoom.hover_image_url || "",
           price: `₹ ${Number(dbRoom.price).toLocaleString('en-IN')}`,
           tagline: dbRoom.is_featured ? "Signature Chamber" : "Palace Chamber",
-          story: dbRoom.description || match.story,
+          story: dbRoom.description || "",
           details: ["Heritage Interior", `${dbRoom.occupancy} Guests Capacity`, "Marble En-suite", "Luxury Amenities"],
           slug: dbRoom.id
         };
       })
-    : chambers;
+    : [];
 
   return (
     <PageShell
-      title="Royal Chambers — Raj Mandir Guest House, Jodhpur"
+      title="Plan Your Stay — Raj Mandir Guest House, Jodhpur"
       description="Step inside the royal chambers of Raj Mandir — Maharaja Suite, Rajwada Chamber and Haveli Courtyard. Heritage rooms with jharokha views in old Jodhpur."
     >
       <PageHero
-        eyebrow="THE CHAMBERS"
-        title="Royal"
-        accent="Quarters"
-        subtitle="Sanctuaries — each a different verse from the same royal poem."
-        image={heroImg}
+        eyebrow={pageHero?.eyebrow || "PLAN YOUR STAY"}
+        title={pageHero?.title || "Royal"}
+        accent={pageHero?.accent || "Quarters"}
+        subtitle={pageHero?.subtitle || "Sanctuaries — each a different verse from the same royal poem."}
+        image={pageHero?.image_url || heroImgFallbackCurrent}
         alt="Frescoed royal bedchamber of Raj Mandir Guest House at golden hour"
       />
       {activeChambers.map((r, i) => (

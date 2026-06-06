@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Loader2, Plus, Edit2, Trash2, Save, X, UtensilsCrossed, Sparkles, MapPin, Palette } from "lucide-react";
 import { MultiImageUploader } from "@/components/admin/MultiImageUploader";
+import { SingleImageUploader } from "@/components/admin/SingleImageUploader";
 
 type DiningArea = {
   id: string;
@@ -301,8 +302,16 @@ export default function DiningCMS() {
                          </select>
                       </div>
                       <div>
-                        <label className="font-serif-sc text-[10px] tracking-widest text-gold block mb-2">IMAGE URL</label>
-                        <input value={editingDish.image_url} onChange={e => setEditingDish({...editingDish, image_url: e.target.value})} className="w-full bg-background border border-gold/20 p-3 font-serif text-sm" />
+                        <label className="font-serif-sc text-[10px] tracking-widest text-gold block mb-2">DISH IMAGE</label>
+                        <div className="aspect-square w-full">
+                           <SingleImageUploader 
+                              bucket="dining-images"
+                              folder="dishes"
+                              value={editingDish.image_url || null}
+                              onChange={(url) => setEditingDish({...editingDish, image_url: url || ""})}
+                              label="UPLOAD DISH IMAGE"
+                           />
+                        </div>
                       </div>
                    </div>
                    <div className="flex justify-end gap-4 pt-6">

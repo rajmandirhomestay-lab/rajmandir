@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Loader2, Save, Type, Image as ImageIcon, Eye, EyeOff, LayoutTemplate, BedDouble, Utensils, Compass, Quote, MessageSquare, X } from "lucide-react";
-import { ImageSelector } from "@/components/admin/ImageSelector";
+import { SingleImageUploader } from "@/components/admin/SingleImageUploader";
 
 type HomepageSection = {
   section_key: string;
@@ -16,8 +16,7 @@ export default function HomepageCMS() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
-  const [showImageSelector, setShowImageSelector] = useState(false);
-  
+    
   const [sections, setSections] = useState<Record<string, HomepageSection>>({
     hero: { section_key: "hero", title: "Raj Mandir", subtitle: "Where history meets luxury.", is_visible: true, content: {} },
     rooms: { section_key: "rooms", title: "Royal Chambers", subtitle: "Experience the legacy.", is_visible: true, content: {} },
@@ -201,39 +200,15 @@ export default function HomepageCMS() {
                 {activeSection} BACKGROUND / FEATURED IMAGE
               </label>
               
-              {currentSection.content?.image_url ? (
-                <div className="relative w-full aspect-video border border-gold/30 group overflow-hidden jharokha-frame bg-black/40">
-                  <img 
-                    src={currentSection.content.image_url} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                    alt={currentSection.title} 
-                  />
-                  <div className="absolute inset-0 bg-royal-deep/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-sm">
-                    <button 
-                      onClick={() => setShowImageSelector(true)}
-                      className="bg-gold text-royal-deep p-3 rounded-full hover:scale-110 transition-transform shadow-gold"
-                      title="Change Image"
-                    >
-                      <ImageIcon size={20} />
-                    </button>
-                    <button 
-                      onClick={() => handleUpdateContent(activeSection, { image_url: null })}
-                      className="bg-red-500 text-white p-3 rounded-full hover:scale-110 transition-transform shadow-lg"
-                      title="Remove Image"
-                    >
-                      <X size={20} />
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setShowImageSelector(true)}
-                  className="w-full aspect-video border-2 border-dashed border-gold/20 hover:border-gold/50 transition-colors flex flex-col items-center justify-center gap-3 bg-gold/5 group jharokha-frame"
-                >
-                  <ImageIcon size={48} className="text-gold/20 group-hover:text-gold/40 transition-colors" />
-                  <span className="font-serif-sc text-[10px] tracking-widest text-gold/40">SELECT PALACE VISUAL</span>
-                </button>
-              )}
+              <div className="aspect-video w-full">
+                <SingleImageUploader 
+                  bucket={activeNavItem?.bucket || "hero-assets"}
+                  folder={`homepage-${activeSection}`}
+                  value={currentSection.content?.image_url || null}
+                  onChange={(url) => handleUpdateContent(activeSection, { image_url: url })}
+                  label={`UPLOAD ${activeSection.toUpperCase()} VISUAL`}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -250,17 +225,7 @@ export default function HomepageCMS() {
         </div>
       </div>
 
-      {showImageSelector && activeNavItem && (
-        <ImageSelector
-          bucketId={activeNavItem.bucket}
-          selectedUrl={currentSection.content?.image_url}
-          onSelect={(url) => {
-            handleUpdateContent(activeSection, { image_url: url });
-            setShowImageSelector(false);
-          }}
-          onClose={() => setShowImageSelector(false)}
-        />
-      )}
+      
     </div>
   );
 }

@@ -3,8 +3,8 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PageShell } from "@/components/palace/PageShell";
 import { PageHero } from "@/components/palace/PageHero";
-import { useExperiences, useHomepageSections, useSliderSettings } from "@/lib/api";
-import { ContentSlider } from "@/components/palace/ContentSlider";
+import { useExperiences, useHomepageSections, useSliderSettings, usePageHero } from "@/lib/api";
+import { UnifiedSlider, SliderSettings } from "@/components/palace/UnifiedSlider";
 import { Clock, MapPin, Sparkles } from "lucide-react";
 
 import heroImgFallback from "@/assets/page-experiences-hero.jpg";
@@ -15,9 +15,22 @@ const Experiences = () => {
   const { data: experiences } = useExperiences();
   const { data: sections } = useHomepageSections();
   const { data: sliderSettings } = useSliderSettings('experiences');
+  const { data: pageHero } = usePageHero('experiences');
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const heroImg = sections?.find(s => s.section_key === 'experiences')?.content?.image_url || heroImgFallback;
+  const defaultSliderSettings: SliderSettings = {
+    slide_speed: 4000,
+    transition_type: "slide",
+    autoplay: true,
+    pause_on_hover: true,
+    show_dots: true,
+    show_arrows: true,
+    loop: true,
+    animation_duration: 1000
+  };
+  const finalSliderSettings = sliderSettings || defaultSliderSettings;
+
+  const heroImgFallbackCurrent = sections?.find(s => s.section_key === 'experiences')?.content?.image_url || heroImgFallback;
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -45,11 +58,11 @@ const Experiences = () => {
       description="Immerse yourself in the cultural tapestry of Jodhpur through curated royal experiences."
     >
       <PageHero
-        eyebrow="IMMERSIVE JOURNEYS"
-        title="Curated"
-        accent="Experiences"
-        subtitle="Step beyond the palace walls and discover the soul of the Blue City."
-        image={heroImg}
+        eyebrow={pageHero?.eyebrow || "A CULTURAL EXPERIENCE"}
+        title={pageHero?.title || "More Than a"}
+        accent={pageHero?.accent || "Stay"}
+        subtitle={pageHero?.subtitle || "Experience Rajasthan like never before. Your royal escape begins here."}
+        image={pageHero?.image_url || heroImgFallbackCurrent}
         alt="Royal experience"
       />
 
@@ -68,11 +81,11 @@ const Experiences = () => {
                  {experiences?.map((exp: any) => (
                     <div key={exp.id} className="experience-card group">
                        <div className="aspect-[16/10] mb-8 overflow-hidden shadow-frame border border-gold/20 relative">
-                          <ContentSlider 
-                             images={exp.experience_images?.map((img: any) => img.image_url) || []} 
-                             settings={sliderSettings}
-                             className="w-full h-full"
-                          />
+                             <UnifiedSlider 
+                                images={exp.experience_images?.length > 0 ? exp.experience_images.map((img: any) => img.image_url) : [heroImgFallbackCurrent]} 
+                                settings={finalSliderSettings as unknown as SliderSettings}
+                                className="w-full h-full"
+                             />
                        </div>
                        <div className="space-y-6">
                            <div className="flex items-center gap-2 text-gold font-serif-sc text-[10px] tracking-widest uppercase">
@@ -81,7 +94,7 @@ const Experiences = () => {
                            <h3 className="font-display text-4xl text-foreground group-hover:text-gold transition-colors duration-500">{exp.title}</h3>
                            <div className="w-12 h-px bg-gold/30" />
                            <p className="font-serif text-lg text-muted-foreground/80 leading-relaxed italic line-clamp-3">
-                              {exp.short_description || exp.full_description}
+                              {exp.description || exp.short_description || exp.full_description}
                            </p>
                            <div className="flex flex-wrap items-center gap-8 pt-4 border-t border-gold/10">
                               <a href="/contact" className="ml-auto font-serif-sc text-[10px] tracking-widest text-gold hover:text-white transition-colors">

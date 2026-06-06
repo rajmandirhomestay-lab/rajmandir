@@ -45,7 +45,27 @@ export default function ReviewsCMS() {
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      setReviews(data || []);
+      
+      const mappedData = (data || []).map(r => {
+        let name = r.guest_name;
+        let location = "";
+        if (name.includes(" (") && name.endsWith(")")) {
+          const parts = name.split(" (");
+          name = parts[0];
+          location = parts[1].replace(")", "");
+        }
+        return {
+          id: r.id,
+          guest_name: name,
+          guest_location: location,
+          rating: parseInt(r.rating) || 5,
+          review_text: r.comment || "",
+          status: r.is_approved ? "approved" : "pending" as any,
+          is_featured: r.is_featured,
+          created_at: r.created_at
+        };
+      });
+      setReviews(mappedData);
     } catch (e: any) {
       toast.error("Failed to load reviews: " + e.message);
     } finally {
@@ -55,7 +75,7 @@ export default function ReviewsCMS() {
 
   const updateStatus = async (id: string, status: "approved" | "rejected") => {
     try {
-      const { error } = await supabase.from("reviews").update({ status }).eq("id", id);
+      const { error } = await supabase.from("reviews").update({ is_approved: status === "approved" }).eq("id", id);
       if (error) throw error;
       toast.success(`Review ${status}.`);
       fetchReviews();
@@ -113,12 +133,20 @@ export default function ReviewsCMS() {
     }
     setSaving(true);
     try {
+      const payload = {
+        guest_name: form.guest_location ? `${form.guest_name} (${form.guest_location})` : form.guest_name,
+        rating: form.rating.toString(),
+        comment: form.review_text,
+        is_approved: form.status === "approved",
+        is_featured: form.is_featured,
+      };
+
       if (editId) {
-        const { error } = await supabase.from("reviews").update(form).eq("id", editId);
+        const { error } = await supabase.from("reviews").update(payload).eq("id", editId);
         if (error) throw error;
         toast.success("Review updated.");
       } else {
-        const { error } = await supabase.from("reviews").insert([form]);
+        const { error } = await supabase.from("reviews").insert([payload]);
         if (error) throw error;
         toast.success("Review added.");
       }

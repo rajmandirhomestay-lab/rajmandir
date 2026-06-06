@@ -6,6 +6,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState({
     rooms: 0,
     bookings: 0,
+    revenue: 0,
     reviews: 0,
     gallery: 0,
   });
@@ -21,8 +22,8 @@ export default function Dashboard() {
           { count: reviewsCount },
           { count: galleryCount }
         ] = await Promise.all([
-          supabase.from("rooms").select("*", { count: "exact", head: true }),
-          supabase.from("bookings").select("*, rooms(title)", { count: "exact" }).order("created_at", { ascending: false }).limit(3),
+          supabase.from("room_categories").select("*", { count: "exact", head: true }),
+          supabase.from("bookings").select("*", { count: "exact" }).order("created_at", { ascending: false }),
           supabase.from("reviews").select("*", { count: "exact", head: true }),
           supabase.from("gallery").select("*", { count: "exact", head: true })
         ]);
@@ -30,11 +31,12 @@ export default function Dashboard() {
         setStats({
           rooms: roomsCount || 0,
           bookings: bookingsCount || 0,
+          revenue: recent?.reduce((sum, b) => sum + Number(b.advance_amount || 0), 0) || 0,
           reviews: reviewsCount || 0,
           gallery: galleryCount || 0,
         });
 
-        if (recent) setRecentBookings(recent);
+        if (recent) setRecentBookings(recent.slice(0, 4));
       } catch (err) {
         console.error("Failed to load dashboard stats", err);
       }
@@ -45,6 +47,7 @@ export default function Dashboard() {
   const statCards = [
     { title: "Total Rooms", value: stats.rooms.toString(), icon: BedDouble, trend: "Active" },
     { title: "Total Bookings", value: stats.bookings.toString(), icon: CalendarCheck, trend: "All Time" },
+    { title: "Revenue (Advance)", value: `₹${stats.revenue.toLocaleString()}`, icon: TrendingUp, trend: "Collected" },
     { title: "Guest Reviews", value: stats.reviews.toString(), icon: Star, trend: "Published" },
     { title: "Gallery Images", value: stats.gallery.toString(), icon: ImageIcon, trend: "Live" },
   ];
@@ -93,15 +96,16 @@ export default function Dashboard() {
                   <div>
                     <p className="font-serif text-foreground">{booking.guest_name}</p>
                     <p className="font-serif-sc text-[10px] tracking-widest text-muted-foreground mt-1">
-                      {booking.rooms?.title?.toUpperCase()} • {new Date(booking.check_in_date).toLocaleDateString()}
+                      {new Date(booking.start_date || booking.created_at).toLocaleDateString()} • ₹{Number(booking.total_price).toLocaleString()}
                     </p>
                   </div>
                   <span className={`font-serif-sc text-[10px] px-3 py-1 border ${
-                    booking.status === 'confirmed' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
-                    booking.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
+                    booking.booking_status === 'confirmed' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                    booking.booking_status === 'canceled' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                    booking.booking_status === 'pending' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
                     'bg-gold/10 text-gold border-gold/20'
                   }`}>
-                    {booking.status?.toUpperCase() || 'NEW'}
+                    {booking.booking_status?.toUpperCase() || 'NEW'}
                   </span>
                 </div>
               ))

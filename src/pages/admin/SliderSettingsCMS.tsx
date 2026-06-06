@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Loader2, Save, Settings2 } from "lucide-react";
+import { Loader2, Save, Settings2, Play } from "lucide-react";
+import { UnifiedSlider } from "@/components/palace/UnifiedSlider";
 
-type SliderSettings = {
+type CMSSliderSettings = {
   id: string;
   section_name: string;
   slide_speed: number;
@@ -14,12 +15,21 @@ type SliderSettings = {
   show_arrows: boolean;
   loop: boolean;
   easing: string;
+  animation_duration?: number;
+  mobile_swipe?: boolean;
+  keyboard_navigation?: boolean;
 };
 
-const SECTIONS = ["experiences", "stories", "attractions", "dining", "gallery"];
+const PREVIEW_IMAGES = [
+  "https://images.unsplash.com/photo-1542314831-c6a4d142104d?q=80&w=2000&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=2000&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=2000&auto=format&fit=crop"
+];
+
+const SECTIONS = ["homepage", "rooms", "experiences", "stories", "attractions", "dining", "gallery"];
 
 export default function SliderSettingsCMS() {
-  const [settings, setSettings] = useState<Record<string, SliderSettings>>({});
+  const [settings, setSettings] = useState<Record<string, CMSSliderSettings>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
 
@@ -32,8 +42,8 @@ export default function SliderSettingsCMS() {
       const { data, error } = await supabase.from("slider_settings").select("*");
       if (error) throw error;
 
-      const settingsMap: Record<string, SliderSettings> = {};
-      data?.forEach((s: SliderSettings) => {
+      const settingsMap: Record<string, CMSSliderSettings> = {};
+      data?.forEach((s: CMSSliderSettings) => {
         settingsMap[s.section_name] = s;
       });
 
@@ -50,7 +60,10 @@ export default function SliderSettingsCMS() {
             show_dots: true,
             show_arrows: true,
             loop: true,
-            easing: "ease-in-out"
+            easing: "ease-in-out",
+            animation_duration: 1000,
+            mobile_swipe: true,
+            keyboard_navigation: true,
           };
         }
       });
@@ -63,7 +76,7 @@ export default function SliderSettingsCMS() {
     }
   };
 
-  const handleChange = (section: string, field: keyof SliderSettings, value: any) => {
+  const handleChange = (section: string, field: keyof CMSSliderSettings, value: any) => {
     setSettings(prev => ({
       ...prev,
       [section]: {
@@ -134,6 +147,17 @@ export default function SliderSettingsCMS() {
                </button>
             </div>
 
+            {/* Live Preview */}
+            <div className="mb-10 w-full h-64 border border-gold/30 relative overflow-hidden group">
+               <div className="absolute top-2 left-2 z-20 bg-black/60 px-3 py-1 font-serif-sc text-[10px] text-gold tracking-widest flex items-center gap-2 backdrop-blur-sm border border-gold/20">
+                 <Play size={10} /> LIVE PREVIEW
+               </div>
+               <UnifiedSlider 
+                 images={PREVIEW_IMAGES} 
+                 settings={settings[section]} 
+               />
+            </div>
+
             <div className="grid lg:grid-cols-3 gap-10">
                <div className="space-y-6 lg:col-span-1">
                   <div>
@@ -145,9 +169,25 @@ export default function SliderSettingsCMS() {
                     >
                        <option value="slide">Slide (Horizontal)</option>
                        <option value="fade">Fade (Cinematic)</option>
+                       <option value="crossfade">Crossfade (Blend)</option>
                        <option value="zoom">Zoom (Immersive)</option>
                        <option value="parallax">Parallax (Depth)</option>
                     </select>
+                  </div>
+                  <div>
+                    <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-2 flex justify-between">
+                       <span>TRANSITION DURATION</span>
+                       <span className="text-gold">{(settings[section].animation_duration || 1000) / 1000}s</span>
+                    </label>
+                    <input 
+                      type="range" 
+                      min="300" 
+                      max="3000" 
+                      step="100" 
+                      value={settings[section].animation_duration || 1000} 
+                      onChange={e => handleChange(section, "animation_duration", parseInt(e.target.value))}
+                      className="w-full accent-gold cursor-pointer" 
+                    />
                   </div>
                   <div>
                     <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-2 flex justify-between">
@@ -194,6 +234,14 @@ export default function SliderSettingsCMS() {
                   <label className="flex items-center justify-between p-4 border border-gold/10 hover:border-gold/30 cursor-pointer transition-colors bg-card">
                      <span className="font-serif-sc text-[11px] tracking-widest">SHOW ARROWS</span>
                      <input type="checkbox" checked={settings[section].show_arrows} onChange={e => handleChange(section, "show_arrows", e.target.checked)} className="w-5 h-5 accent-gold" />
+                  </label>
+                  <label className="flex items-center justify-between p-4 border border-gold/10 hover:border-gold/30 cursor-pointer transition-colors bg-card">
+                     <span className="font-serif-sc text-[11px] tracking-widest">MOBILE SWIPE</span>
+                     <input type="checkbox" checked={settings[section].mobile_swipe !== false} onChange={e => handleChange(section, "mobile_swipe", e.target.checked)} className="w-5 h-5 accent-gold" />
+                  </label>
+                  <label className="flex items-center justify-between p-4 border border-gold/10 hover:border-gold/30 cursor-pointer transition-colors bg-card">
+                     <span className="font-serif-sc text-[11px] tracking-widest">KEYBOARD NAV</span>
+                     <input type="checkbox" checked={settings[section].keyboard_navigation !== false} onChange={e => handleChange(section, "keyboard_navigation", e.target.checked)} className="w-5 h-5 accent-gold" />
                   </label>
                   <label className="flex items-center justify-between p-4 border border-gold/10 hover:border-gold/30 cursor-pointer transition-colors bg-card sm:col-span-2">
                      <span className="font-serif-sc text-[11px] tracking-widest">INFINITE LOOP</span>

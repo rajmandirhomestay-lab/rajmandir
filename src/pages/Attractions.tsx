@@ -3,8 +3,8 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PageShell } from "@/components/palace/PageShell";
 import { PageHero } from "@/components/palace/PageHero";
-import { useAttractions, useHomepageSections, useSliderSettings } from "@/lib/api";
-import { ContentSlider } from "@/components/palace/ContentSlider";
+import { useAttractions, useHomepageSections, useSliderSettings, usePageHero } from "@/lib/api";
+import { UnifiedSlider, SliderSettings } from "@/components/palace/UnifiedSlider";
 import { MapPin } from "lucide-react";
 
 import heroImgFallback from "@/assets/story-bluecity.jpg";
@@ -15,9 +15,22 @@ const Attractions = () => {
   const { data: attractions } = useAttractions();
   const { data: sections } = useHomepageSections();
   const { data: sliderSettings } = useSliderSettings('attractions');
+  const { data: pageHero } = usePageHero('attractions');
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const heroImg = sections?.find(s => s.section_key === 'attractions')?.content?.image_url || heroImgFallback;
+  const heroImgFallbackCurrent = sections?.find(s => s.section_key === 'attractions')?.content?.image_url || heroImgFallback;
+
+  const defaultSliderSettings: SliderSettings = {
+    slide_speed: 4000,
+    transition_type: "slide",
+    autoplay: true,
+    pause_on_hover: true,
+    show_dots: true,
+    show_arrows: true,
+    loop: true,
+    animation_duration: 1000
+  };
+  const finalSliderSettings = sliderSettings || defaultSliderSettings;
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -45,11 +58,11 @@ const Attractions = () => {
       description="Explore the heritage of Jodhpur, from the Mehrangarh Fort to the vibrant Sardar Market."
     >
       <PageHero
-        eyebrow="LANDMARKS & LEGENDS"
-        title="Jodhpur"
-        accent="Attractions"
-        subtitle="A curated guide to the most magnificent sights around the Blue City."
-        image={heroImg}
+        eyebrow={pageHero?.eyebrow || "LOCAL EXPERIENCES & NEARBY WONDERS"}
+        title={pageHero?.title || "Nearby"}
+        accent={pageHero?.accent || "Wonders"}
+        subtitle={pageHero?.subtitle || "A curated local guide to the most magnificent sights around the Blue City."}
+        image={pageHero?.image_url || heroImgFallbackCurrent}
         alt="Jodhpur landmarks"
       />
 
@@ -68,11 +81,11 @@ const Attractions = () => {
                  {attractions?.map((item: any) => (
                     <div key={item.id} className="attraction-card group">
                        <div className="aspect-square mb-8 overflow-hidden shadow-frame border border-gold/20 relative group-hover:shadow-gold transition-all duration-700">
-                          <ContentSlider 
-                             images={item.attraction_images?.map((img: any) => img.image_url) || []} 
-                             settings={sliderSettings}
-                             className="w-full h-full"
-                          />
+                             <UnifiedSlider 
+                                images={item.attraction_images?.length > 0 ? item.attraction_images.map((img: any) => img.image_url) : [heroImgFallbackCurrent]} 
+                                settings={finalSliderSettings as unknown as SliderSettings}
+                                className="w-full h-full"
+                             />
                           <div className="absolute top-4 left-4 z-20 px-3 py-1 bg-royal-deep/80 backdrop-blur-md border border-gold/30 text-gold font-serif-sc text-[9px] tracking-widest uppercase">
                              {item.location || "Nearby"}
                           </div>

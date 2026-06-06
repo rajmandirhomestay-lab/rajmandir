@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { X } from "lucide-react";
+import { useGallery } from "@/lib/api";
 import g1 from "@/assets/gallery-1.jpg";
 import g2 from "@/assets/gallery-2.jpg";
 import g3 from "@/assets/gallery-3.jpg";
@@ -23,6 +24,32 @@ const photos = [
 export const Gallery = () => {
   const ref = useRef<HTMLElement>(null);
   const [active, setActive] = useState<number | null>(null);
+  const { data: dbGallery } = useGallery();
+
+  const activePhotos = useMemo(() => {
+    if (dbGallery && dbGallery.length > 0) {
+      const mappedDb = dbGallery.map((item, index) => ({
+        src: item.storage_path || item.image_url || photos[index % photos.length].src,
+        alt: item.title || "Gallery image",
+        span: photos[index % photos.length].span
+      }));
+      
+      const combined = [...mappedDb];
+      while (combined.length < 6) {
+        combined.push({
+          ...photos[combined.length],
+          span: photos[combined.length].span
+        });
+      }
+      
+      // Update spans to maintain masonry layout
+      return combined.slice(0, 6).map((item, i) => ({
+        ...item,
+        span: photos[i].span
+      }));
+    }
+    return photos;
+  }, [dbGallery]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -57,8 +84,8 @@ export const Gallery = () => {
     if (active === null) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setActive(null);
-      if (e.key === "ArrowRight") setActive((p) => (p === null ? 0 : (p + 1) % photos.length));
-      if (e.key === "ArrowLeft") setActive((p) => (p === null ? 0 : (p - 1 + photos.length) % photos.length));
+      if (e.key === "ArrowRight") setActive((p) => (p === null ? 0 : (p + 1) % activePhotos.length));
+      if (e.key === "ArrowLeft") setActive((p) => (p === null ? 0 : (p - 1 + activePhotos.length) % activePhotos.length));
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -69,9 +96,9 @@ export const Gallery = () => {
       <div className="absolute inset-0 light-rays opacity-30 pointer-events-none" />
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <div className="eyebrow mb-4">★ THE PALACE EXHIBITION ★</div>
+          <div className="eyebrow mb-4">★ CAPTURED MEMORIES ★</div>
           <h2 className="font-display text-5xl md:text-6xl text-foreground">
-            Walk the <span className="text-gold-gradient italic">corridors</span>
+            A Glimpse of <span className="text-gold-gradient italic">Raj Mandir</span>
           </h2>
           <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold text-xl">❖</span></div>
           <p className="font-serif italic mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -80,7 +107,7 @@ export const Gallery = () => {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[180px] md:auto-rows-[220px] gap-4 md:gap-6">
-          {photos.map((p, i) => (
+          {activePhotos.map((p, i) => (
             <button
               key={i}
               onClick={() => setActive(i)}
@@ -121,11 +148,11 @@ export const Gallery = () => {
           <div className="relative max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
             <div className="absolute -inset-2 bg-gradient-gold opacity-60 blur-lg" />
             <img
-              src={photos[active].src}
-              alt={photos[active].alt}
+              src={activePhotos[active].src}
+              alt={activePhotos[active].alt}
               className="relative w-full max-h-[80vh] object-contain shadow-gold"
             />
-            <div className="text-center mt-6 font-serif italic text-ivory/80">{photos[active].alt}</div>
+            <div className="text-center mt-6 font-serif italic text-ivory/80">{activePhotos[active].alt}</div>
           </div>
         </div>
       )}

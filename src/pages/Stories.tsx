@@ -1,10 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PageShell } from "@/components/palace/PageShell";
 import { PageHero } from "@/components/palace/PageHero";
-import { useStories, useHomepageSections, useSliderSettings } from "@/lib/api";
-import { ContentSlider } from "@/components/palace/ContentSlider";
+import { useStories, useHomepageSections, useSliderSettings, usePageHero } from "@/lib/api";
+import { UnifiedSlider, SliderSettings } from "@/components/palace/UnifiedSlider";
 
 import heroImgFallback from "@/assets/page-stories-hero.jpg";
 
@@ -12,24 +12,44 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Stories = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [expandedStoryId, setExpandedStoryId] = useState<string | null>(null);
   const { data: dbStories, isLoading } = useStories();
   const { data: sections } = useHomepageSections();
   const { data: sliderSettings } = useSliderSettings('stories');
+  const { data: pageHero } = usePageHero('stories');
 
-  const heroImg = sections?.find(s => s.section_key === 'stories')?.content?.image_url || heroImgFallback;
+  const heroImgFallbackCurrent = sections?.find(s => s.section_key === 'stories')?.content?.image_url || heroImgFallback;
+
+  const defaultSliderSettings: SliderSettings = {
+    slide_speed: 4000,
+    transition_type: "slide",
+    autoplay: true,
+    pause_on_hover: true,
+    show_dots: true,
+    show_arrows: true,
+    loop: true,
+    animation_duration: 1000
+  };
+  const finalSliderSettings = sliderSettings || defaultSliderSettings;
 
   const entries = dbStories?.map((s: any) => ({
     id: s.slug || s.id,
     title: s.title,
     category: "HERITAGE",
     date: new Date(s.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-    excerpt: s.short_description || s.full_description,
+    excerpt: s.excerpt || s.short_description || "",
+    full_description: s.content?.text || s.content || s.full_description || "",
     images: s.travel_story_images?.map((img: any) => img.image_url) || [],
     readTime: "5 MIN READ",
-    isFeatured: s.featured
+    isFeatured: s.featured || s.is_featured
   })) || [];
 
   const featuredStory = entries.find(e => e.isFeatured) || entries[0];
+
+  const toggleStory = (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    setExpandedStoryId(expandedStoryId === id ? null : id);
+  };
 
   useEffect(() => {
     if (isLoading) return;
@@ -62,11 +82,11 @@ const Stories = () => {
       description="Royal chronicles, architectural guides, and culinary secrets from the heart of the Blue City."
     >
       <PageHero
-        eyebrow="PALACE JOURNALS"
-        title="The Royal"
-        accent="Chronicles"
-        subtitle="Stories of sandstone, indigo, and the enduring romance of Marwar."
-        image={heroImg}
+        eyebrow={pageHero?.eyebrow || "PALACE JOURNALS"}
+        title={pageHero?.title || "The Royal"}
+        accent={pageHero?.accent || "Chronicles"}
+        subtitle={pageHero?.subtitle || "Stories of sandstone, indigo, and the enduring romance of Marwar."}
+        image={pageHero?.image_url || heroImgFallbackCurrent}
         alt="Ancient books and scrolls"
       />
 
@@ -79,12 +99,11 @@ const Stories = () => {
             <div className="max-w-7xl mx-auto">
               <div className="featured-card relative grid lg:grid-cols-2 bg-card border border-gold/20 shadow-frame overflow-hidden">
                 <div className="relative h-[500px] lg:h-auto overflow-hidden">
-                  <ContentSlider 
-                    images={featuredStory.images} 
-                    settings={sliderSettings}
-                    className="w-full h-full"
-                    autoPlay={true}
-                  />
+                    <UnifiedSlider 
+                      images={featuredStory.images?.length > 0 ? featuredStory.images : [heroImgFallbackCurrent]} 
+                      settings={finalSliderSettings as unknown as SliderSettings}
+                      className="w-full h-full"
+                    />
                 </div>
                 <div className="p-8 md:p-16 flex flex-col justify-center bg-background/50 backdrop-blur-sm relative z-10">
                   <div className="flex items-center gap-4 mb-6">
@@ -93,12 +112,17 @@ const Stories = () => {
                     <div className="font-serif-sc text-muted-foreground tracking-[0.2em] text-[10px] uppercase">{featuredStory.readTime}</div>
                   </div>
                   <h2 className="font-display text-4xl md:text-5xl text-foreground mb-6 leading-tight uppercase tracking-tight">{featuredStory.title}</h2>
-                  <p className="font-serif text-lg text-muted-foreground leading-relaxed mb-10 italic">
+                  <p className="font-serif text-lg text-muted-foreground leading-relaxed mb-6 italic">
                     "{featuredStory.excerpt}"
                   </p>
-                  <a href={`/stories/${featuredStory.id}`} className="group inline-flex items-center gap-4 font-serif-sc tracking-[0.3em] text-xs text-foreground hover:text-gold transition-colors">
-                    READ THE FULL CHAPTER <span className="text-xl group-hover:translate-x-2 transition-transform">→</span>
-                  </a>
+                  {expandedStoryId === featuredStory.id && (
+                     <div className="font-serif text-muted-foreground leading-relaxed mb-6 whitespace-pre-wrap animate-fade-in border-t border-gold/20 pt-4">
+                        {featuredStory.full_description}
+                     </div>
+                  )}
+                  <button onClick={(e) => toggleStory(featuredStory.id, e)} className="group inline-flex items-center gap-4 font-serif-sc tracking-[0.3em] text-xs text-foreground hover:text-gold transition-colors">
+                    {expandedStoryId === featuredStory.id ? "CLOSE CHAPTER" : "READ THE FULL CHAPTER"} <span className="text-xl group-hover:translate-x-2 transition-transform">{expandedStoryId === featuredStory.id ? "↑" : "→"}</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -112,11 +136,11 @@ const Stories = () => {
               {entries.filter(e => e.id !== featuredStory?.id).map((entry) => (
                 <article key={entry.id} className="story-card group">
                   <div className="relative aspect-[4/5] overflow-hidden jharokha-frame mb-8 border border-gold/10 bg-muted/20">
-                     <ContentSlider 
-                        images={entry.images} 
-                        settings={sliderSettings}
-                        className="w-full h-full"
-                     />
+                        <UnifiedSlider 
+                           images={entry.images?.length > 0 ? entry.images : [heroImgFallbackCurrent]} 
+                           settings={finalSliderSettings as unknown as SliderSettings}
+                           className="w-full h-full"
+                        />
                   </div>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between font-serif-sc text-[10px] tracking-[0.3em] text-gold uppercase">
@@ -126,12 +150,19 @@ const Stories = () => {
                     <h3 className="font-display text-3xl text-foreground group-hover:text-gold transition-colors duration-500 leading-tight uppercase">
                       {entry.title}
                     </h3>
-                    <p className="font-serif text-muted-foreground line-clamp-3 leading-relaxed italic">
+                    <p className={`font-serif text-muted-foreground leading-relaxed italic ${expandedStoryId === entry.id ? 'mb-4' : 'line-clamp-3'}`}>
                       {entry.excerpt}
                     </p>
-                    <div className="pt-4 border-t border-gold/10 flex items-center justify-between">
+                    {expandedStoryId === entry.id && (
+                       <div className="font-serif text-muted-foreground text-sm leading-relaxed mb-4 whitespace-pre-wrap animate-fade-in border-t border-gold/10 pt-4">
+                          {entry.full_description}
+                       </div>
+                    )}
+                    <div className="pt-4 border-t border-gold/10 flex items-center justify-between mt-auto">
                       <span className="font-serif-sc text-[9px] tracking-widest text-muted-foreground uppercase">{entry.date}</span>
-                      <a href={`/stories/${entry.id}`} className="font-serif-sc text-[10px] tracking-widest text-gold hover:underline">DISCOVER →</a>
+                      <button onClick={(e) => toggleStory(entry.id, e)} className="font-serif-sc text-[10px] tracking-widest text-gold hover:underline">
+                        {expandedStoryId === entry.id ? "CLOSE ↑" : "DISCOVER →"}
+                      </button>
                     </div>
                   </div>
                 </article>

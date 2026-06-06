@@ -3,6 +3,7 @@ import gsap from "gsap";
 import heroImg from "@/assets/palace-hero.jpg";
 import { DustParticles } from "./DustParticles";
 import { useHomepageSections } from "@/lib/api";
+import { UnifiedSlider, SliderSettings } from "./UnifiedSlider";
 
 export const Hero = ({ start }: { start: boolean }) => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -12,11 +13,48 @@ export const Hero = ({ start }: { start: boolean }) => {
   const imgRef = useRef<HTMLDivElement>(null);
 
   const [cmsData, setCmsData] = useState({
-    title: "Raj Mandir",
-    subtitle: "Where the blue city sleeps beneath sandstone arches, and every doorway opens onto a forgotten dynasty.",
+    title: "Where Heritage Meets Hospitality",
+    subtitle: "Experience warm hospitality and heritage architecture in the heart of Jodhpur's vibrant culture.",
     image_url: null as string | null,
     isVisible: true
   });
+  const [sliderSettings, setSliderSettings] = useState<SliderSettings | null>(null);
+
+  useEffect(() => {
+    fetch('/rest/v1/slider_settings?section_name=eq.homepage', {
+      headers: {
+        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.length > 0) {
+        setSliderSettings(data[0]);
+      } else {
+        setSliderSettings({
+          slide_speed: 6000,
+          transition_type: "crossfade",
+          autoplay: true,
+          pause_on_hover: false,
+          show_dots: false,
+          show_arrows: false,
+          loop: true,
+          animation_duration: 1500
+        });
+      }
+    })
+    .catch(() => setSliderSettings({
+      slide_speed: 6000,
+      transition_type: "crossfade",
+      autoplay: true,
+      pause_on_hover: false,
+      show_dots: false,
+      show_arrows: false,
+      loop: true,
+      animation_duration: 1500
+    }));
+  }, []);
 
   const { data: sections } = useHomepageSections();
 
@@ -25,8 +63,8 @@ export const Hero = ({ start }: { start: boolean }) => {
       const heroSection = sections.find(s => s.section_key === "hero");
       if (heroSection) {
         setCmsData({
-          title: heroSection.content?.title || "Raj Mandir",
-          subtitle: heroSection.content?.subtitle || "Where the blue city sleeps beneath sandstone arches, and every doorway opens onto a forgotten dynasty.",
+          title: heroSection.content?.title || "Where Heritage Meets Hospitality",
+          subtitle: heroSection.content?.subtitle || "Experience warm hospitality and heritage architecture in the heart of Jodhpur's vibrant culture.",
           image_url: heroSection.content?.image_url || null,
           isVisible: heroSection.is_visible !== false
         });
@@ -57,16 +95,17 @@ export const Hero = ({ start }: { start: boolean }) => {
     <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center pt-24 pb-16">
       {/* Background image with refined cinematic dark overlay */}
       <div ref={imgRef} className="absolute inset-0">
-        <img
-          src={cmsData.image_url || heroImg}
-          alt="Raj Mandir Guest House palace courtyard at golden hour"
-          className="h-full w-full object-cover"
-          width={1920}
-          height={1080}
-        />
+        {sliderSettings && (
+          <UnifiedSlider
+            settings={sliderSettings}
+            images={[cmsData.image_url || heroImg, "https://images.unsplash.com/photo-1542314831-c6a4d142104d?q=80&w=2000&auto=format&fit=crop"]}
+            className="w-full h-full"
+            overlay={false}
+          />
+        )}
         {/* Balanced dark gradient to ensure text readability without excessive haze */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-royal-deep/50 to-background/95" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.2)_0%,rgba(0,0,0,0.7)_100%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-royal-deep/50 to-background/95 pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.2)_0%,rgba(0,0,0,0.7)_100%)] pointer-events-none" />
       </div>
 
       {/* Reduced dust particle opacity to avoid white fog effect over text */}
@@ -114,7 +153,7 @@ export const Hero = ({ start }: { start: boolean }) => {
             href="#rooms"
             className="group relative px-10 py-4 bg-gradient-gold text-royal-deep font-serif-sc tracking-[0.3em] text-sm font-bold rounded-sm shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:shadow-[0_0_30px_rgba(212,175,55,0.6)] hover:scale-[1.02] transition-all duration-700"
           >
-            ENTER THE PALACE
+            PLAN YOUR STAY
           </a>
           <a
             href="#about"

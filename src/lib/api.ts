@@ -59,6 +59,46 @@ export const useRoom = (slug: string) => useQuery({
   enabled: !!slug,
 });
 
+
+
+// ---- HOMEPAGE AMENITIES ----
+export const useHomepageAmenities = () => {
+  return useQuery({
+    queryKey: ['homepage_amenities'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('homepage_amenities').select('*').order('display_order', { ascending: true });
+      if (error) throw error;
+      return data;
+    }
+  });
+};
+
+// ---- PAYMENT SETTINGS & MANUAL PAYMENTS ----
+export const usePaymentSettings = () => {
+  return useQuery({
+    queryKey: ['payment_settings'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('payment_settings').select('*').limit(1).maybeSingle();
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    }
+  });
+};
+
+export const useManualPayments = () => {
+  return useQuery({
+    queryKey: ['manual_payments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('manual_payment_submissions')
+        .select('*, bookings(booking_number, start_date, end_date, total_price, num_rooms, room_id)')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    }
+  });
+};
+
 // 2. Gallery
 export const fetchGallery = async () => {
   const { data, error } = await supabase
@@ -137,7 +177,7 @@ export const fetchStories = async () => {
   const { data, error } = await supabase
     .from("travel_stories")
     .select("*, travel_story_images(*)")
-    .order("created_at", { ascending: false });
+    .order("sort_order", { ascending: true });
   if (error) throw error;
   return data;
 };
@@ -265,6 +305,39 @@ export const useHomepageSections = () => useQuery({
   queryFn: fetchHomepageSections,
 });
 
+// 9.2 Page Heroes
+export const fetchPageHeroes = async () => {
+  const { data, error } = await supabase
+    .from("page_heroes")
+    .select("*")
+    .order("page_slug", { ascending: true });
+
+  if (error) throw error;
+  return data;
+};
+
+export const usePageHeroes = () => useQuery({
+  queryKey: ["page_heroes"],
+  queryFn: fetchPageHeroes,
+});
+
+export const fetchPageHero = async (page_slug: string) => {
+  const { data, error } = await supabase
+    .from("page_heroes")
+    .select("*")
+    .eq("page_slug", page_slug)
+    .single();
+
+  if (error && error.code !== 'PGRST116') throw error; // PGRST116 is no rows returned
+  return data;
+};
+
+export const usePageHero = (page_slug: string) => useQuery({
+  queryKey: ["page_hero", page_slug],
+  queryFn: () => fetchPageHero(page_slug),
+  enabled: !!page_slug,
+});
+
 // 9.5 Global Settings
 export const fetchSettings = async () => {
   const { data, error } = await supabase.from("settings").select("*");
@@ -295,6 +368,13 @@ export const fetchRoomCategories = async () => {
       room_seasonal_prices (
         month,
         price
+      ),
+      room_calendar_prices (
+        id,
+        start_date,
+        end_date,
+        price,
+        price_type
       )
     `)
     .order("sort_order", { ascending: true });
@@ -320,6 +400,13 @@ export const fetchRoomCategoryById = async (id: string) => {
       room_seasonal_prices (
         month,
         price
+      ),
+      room_calendar_prices (
+        id,
+        start_date,
+        end_date,
+        price,
+        price_type
       )
     `)
     .eq("id", id)
@@ -396,4 +483,32 @@ export const fetchAllBookings = async () => {
 export const useAllBookings = () => useQuery({
   queryKey: ["all_bookings"],
   queryFn: fetchAllBookings,
+});
+
+// 15. About Page Content
+export const useAboutContent = () => useQuery({
+  queryKey: ["about_page_content"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("about_page_content").select("*");
+    if (error) throw error;
+    return data;
+  },
+});
+
+export const useAboutFeatures = () => useQuery({
+  queryKey: ["about_page_features"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("about_page_features").select("*").order("sort_order", { ascending: true });
+    if (error) throw error;
+    return data;
+  },
+});
+
+export const useAboutGallery = () => useQuery({
+  queryKey: ["about_page_gallery"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("about_page_gallery").select("*").order("sort_order", { ascending: true });
+    if (error) throw error;
+    return data;
+  },
 });

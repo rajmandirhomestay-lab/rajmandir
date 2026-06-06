@@ -3,7 +3,8 @@ import gsap from "gsap";
 import { PageShell } from "@/components/palace/PageShell";
 import { PageHero } from "@/components/palace/PageHero";
 import { X } from "lucide-react";
-import { useGallery } from "@/lib/api";
+import { useGallery, usePageHero } from "@/lib/api";
+import { UnifiedSlider, SliderSettings } from "@/components/palace/UnifiedSlider";
 
 import room1 from "@/assets/room-haveli.jpg";
 import room2 from "@/assets/room-maharaja.jpg";
@@ -47,13 +48,51 @@ const initialGalleryItems = [
 const GalleryPage = () => {
   const [activeCategory, setActiveCategory] = useState<Category>("All");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [sliderSettings, setSliderSettings] = useState<SliderSettings | null>(null);
   const { data: dbGallery } = useGallery();
+  const { data: pageHero } = usePageHero('gallery');
+
+  useEffect(() => {
+    fetch('/rest/v1/slider_settings?section_name=eq.gallery', {
+      headers: {
+        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.length > 0) {
+        setSliderSettings(data[0]);
+      } else {
+        setSliderSettings({
+          slide_speed: 6000,
+          transition_type: "zoom",
+          autoplay: false,
+          pause_on_hover: true,
+          show_dots: false,
+          show_arrows: true,
+          loop: true,
+          animation_duration: 1200
+        });
+      }
+    })
+    .catch(() => setSliderSettings({
+      slide_speed: 6000,
+      transition_type: "zoom",
+      autoplay: false,
+      pause_on_hover: true,
+      show_dots: false,
+      show_arrows: true,
+      loop: true,
+      animation_duration: 1200
+    }));
+  }, []);
 
   const galleryItems = useMemo(() => {
     if (dbGallery && dbGallery.length > 0) {
       return dbGallery.map((item, index) => ({
         id: item.id,
-        src: item.image_url || initialGalleryItems[index % initialGalleryItems.length].src,
+        src: item.storage_path || item.image_url || initialGalleryItems[index % initialGalleryItems.length].src,
         category: (item.category as Category) || "Heritage",
         title: item.title || "Royal Frame",
         span: initialGalleryItems[index % initialGalleryItems.length].span,
@@ -79,24 +118,22 @@ const GalleryPage = () => {
     if (lightboxIndex === null) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setLightboxIndex(null);
-      if (e.key === "ArrowRight") setLightboxIndex((prev) => (prev === null ? 0 : (prev + 1) % filteredItems.length));
-      if (e.key === "ArrowLeft") setLightboxIndex((prev) => (prev === null ? 0 : (prev - 1 + filteredItems.length) % filteredItems.length));
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxIndex, filteredItems.length]);
+  }, [lightboxIndex]);
 
   return (
     <PageShell
-      title="The Royal Gallery — Raj Mandir"
+      title="A Glimpse of Raj Mandir"
       description="Immerse yourself in the visual heritage, luxurious rooms, and unforgettable dining experiences of Raj Mandir Guest House."
     >
       <PageHero
-        eyebrow="A VISUAL JOURNEY"
-        title="Frames of"
-        accent="Heritage"
-        subtitle="A curated exhibition of our palace, our city, and the memories woven within."
-        image={heroImg}
+        eyebrow={pageHero?.eyebrow || "A VISUAL JOURNEY"}
+        title={pageHero?.title || "A Glimpse of"}
+        accent={pageHero?.accent || "Raj Mandir"}
+        subtitle={pageHero?.subtitle || "A curated exhibition of our palace, our city, and the memories woven within."}
+        image={pageHero?.image_url || heroImg}
         alt="Palace corridor"
       />
 
@@ -151,54 +188,39 @@ const GalleryPage = () => {
         </div>
 
         {/* Lightbox */}
-        {lightboxIndex !== null && (
+        {lightboxIndex !== null && sliderSettings && (
           <div
-            className="fixed inset-0 z-50 bg-background/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-12 animate-fade-in"
-            onClick={() => setLightboxIndex(null)}
+            className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-12 animate-fade-in"
           >
             <button
               onClick={() => setLightboxIndex(null)}
-              className="absolute top-6 right-6 text-muted-foreground hover:text-gold transition-colors z-50 p-2"
+              className="absolute top-6 right-6 text-muted-foreground hover:text-gold transition-colors z-[110] p-2 bg-black/50 rounded-full"
               aria-label="Close viewer"
             >
               <X size={32} />
             </button>
-            
-            <button
-              onClick={(e) => { e.stopPropagation(); setLightboxIndex((prev) => (prev === null ? 0 : (prev - 1 + filteredItems.length) % filteredItems.length)); }}
-              className="absolute left-6 text-muted-foreground hover:text-gold text-4xl hidden md:block z-50 transition-colors"
-            >
-              ‹
-            </button>
-            
-            <button
-              onClick={(e) => { e.stopPropagation(); setLightboxIndex((prev) => (prev === null ? 0 : (prev + 1) % filteredItems.length)); }}
-              className="absolute right-6 text-muted-foreground hover:text-gold text-4xl hidden md:block z-50 transition-colors"
-            >
-              ›
-            </button>
 
-            <div 
-              className="relative w-full max-w-6xl max-h-full flex flex-col items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="relative group max-h-[80vh] w-auto">
-                <img
-                  src={filteredItems[lightboxIndex].src}
-                  alt={filteredItems[lightboxIndex].title}
-                  className="max-h-[80vh] max-w-full object-contain shadow-2xl border border-gold/20"
-                />
-              </div>
-              
-              <div className="mt-8 text-center text-foreground w-full max-w-2xl bg-card/30 backdrop-blur-sm py-4 px-6 border border-gold/10">
-                <div className="font-serif-sc text-gold tracking-widest text-xs mb-2">
-                  {filteredItems[lightboxIndex].category.toUpperCase()}
-                </div>
-                <h3 className="font-display text-3xl mb-1">{filteredItems[lightboxIndex].title}</h3>
-                <div className="text-muted-foreground font-serif italic text-sm">
-                  {lightboxIndex + 1} of {filteredItems.length}
-                </div>
-              </div>
+            <div className="w-full h-full max-w-7xl mx-auto flex flex-col items-center justify-center">
+              <UnifiedSlider
+                settings={sliderSettings}
+                initialSlide={lightboxIndex}
+                className="w-full h-[80vh]"
+                slides={filteredItems.map((item, index) => (
+                  <div key={item.id} className="relative w-full h-full flex flex-col items-center justify-center">
+                    <img
+                      src={item.src}
+                      alt={item.title}
+                      className="max-h-[70vh] max-w-full object-contain shadow-2xl border border-gold/20"
+                    />
+                    <div className="mt-8 text-center text-foreground w-full max-w-2xl bg-card/30 backdrop-blur-sm py-4 px-6 border border-gold/10">
+                      <div className="font-serif-sc text-gold tracking-widest text-xs mb-2">
+                        {item.category.toUpperCase()}
+                      </div>
+                      <h3 className="font-display text-3xl mb-1">{item.title}</h3>
+                    </div>
+                  </div>
+                ))}
+              />
             </div>
           </div>
         )}

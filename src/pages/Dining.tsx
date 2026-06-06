@@ -3,8 +3,9 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PageShell } from "@/components/palace/PageShell";
 import { PageHero } from "@/components/palace/PageHero";
-import { useDiningAreas, useDishes, useHomepageSections } from "@/lib/api";
-import { ContentSlider } from "@/components/palace/ContentSlider";
+import { useDiningAreas, useDishes, useHomepageSections, usePageHero } from "@/lib/api";
+import { UnifiedSlider, SliderSettings } from "@/components/palace/UnifiedSlider";
+import { useState } from "react";
 
 import heroImgFallback from "@/assets/page-dining-hero.jpg";
 
@@ -14,9 +15,47 @@ const Dining = () => {
   const { data: areas } = useDiningAreas();
   const { data: dishes } = useDishes();
   const { data: sections } = useHomepageSections();
+  const { data: pageHero } = usePageHero('dining');
   const containerRef = useRef<HTMLDivElement>(null);
+  const [sliderSettings, setSliderSettings] = useState<SliderSettings | null>(null);
 
-  const heroImg = sections?.find(s => s.section_key === 'dining')?.content?.image_url || heroImgFallback;
+  const heroImgFallbackCurrent = sections?.find(s => s.section_key === 'dining')?.content?.image_url || heroImgFallback;
+
+  useEffect(() => {
+    fetch('/rest/v1/slider_settings?section_name=eq.dining', {
+      headers: {
+        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.length > 0) {
+        setSliderSettings(data[0]);
+      } else {
+        setSliderSettings({
+          slide_speed: 4000,
+          transition_type: "slide",
+          autoplay: true,
+          pause_on_hover: true,
+          show_dots: true,
+          show_arrows: true,
+          loop: true,
+          animation_duration: 1000
+        });
+      }
+    })
+    .catch(() => setSliderSettings({
+      slide_speed: 4000,
+      transition_type: "slide",
+      autoplay: true,
+      pause_on_hover: true,
+      show_dots: true,
+      show_arrows: true,
+      loop: true,
+      animation_duration: 1000
+    }));
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -62,11 +101,11 @@ const Dining = () => {
       description="Taste the heritage of Rajasthan through curated culinary experiences at Raj Mandir."
     >
       <PageHero
-        eyebrow="CULINARY HERITAGE"
-        title="Feasts of"
-        accent="the Maharajas"
-        subtitle="Where ancient recipes meet the romance of the Blue City under the stars."
-        image={heroImg}
+        eyebrow={pageHero?.eyebrow || "AUTHENTIC RAJASTHANI CUISINE"}
+        title={pageHero?.title || "Traditional"}
+        accent={pageHero?.accent || "Flavours"}
+        subtitle={pageHero?.subtitle || "Experience authentic Rajasthani cuisine and local ingredients with rooftop dining."}
+        image={pageHero?.image_url || heroImgFallbackCurrent}
         alt="Royal dining setup"
       />
 
@@ -79,11 +118,13 @@ const Dining = () => {
               {areas?.map((area, idx) => (
                  <div key={area.id} className={`flex flex-col ${idx % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-16 lg:gap-24`}>
                     <div className="w-full md:w-3/5 aspect-[16/10] overflow-hidden border border-gold/20 shadow-frame relative group">
-                       <ContentSlider 
-                          images={area.dining_area_images.map((img: any) => img.image_url)} 
-                          className="w-full h-full"
-                          autoPlay={true}
-                       />
+                       {sliderSettings && (
+                         <UnifiedSlider 
+                            images={area.dining_area_images?.length > 0 ? area.dining_area_images.map((img: any) => img.image_url) : [heroImgFallbackCurrent]} 
+                            settings={sliderSettings}
+                            className="w-full h-full"
+                         />
+                       )}
                        <div className="absolute top-6 left-6 z-20 px-4 py-1 bg-royal-deep/80 backdrop-blur-md border border-gold/30 text-gold font-display text-sm">
                           {String(idx + 1).padStart(2, '0')}
                        </div>

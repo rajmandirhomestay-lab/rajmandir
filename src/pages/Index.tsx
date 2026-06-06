@@ -4,12 +4,11 @@ import { Navbar } from "@/components/palace/Navbar";
 import { Hero } from "@/components/palace/Hero";
 import { Rooms } from "@/components/palace/Rooms";
 import { About } from "@/components/palace/About";
-import { Reviews } from "@/components/palace/Reviews";
 import { Footer } from "@/components/palace/Footer";
 import { Gallery } from "@/components/palace/Gallery";
 import { Facilities } from "@/components/palace/Facilities";
 import { FeedbackSection } from "@/components/palace/FeedbackSection";
-import { Offers } from "@/components/palace/Offers";
+import { Offers } from "@/components/palace/HomepageExperiences";
 
 const Index = () => {
   const [opened, setOpened] = useState(false);
@@ -39,10 +38,10 @@ const Index = () => {
       <Gallery />
       <About />
       <FeedbackSection />
-      <Reviews />
       <Footer />
     </main>
   );
 };
 
 export default Index;
+

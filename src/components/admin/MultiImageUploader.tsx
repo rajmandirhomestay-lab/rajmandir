@@ -3,6 +3,7 @@ import { motion, Reorder } from "framer-motion";
 import { Plus, X, GripVertical, Image as ImageIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+import { compressImage } from "@/lib/imageCompression";
 
 interface MultiImageUploaderProps {
   images: string[];
@@ -29,14 +30,14 @@ export const MultiImageUploader = ({
 
     try {
       for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const fileExt = file.name.split(".").pop();
+        const optimizedFile = await compressImage(file);
+        const fileExt = "webp"; // compressImage always returns webp
         const fileName = `${Math.random()}.${fileExt}`;
         const filePath = `${folder}/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
           .from(bucket)
-          .upload(filePath, file);
+          .upload(filePath, optimizedFile);
 
         if (uploadError) throw uploadError;
 

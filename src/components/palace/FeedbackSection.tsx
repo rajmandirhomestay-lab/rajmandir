@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useReviews } from "@/lib/api";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -25,6 +27,15 @@ const cards = [
 
 export const FeedbackSection = () => {
   const ref = useRef<HTMLElement>(null);
+  const { data: dbReviews } = useReviews();
+
+  const displayCards = dbReviews && dbReviews.filter(r => r.is_featured).length > 0
+    ? dbReviews.filter(r => r.is_featured).slice(0, 3).map(r => ({
+        quote: r.comment,
+        name: r.guest_name,
+        place: r.guest_location || "Global Guest",
+      }))
+    : cards;
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -67,37 +78,49 @@ export const FeedbackSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {cards.map((c, i) => (
-            <div
-              key={i}
-              className="fs-card relative p-10 marble-texture border border-gold/30 shadow-frame hover:shadow-gold transition-all duration-700"
-              style={{ transformStyle: "preserve-3d" }}
-            >
-              <div className="absolute -top-5 left-1/2 -translate-x-1/2 w-10 h-6 jharokha bg-gradient-gold flex items-center justify-center text-royal-deep font-display text-xs">
-                ❖
-              </div>
-              <div className="font-display text-gold text-5xl leading-none mb-3">“</div>
-              <blockquote className="font-serif italic text-lg leading-relaxed text-foreground/90 min-h-[140px]">
-                {c.quote}
-              </blockquote>
-              <div className="divider-gold my-6"><span className="text-gold text-xs">❖</span></div>
-              <div className="text-center">
-                <div className="font-serif-sc tracking-[0.3em] text-xs text-foreground">{c.name}</div>
-                <div className="font-serif italic text-muted-foreground mt-1 text-sm">{c.place}</div>
-              </div>
-            </div>
+          {displayCards.map((c, i) => (
+            <FeedbackCard key={i} quote={c.quote} name={c.name} place={c.place} />
           ))}
-        </div>
-
-        <div className="text-center mt-16">
-          <Link
-            to="/feedback"
-            className="inline-flex font-serif-sc tracking-[0.3em] text-xs px-10 py-4 border border-gold text-gold hover:bg-gold hover:text-royal-deep transition-all duration-700"
-          >
-            SIGN OUR GUESTBOOK
-          </Link>
         </div>
       </div>
     </section>
+  );
+};
+
+const FeedbackCard = ({ quote, name, place }: { quote: string; name: string; place: string }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const isLongText = quote && quote.length > 120; // Roughly 3 lines depending on screen size
+
+  return (
+    <div
+      className="fs-card relative p-10 marble-texture border border-gold/30 shadow-frame hover:shadow-gold transition-all duration-700 h-full flex flex-col"
+      style={{ transformStyle: "preserve-3d" }}
+    >
+      <div className="absolute -top-5 left-1/2 -translate-x-1/2 w-10 h-6 jharokha bg-gradient-gold flex items-center justify-center text-royal-deep font-display text-xs">
+        ❖
+      </div>
+      <div className="font-display text-gold text-5xl leading-none mb-3">“</div>
+      
+      <div className="flex-grow flex flex-col">
+        <blockquote className={`font-serif italic text-lg leading-relaxed text-foreground/90 transition-all duration-500 ${isExpanded ? '' : 'line-clamp-3'}`}>
+          {quote}
+        </blockquote>
+        
+        {isLongText && (
+          <button 
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="text-left mt-2 text-gold font-serif-sc tracking-widest text-[10px] hover:text-gold-glow transition-colors"
+          >
+            {isExpanded ? "READ LESS ↑" : "READ MORE ↓"}
+          </button>
+        )}
+      </div>
+
+      <div className="divider-gold my-6"><span className="text-gold text-xs">❖</span></div>
+      <div className="text-center mt-auto">
+        <div className="font-serif-sc tracking-[0.3em] text-xs text-foreground">{name}</div>
+        <div className="font-serif italic text-muted-foreground mt-1 text-sm">{place}</div>
+      </div>
+    </div>
   );
 };

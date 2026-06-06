@@ -8,7 +8,7 @@ import heroImgFallback from "@/assets/page-booking-hero.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
-import { useFaqs, useHomepageSections } from "@/lib/api";
+import { useFaqs, useHomepageSections, usePageHero } from "@/lib/api";
 
 const initialFaqs = [
   {
@@ -49,9 +49,10 @@ export const FAQ = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { data: dbFaqs } = useFaqs();
   const { data: sections } = useHomepageSections();
+  const { data: pageHero } = usePageHero('faq');
 
   const faqSection = sections?.find(s => s.section_key === 'faq');
-  const heroImg = faqSection?.content?.image_url || heroImgFallback;
+  const heroImgFallbackCurrent = faqSection?.content?.image_url || heroImgFallback;
 
   const faqs = dbFaqs && dbFaqs.length > 0 ? (() => {
     const grouped = dbFaqs.reduce((acc: any, faq: any) => {
@@ -103,11 +104,11 @@ export const FAQ = () => {
       description="Find answers to common questions regarding bookings, stay, dining, and travel at Raj Mandir Guest House."
     >
       <PageHero
-        eyebrow="GUEST CONCIERGE"
-        title="Curated"
-        accent="Inquiries"
-        subtitle="Essential information to help you plan your royal stay."
-        image={heroImg}
+        eyebrow={pageHero?.eyebrow || "GUEST CONCIERGE"}
+        title={pageHero?.title || "Curated"}
+        accent={pageHero?.accent || "Inquiries"}
+        subtitle={pageHero?.subtitle || "Essential information to help you plan your royal stay."}
+        image={pageHero?.image_url || heroImgFallbackCurrent}
         alt="Palace courtyard"
       />
 

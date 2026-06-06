@@ -70,8 +70,8 @@ export default function NavigationCMS() {
     setSaving(true);
     try {
       const updates = [
-        { key: "navbar_items", value: navbarItems, category: "navigation" },
-        { key: "footer_links", value: footerItems, category: "navigation" }
+        { key: "navbar_items", value: navbarItems },
+        { key: "footer_links", value: footerItems }
       ];
 
       const { error } = await supabase.from("settings").upsert(updates, { onConflict: "key" });
