@@ -2,7 +2,6 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { Menu, X, Globe } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
 import { supabase } from "@/lib/supabase";
 
 const defaultLinks = [
@@ -141,7 +140,6 @@ export const Navbar = () => {
           </nav>
 
           <div className="flex items-center gap-3">
-            <ThemeToggle />
             
             {/* Language Switcher Desktop */}
             <div className="hidden lg:relative lg:block">

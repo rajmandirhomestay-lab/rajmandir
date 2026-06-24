@@ -11,103 +11,57 @@
 
 @layer base {
   :root {
-    /* Ivory palace canvas */
-    --background: 38 44% 94%;
-    --foreground: 224 70% 12%; /* Deeper royal navy */
+    /* Jodhpur Blue City canvas (Lighter) */
+    --background: 215 60% 97%;
+    --foreground: 220 70% 18%; 
 
-    --card: 36 40% 96%;
-    --card-foreground: 224 70% 12%;
+    --card: 215 60% 98%;
+    --card-foreground: 220 70% 18%;
 
-    --popover: 36 40% 96%;
-    --popover-foreground: 224 70% 12%;
+    --popover: 215 60% 98%;
+    --popover-foreground: 220 70% 18%;
 
-    /* Royal Indigo */
-    --primary: 224 70% 32%;
-    --primary-foreground: 40 60% 96%;
+    /* Jodhpur Blue Accent (Lighter) */
+    --primary: 215 70% 60%;
+    --primary-foreground: 0 0% 100%;
 
     /* Antique Gold */
     --secondary: 40 65% 52%;
     --secondary-foreground: 224 70% 14%;
 
-    --muted: 36 30% 88%;
-    --muted-foreground: 220 20% 30%; /* Rich dark gray */
+    --muted: 215 40% 92%;
+    --muted-foreground: 220 20% 45%;
 
-    /* Saffron accent */
-    --accent: 28 75% 55%;
-    --accent-foreground: 40 60% 98%;
+    --accent: 215 75% 88%;
+    --accent-foreground: 220 70% 18%;
 
     --destructive: 0 70% 45%;
-    --destructive-foreground: 40 60% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 40 35% 78%;
-    --input: 40 35% 78%;
-    --ring: 40 65% 52%;
+    --border: 215 40% 88%;
+    --input: 215 40% 88%;
+    --ring: 215 70% 60%;
 
     /* Brand tokens */
-    --gold: 40 80% 45%; /* Darker, richer gold */
+    --gold: 40 80% 45%;
     --gold-glow: 42 90% 60%;
-    --royal: 224 70% 32%;
-    --royal-deep: 226 75% 22%;
-    --ivory: 38 50% 95%;
+    --royal: 215 70% 60%;
+    --royal-deep: 215 75% 45%;
+    --ivory: 215 60% 97%;
     --saffron: 28 80% 55%;
 
-    --gradient-royal: linear-gradient(135deg, hsl(224 70% 22%), hsl(226 75% 12%));
+    --gradient-royal: linear-gradient(135deg, hsl(215 70% 60%), hsl(215 75% 45%));
     --gradient-gold: linear-gradient(135deg, hsl(40 80% 45%), hsl(42 90% 55%), hsl(36 80% 40%));
-    --gradient-ivory: radial-gradient(ellipse at top, hsl(40 55% 96%), hsl(36 35% 88%));
-    --gradient-night: radial-gradient(ellipse at center, hsl(224 70% 22%), hsl(226 80% 8%));
+    --gradient-ivory: radial-gradient(ellipse at top, hsl(215 65% 98%), hsl(215 50% 92%));
+    --gradient-night: radial-gradient(ellipse at center, hsl(215 70% 60%), hsl(215 75% 45%));
 
-    --shadow-royal: 0 30px 80px -20px hsl(224 70% 22% / 0.35);
+    --shadow-royal: 0 30px 80px -20px hsl(215 70% 60% / 0.30);
     --shadow-gold: 0 0 60px hsl(42 75% 55% / 0.35), 0 20px 40px -15px hsl(42 75% 35% / 0.4);
-    --shadow-frame: 0 20px 60px -25px hsl(224 60% 14% / 0.5), inset 0 0 0 1px hsl(42 75% 55% / 0.4);
+    --shadow-frame: 0 20px 60px -25px hsl(215 60% 25% / 0.25), inset 0 0 0 1px hsl(42 75% 55% / 0.4);
 
     --transition-cinematic: cubic-bezier(0.77, 0, 0.175, 1);
 
     --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 226 60% 6%;
-    --foreground: 40 50% 92%;
-
-    --card: 226 55% 10%;
-    --card-foreground: 40 50% 92%;
-
-    --popover: 226 55% 10%;
-    --popover-foreground: 40 50% 92%;
-
-    --primary: 42 80% 62%;
-    --primary-foreground: 226 70% 8%;
-
-    --secondary: 224 60% 22%;
-    --secondary-foreground: 40 60% 92%;
-
-    --muted: 226 40% 14%;
-    --muted-foreground: 40 25% 70%;
-
-    --accent: 28 80% 58%;
-    --accent-foreground: 226 70% 8%;
-
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 40 60% 98%;
-
-    --border: 224 40% 22%;
-    --input: 224 40% 22%;
-    --ring: 42 80% 62%;
-
-    --gold: 45 90% 65%;
-    --gold-glow: 48 100% 78%;
-    --royal: 224 65% 38%;
-    --royal-deep: 226 75% 16%;
-    --ivory: 40 50% 92%;
-
-    --gradient-royal: linear-gradient(135deg, hsl(226 70% 14%), hsl(226 80% 5%));
-    --gradient-gold: linear-gradient(135deg, hsl(45 90% 65%), hsl(48 100% 78%), hsl(38 80% 55%));
-    --gradient-ivory: radial-gradient(ellipse at top, hsl(226 55% 12%), hsl(226 70% 5%));
-    --gradient-night: radial-gradient(ellipse at center, hsl(226 60% 14%), hsl(226 80% 4%));
-
-    --shadow-royal: 0 30px 80px -20px hsl(0 0% 0% / 0.7);
-    --shadow-gold: 0 0 80px hsl(45 90% 65% / 0.45), 0 20px 50px -15px hsl(45 90% 50% / 0.5);
-    --shadow-frame: 0 20px 60px -25px hsl(0 0% 0% / 0.8), inset 0 0 0 1px hsl(45 90% 65% / 0.5);
   }
 }
 
@@ -127,12 +81,6 @@
     background-image:
       radial-gradient(ellipse at top, hsl(var(--gold) / 0.08), transparent 60%),
       radial-gradient(ellipse at bottom, hsl(var(--royal) / 0.06), transparent 60%);
-  }
-
-  .dark body {
-    background-image:
-      radial-gradient(ellipse at top, hsl(var(--gold) / 0.06), transparent 60%),
-      radial-gradient(ellipse at bottom, hsl(var(--royal) / 0.18), transparent 60%);
   }
 
   h1, h2, h3, h4 {
