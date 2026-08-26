@@ -92,16 +92,15 @@ export const Gallery = () => {
   }, [active]);
 
   return (
-    <section ref={ref} id="gallery" className="relative py-32 px-6 overflow-hidden marble-texture">
-      <div className="absolute inset-0 light-rays opacity-30 pointer-events-none" />
+    <section ref={ref} id="gallery" className="relative py-32 px-6 overflow-hidden bg-[#dceef9] border-b border-[#9ed1ee]/40">
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <div className="eyebrow mb-4">★ CAPTURED MEMORIES ★</div>
-          <h2 className="font-display text-5xl md:text-6xl text-foreground">
-            A Glimpse of <span className="text-gold-gradient italic">Raj Mandir</span>
+          <div className="eyebrow mb-4 font-serif-sc text-[#20638b] tracking-[0.5em] text-xs font-bold uppercase">★ CAPTURED MEMORIES ★</div>
+          <h2 className="font-display text-5xl md:text-6xl text-[#091a26] font-bold">
+            A Glimpse of <span className="text-[#20638b] italic">Raj Mandir</span>
           </h2>
-          <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold text-xl">❖</span></div>
-          <p className="font-serif italic mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
+          <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-[#20638b] text-xl">❖</span></div>
+          <p className="font-serif italic mt-6 text-lg md:text-xl text-[#13374f] max-w-2xl mx-auto font-medium">
             Frames suspended in stone — moments from a palace that has watched a century pass.
           </p>
         </div>

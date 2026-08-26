@@ -8,8 +8,12 @@ type Attraction = {
   id: string;
   title: string;
   slug: string;
+  subtitle?: string;
+  eyebrow?: string;
   short_description: string;
   full_description: string;
+  architecture_text?: string;
+  tips?: string | string[];
   location: string;
   map_link: string;
   featured: boolean;
@@ -55,7 +59,7 @@ export default function AttractionsCMS() {
     if (!editingItem?.title) return;
     setSaving(true);
     try {
-      const mainData = {
+      const mainData: any = {
         title: editingItem.title,
         slug: editingItem.slug,
         short_description: editingItem.short_description,
@@ -67,10 +71,23 @@ export default function AttractionsCMS() {
         sort_order: editingItem.sort_order ?? items.length,
       };
 
+      if (editingItem.subtitle !== undefined) mainData.subtitle = editingItem.subtitle;
+      if (editingItem.eyebrow !== undefined) mainData.eyebrow = editingItem.eyebrow;
+      if (editingItem.architecture_text !== undefined) mainData.architecture_text = editingItem.architecture_text;
+      if (editingItem.tips !== undefined) mainData.tips = editingItem.tips;
+
       let itemId = editingItem.id;
 
       if (itemId) {
-        await supabase.from("attractions").update(mainData).eq("id", itemId);
+        const { error } = await supabase.from("attractions").update(mainData).eq("id", itemId);
+        if (error) {
+          // If schema columns don't exist yet, retry without optional columns
+          delete mainData.subtitle;
+          delete mainData.eyebrow;
+          delete mainData.architecture_text;
+          delete mainData.tips;
+          await supabase.from("attractions").update(mainData).eq("id", itemId);
+        }
         await supabase.from("attraction_images").delete().eq("attraction_id", itemId);
       } else {
         const { data, error } = await supabase.from("attractions").insert([mainData]).select().single();
@@ -87,11 +104,11 @@ export default function AttractionsCMS() {
         await supabase.from("attraction_images").insert(imageInserts);
       }
       
-      toast.success("Attraction updated.");
+      toast.success("Attraction updated successfully.");
       setEditingItem(null);
       fetchItems();
     } catch (error: any) {
-      toast.error("Error saving: " + error.message);
+      toast.error("Error saving attraction: " + error.message);
     } finally {
       setSaving(false);
     }
@@ -115,10 +132,10 @@ export default function AttractionsCMS() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-4xl mb-2">Attractions CMS</h1>
-          <p className="font-serif text-muted-foreground">Manage nearby landmarks and royal heritage sites.</p>
+          <p className="font-serif text-muted-foreground">Manage nearby landmarks, story details, and visiting tips.</p>
         </div>
         {!editingItem && (
-          <button onClick={() => setEditingItem({ images: [], featured: false, active: true })} className="bg-gold text-royal-deep font-serif-sc text-xs px-6 py-3 flex items-center gap-2 hover:bg-gold-glow">
+          <button onClick={() => setEditingItem({ images: [], featured: false, active: true })} className="bg-gold text-royal-deep font-serif-sc text-xs px-6 py-3 flex items-center gap-2 hover:bg-gold-glow font-bold">
             <Plus size={16} /> ADD ATTRACTION
           </button>
         )}
@@ -142,10 +159,21 @@ export default function AttractionsCMS() {
                     <input required type="text" value={editingItem.slug || ""} onChange={e => setEditingItem({ ...editingItem, slug: e.target.value })} className="w-full bg-background border border-gold/20 focus:border-gold px-4 py-3 font-serif outline-none" />
                   </div>
                </div>
+
+               <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-2">SUBTITLE / TAGLINE (e.g. The Indigo Lanes Below The Fort)</label>
+                    <input type="text" value={editingItem.subtitle || ""} onChange={e => setEditingItem({ ...editingItem, subtitle: e.target.value })} className="w-full bg-background border border-gold/20 focus:border-gold px-4 py-3 font-serif outline-none" />
+                  </div>
+                  <div>
+                    <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-2">EYEBROW / CATEGORY (e.g. OUR ADDRESS FROM RAJ MANDIR)</label>
+                    <input type="text" value={editingItem.eyebrow || ""} onChange={e => setEditingItem({ ...editingItem, eyebrow: e.target.value })} className="w-full bg-background border border-gold/20 focus:border-gold px-4 py-3 font-serif outline-none" />
+                  </div>
+               </div>
                
                <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-2">LOCATION (e.g., 2km from Palace)</label>
+                    <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-2">LOCATION (e.g. Navchokiya, 1.2km from Palace)</label>
                     <input type="text" value={editingItem.location || ""} onChange={e => setEditingItem({ ...editingItem, location: e.target.value })} className="w-full bg-background border border-gold/20 focus:border-gold px-4 py-3 font-serif outline-none" />
                   </div>
                   <div>
@@ -160,22 +188,32 @@ export default function AttractionsCMS() {
                </div>
 
                <div>
-                 <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-2">FULL DESCRIPTION</label>
+                 <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-2">FULL DESCRIPTION (MAIN STORY)</label>
                  <textarea required rows={4} value={editingItem.full_description || ""} onChange={e => setEditingItem({ ...editingItem, full_description: e.target.value })} className="w-full bg-background border border-gold/20 focus:border-gold px-4 py-3 font-serif outline-none resize-none" />
+               </div>
+
+               <div>
+                 <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-2">ARCHITECTURAL & HISTORY DETAILS</label>
+                 <textarea rows={3} value={editingItem.architecture_text || ""} onChange={e => setEditingItem({ ...editingItem, architecture_text: e.target.value })} className="w-full bg-background border border-gold/20 focus:border-gold px-4 py-3 font-serif outline-none resize-none" placeholder="Details about architecture, windows, history..." />
+               </div>
+
+               <div>
+                 <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-2">VISITING TIPS (1 tip per line)</label>
+                 <textarea rows={3} value={Array.isArray(editingItem.tips) ? editingItem.tips.join('\n') : (editingItem.tips || "")} onChange={e => setEditingItem({ ...editingItem, tips: e.target.value })} className="w-full bg-background border border-gold/20 focus:border-gold px-4 py-3 font-serif outline-none resize-none" placeholder="Enter tips separated by new line" />
                </div>
 
                <div className="flex gap-6 border-y border-gold/10 py-4">
                   <label className="flex items-center gap-3 cursor-pointer">
                      <input type="checkbox" checked={editingItem.featured} onChange={e => setEditingItem({...editingItem, featured: e.target.checked})} className="w-4 h-4 accent-gold" />
-                     <span className="font-serif-sc text-[10px] tracking-widest text-gold">FEATURED</span>
+                     <span className="font-serif-sc text-[10px] tracking-widest text-gold font-bold">FEATURED</span>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer">
                      <input type="checkbox" checked={editingItem.active} onChange={e => setEditingItem({...editingItem, active: e.target.checked})} className="w-4 h-4 accent-gold" />
-                     <span className="font-serif-sc text-[10px] tracking-widest text-gold">ACTIVE</span>
+                     <span className="font-serif-sc text-[10px] tracking-widest text-gold font-bold">ACTIVE</span>
                   </label>
                </div>
 
-               <button disabled={saving} type="submit" className="w-full bg-gold text-royal-deep font-serif-sc text-xs py-4 flex items-center justify-center gap-2 hover:bg-gold-glow">
+               <button disabled={saving} type="submit" className="w-full bg-gold text-royal-deep font-serif-sc text-xs py-4 flex items-center justify-center gap-2 hover:bg-gold-glow font-bold">
                  {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />} SAVE ATTRACTION
                </button>
             </div>

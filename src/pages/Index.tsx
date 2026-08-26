@@ -32,11 +32,11 @@ const Index = () => {
       <CurtainOpener onComplete={() => setOpened(true)} />
       <Navbar />
       <Hero start={opened} />
+      <About />
       <Rooms />
       <Offers />
       <Facilities />
       <Gallery />
-      <About />
       <FeedbackSection />
       <Footer />
     </main>

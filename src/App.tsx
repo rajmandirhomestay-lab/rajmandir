@@ -11,6 +11,7 @@ import Stories from "./pages/Stories.tsx";
 import Dining from "./pages/Dining.tsx";
 import Experiences from "./pages/Experiences.tsx";
 import Attractions from "./pages/Attractions.tsx";
+import AttractionDetail from "./pages/AttractionDetail.tsx";
 import About from "./pages/About.tsx";
 import Contact from "./pages/Contact.tsx";
 import Booking from "./pages/Booking.tsx";
@@ -82,6 +83,7 @@ const App = () => (
           <Route path="/dining" element={<Dining />} />
           <Route path="/experiences" element={<Experiences />} />
           <Route path="/attractions" element={<Attractions />} />
+          <Route path="/attractions/:id" element={<AttractionDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/booking" element={<Booking />} />

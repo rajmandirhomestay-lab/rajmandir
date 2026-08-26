@@ -65,16 +65,16 @@ export const FeedbackSection = () => {
   }, []);
 
   return (
-    <section ref={ref} className="relative py-32 px-6 overflow-hidden bg-gradient-to-b from-background via-background to-muted/30">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--gold)/0.08),transparent_60%)]" />
+    <section ref={ref} className="relative py-32 px-6 overflow-hidden bg-[#f4f9fd] border-b border-[#9ed1ee]/40">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(158,209,238,0.2),transparent_60%)]" />
 
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center mb-20">
-          <div className="eyebrow mb-4">★ THE GUESTBOOK ★</div>
-          <h2 className="font-display text-5xl md:text-6xl text-foreground">
-            Whispers from <span className="text-gold-gradient italic">our guests</span>
+          <div className="eyebrow mb-4 font-serif-sc text-[#20638b] tracking-[0.5em] text-xs font-bold uppercase">★ THE GUESTBOOK ★</div>
+          <h2 className="font-display text-5xl md:text-6xl text-[#091a26] font-bold">
+            Whispers from <span className="text-[#20638b] italic">our guests</span>
           </h2>
-          <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold text-xl">❖</span></div>
+          <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-[#20638b] text-xl">❖</span></div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

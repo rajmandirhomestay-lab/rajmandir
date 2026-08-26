@@ -53,6 +53,8 @@ const attractions = [
   },
 ];
 
+import { Link } from "react-router-dom";
+
 export const Attractions = () => {
   const containerRef = useRef<HTMLElement>(null);
 
@@ -96,7 +98,11 @@ export const Attractions = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {attractions.map((item) => (
-            <div key={item.id} className="attraction-card group relative bg-card border border-gold/20 shadow-frame hover:shadow-gold hover:border-gold/50 transition-all duration-700 overflow-hidden flex flex-col">
+            <Link 
+              key={item.id} 
+              to={`/attractions/${item.id}`}
+              className="attraction-card group relative bg-card border border-gold/20 shadow-frame hover:shadow-gold hover:border-gold/50 transition-all duration-700 overflow-hidden flex flex-col block"
+            >
               <div className="relative h-56 overflow-hidden">
                 <img 
                   src={item.image} 
@@ -123,12 +129,12 @@ export const Attractions = () => {
                   {item.desc}
                 </p>
                 <div className="mt-6 pt-4 text-right mt-auto">
-                  <span className="font-serif-sc text-[10px] tracking-[0.2em] text-gold hover:text-gold-glow cursor-pointer transition-colors">
-                    GET DIRECTIONS →
+                  <span className="font-serif-sc text-[10px] tracking-[0.2em] text-gold group-hover:text-gold-glow uppercase font-bold transition-colors">
+                    EXPLORE WONDER →
                   </span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
 
           {/* Interactive Map UI Placeholder Card */}

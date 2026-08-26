@@ -54,17 +54,17 @@ export const Offers = () => {
   if (displayExperiences.length === 0) return null;
 
   return (
-    <section ref={ref} id="experiences" className="relative py-32 px-6 overflow-hidden marble-texture">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(var(--gold)/0.05),transparent_70%)]" />
+    <section ref={ref} id="experiences" className="relative py-32 px-6 overflow-hidden bg-[#d8ecf8] border-b border-[#9ed1ee]/40">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(158,209,238,0.3),transparent_70%)]" />
 
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center mb-24">
-          <div className="font-serif-sc text-gold tracking-[0.4em] text-[10px] mb-4 uppercase">THE COLLECTION</div>
-          <h2 className="font-display text-5xl md:text-6xl text-foreground">
-            Curated <span className="text-gold-gradient italic">Experiences</span>
+          <div className="font-serif-sc text-[#20638b] tracking-[0.4em] text-xs mb-4 uppercase font-bold">THE COLLECTION</div>
+          <h2 className="font-display text-5xl md:text-6xl text-[#091a26] font-bold">
+            Curated <span className="text-[#20638b] italic">Experiences</span>
           </h2>
-          <div className="divider-gold mt-6 max-w-xs mx-auto"><span className="text-gold text-sm">❖</span></div>
-          <p className="font-serif italic mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
+          <div className="divider-gold mt-6 max-w-xs mx-auto"><span className="text-[#20638b] text-sm">❖</span></div>
+          <p className="font-serif italic mt-6 text-lg md:text-xl text-[#13374f] max-w-2xl mx-auto font-medium">
             Immerse yourself in the cultural tapestry of Jodhpur through curated royal experiences.
           </p>
         </div>

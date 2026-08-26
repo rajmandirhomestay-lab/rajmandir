@@ -11,57 +11,81 @@
 
 @layer base {
   :root {
-    /* Jodhpur Blue City canvas (Lighter) */
-    --background: 215 60% 97%;
-    --foreground: 220 70% 18%; 
+    /* Custom Sky Shades: #9ed1ee, #aed9f1, #bee0f4, #cee8f6 */
+    --background: 202 69% 89%; /* #cee8f6 */
+    --foreground: 205 60% 12%; 
 
-    --card: 215 60% 98%;
-    --card-foreground: 220 70% 18%;
+    --card: 202 70% 96%; /* Soft white-tinted sky */
+    --card-foreground: 205 60% 12%;
 
-    --popover: 215 60% 98%;
-    --popover-foreground: 220 70% 18%;
+    --popover: 202 70% 96%;
+    --popover-foreground: 205 60% 12%;
 
-    /* Jodhpur Blue Accent (Lighter) */
-    --primary: 215 70% 60%;
+    /* Primary: #9ed1ee (202 72% 77%) & #60b3e6 */
+    --primary: 202 72% 60%;
     --primary-foreground: 0 0% 100%;
 
-    /* Antique Gold */
-    --secondary: 40 65% 52%;
-    --secondary-foreground: 224 70% 14%;
+    --secondary: 40 80% 45%;
+    --secondary-foreground: 205 60% 12%;
 
-    --muted: 215 40% 92%;
-    --muted-foreground: 220 20% 45%;
+    --muted: 202 70% 85%; /* #bee0f4 */
+    --muted-foreground: 205 30% 35%;
 
-    --accent: 215 75% 88%;
-    --accent-foreground: 220 70% 18%;
+    --accent: 202 71% 81%; /* #aed9f1 */
+    --accent-foreground: 205 60% 12%;
 
     --destructive: 0 70% 45%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 215 40% 88%;
-    --input: 215 40% 88%;
-    --ring: 215 70% 60%;
+    --border: 202 70% 80%;
+    --input: 202 70% 80%;
+    --ring: 202 72% 77%;
 
-    /* Brand tokens */
+    /* Brand tokens - #9ed1ee, #aed9f1, #bee0f4, #cee8f6 */
     --gold: 40 80% 45%;
-    --gold-glow: 42 90% 60%;
-    --royal: 215 70% 60%;
-    --royal-deep: 215 75% 45%;
-    --ivory: 215 60% 97%;
+    --gold-glow: 42 90% 55%;
+    --royal: 202 72% 77%; /* #9ed1ee */
+    --royal-deep: 205 60% 25%;
+    --ivory: 202 69% 89%; /* #cee8f6 */
+    --shade-9ed1ee: 202 72% 77%;
+    --shade-aed9f1: 202 71% 81%;
+    --shade-bee0f4: 202 70% 85%;
+    --shade-cee8f6: 202 69% 89%;
     --saffron: 28 80% 55%;
 
-    --gradient-royal: linear-gradient(135deg, hsl(215 70% 60%), hsl(215 75% 45%));
+    --gradient-royal: linear-gradient(135deg, #9ed1ee, #20638b);
     --gradient-gold: linear-gradient(135deg, hsl(40 80% 45%), hsl(42 90% 55%), hsl(36 80% 40%));
-    --gradient-ivory: radial-gradient(ellipse at top, hsl(215 65% 98%), hsl(215 50% 92%));
-    --gradient-night: radial-gradient(ellipse at center, hsl(215 70% 60%), hsl(215 75% 45%));
+    --gradient-ivory: radial-gradient(ellipse at top, #cee8f6, #bee0f4);
+    --gradient-sky: linear-gradient(135deg, #cee8f6 0%, #bee0f4 35%, #aed9f1 70%, #9ed1ee 100%);
 
-    --shadow-royal: 0 30px 80px -20px hsl(215 70% 60% / 0.30);
-    --shadow-gold: 0 0 60px hsl(42 75% 55% / 0.35), 0 20px 40px -15px hsl(42 75% 35% / 0.4);
-    --shadow-frame: 0 20px 60px -25px hsl(215 60% 25% / 0.25), inset 0 0 0 1px hsl(42 75% 55% / 0.4);
+    --shadow-royal: 0 20px 60px -15px rgba(158, 209, 238, 0.4);
+    --shadow-gold: 0 0 40px hsl(42 75% 55% / 0.3), 0 15px 30px -10px hsl(42 75% 35% / 0.3);
+    --shadow-frame: 0 15px 45px -20px rgba(13, 35, 50, 0.15), inset 0 0 0 1px hsl(42 75% 55% / 0.3);
 
     --transition-cinematic: cubic-bezier(0.77, 0, 0.175, 1);
 
     --radius: 0.5rem;
+  }
+
+  /* Custom shades across all themes */
+  .dark {
+    --background: 202 69% 89%;
+    --foreground: 205 60% 12%;
+    --card: 202 70% 96%;
+    --card-foreground: 205 60% 12%;
+    --popover: 202 70% 96%;
+    --popover-foreground: 205 60% 12%;
+    --primary: 202 72% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 40 80% 45%;
+    --secondary-foreground: 205 60% 12%;
+    --muted: 202 70% 85%;
+    --muted-foreground: 205 30% 35%;
+    --accent: 202 71% 81%;
+    --accent-foreground: 205 60% 12%;
+    --border: 202 70% 80%;
+    --input: 202 70% 80%;
+    --ring: 202 72% 77%;
   }
 }
 

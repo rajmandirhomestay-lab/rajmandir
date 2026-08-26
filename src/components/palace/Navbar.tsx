@@ -103,21 +103,21 @@ export const Navbar = () => {
       <header
         className={`fixed top-0 inset-x-0 z-40 transition-all duration-700 ${
           scrolled
-            ? "backdrop-blur-xl bg-royal-deep/95 border-b border-gold/40 shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
-            : "backdrop-blur-md bg-black/40 border-b border-gold/20"
+            ? "backdrop-blur-xl bg-[#091a26]/95 border-b border-[#9ed1ee]/40 shadow-lg"
+            : "backdrop-blur-md bg-[#091a26]/80 border-b border-[#9ed1ee]/20"
         }`}
       >
         {/* Subtle gold thread under bar */}
-        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#9ed1ee]/50 to-transparent" />
 
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="h-10 w-10 rounded-full bg-gradient-gold flex items-center justify-center shadow-gold transition-transform duration-700 group-hover:rotate-[20deg]">
-              <span className="font-display text-royal-deep text-lg font-bold">R</span>
+            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-[#9ed1ee] to-[#aed9f1] flex items-center justify-center shadow-md transition-transform duration-700 group-hover:rotate-[20deg]">
+              <span className="font-display text-[#0a1b28] text-lg font-bold">R</span>
             </div>
             <div className="leading-tight">
               <div className="font-display text-white text-lg tracking-wider font-bold drop-shadow-md">Raj Mandir</div>
-              <div className="font-serif-sc text-[10px] tracking-[0.4em] text-gold font-bold drop-shadow-md">JODHPUR · 1894</div>
+              <div className="font-serif-sc text-[10px] tracking-[0.4em] text-[#9ed1ee] font-bold drop-shadow-md">JODHPUR · 1894</div>
             </div>
           </Link>
 
@@ -127,10 +127,10 @@ export const Navbar = () => {
                 key={l.to}
                 to={l.to}
                 className={({ isActive }) =>
-                  `font-serif-sc text-xs tracking-[0.3em] transition-colors duration-500 relative after:absolute after:left-0 after:-bottom-1 after:h-px after:bg-gold after:transition-all after:duration-500 drop-shadow-md ${
+                  `font-serif-sc text-xs tracking-[0.3em] transition-colors duration-500 relative after:absolute after:left-0 after:-bottom-1 after:h-px after:bg-[#9ed1ee] after:transition-all after:duration-500 drop-shadow-md ${
                     isActive
-                      ? "text-gold font-bold after:w-full"
-                      : "text-white font-semibold hover:text-gold after:w-0 hover:after:w-full"
+                      ? "text-[#9ed1ee] font-bold after:w-full"
+                      : "text-white font-semibold hover:text-[#9ed1ee] after:w-0 hover:after:w-full"
                   }`
                 }
               >
@@ -145,17 +145,17 @@ export const Navbar = () => {
             <div className="hidden lg:relative lg:block">
               <button 
                 onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1 font-serif-sc text-[10px] tracking-widest text-white font-semibold hover:text-gold transition-colors px-2 py-1 drop-shadow-md"
+                className="flex items-center gap-1 font-serif-sc text-[10px] tracking-widest text-white font-semibold hover:text-[#9ed1ee] transition-colors px-2 py-1 drop-shadow-md"
               >
-                <Globe size={14} className="text-gold" /> {currentLang}
+                <Globe size={14} className="text-[#9ed1ee]" /> {currentLang}
               </button>
               {langOpen && (
-                <div className="absolute top-full right-0 mt-2 w-32 bg-card border border-gold/20 shadow-xl py-2 flex flex-col z-50 animate-fade-in backdrop-blur-md">
+                <div className="absolute top-full right-0 mt-2 w-32 bg-card border border-[#9ed1ee]/30 shadow-xl py-2 flex flex-col z-50 animate-fade-in backdrop-blur-md">
                   {languages.map(lang => (
                     <button
                       key={lang.code}
                       onClick={() => handleLanguageChange(lang.code, lang.gtCode)}
-                      className={`text-left px-4 py-2 font-serif text-sm transition-colors ${currentLang === lang.code ? "text-gold bg-gold/5" : "text-foreground hover:text-gold hover:bg-gold/5"}`}
+                      className={`text-left px-4 py-2 font-serif text-sm transition-colors ${currentLang === lang.code ? "text-[#0a1b28] font-bold bg-[#bee0f4]" : "text-foreground hover:text-[#0a1b28] hover:bg-[#cee8f6]"}`}
                     >
                       {lang.name}
                     </button>
@@ -166,7 +166,7 @@ export const Navbar = () => {
 
             <Link
               to="/booking"
-              className="hidden sm:inline-flex font-serif-sc tracking-[0.2em] text-xs px-5 py-3 rounded-sm bg-gradient-gold text-royal-deep font-semibold hover:shadow-gold hover:-translate-y-0.5 transition-all duration-700"
+              className="hidden sm:inline-flex font-serif-sc tracking-[0.2em] text-xs px-5 py-3 rounded-sm bg-gradient-to-r from-[#9ed1ee] to-[#aed9f1] text-[#0a1b28] font-bold hover:shadow-md hover:-translate-y-0.5 transition-all duration-500"
             >
               RESERVE
             </Link>

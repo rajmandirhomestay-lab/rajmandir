@@ -44,16 +44,16 @@ export const Footer = () => {
   }, []);
 
   return (
-    <footer className="relative bg-gradient-night text-ivory pt-20 pb-10 px-6 overflow-hidden">
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
+    <footer className="relative bg-[#091a26] text-white pt-20 pb-10 px-6 overflow-hidden">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#9ed1ee] to-transparent" />
 
       <div className="relative max-w-6xl mx-auto text-center">
         <Link to="/" className="inline-flex flex-col items-center">
-          <div className="mx-auto h-14 w-14 rounded-full bg-gradient-gold flex items-center justify-center shadow-gold mb-6">
-            <span className="font-display text-royal-deep text-2xl">R</span>
+          <div className="mx-auto h-14 w-14 rounded-full bg-gradient-to-r from-[#9ed1ee] to-[#aed9f1] flex items-center justify-center shadow-lg mb-6">
+            <span className="font-display text-[#091a26] text-2xl font-bold">R</span>
           </div>
-          <div className="font-display text-3xl md:text-4xl text-ivory">Raj Mandir</div>
-          <div className="font-serif-sc text-gold text-[11px] tracking-[0.5em] mt-2">JODHPUR · EST. 1894</div>
+          <div className="font-display text-3xl md:text-4xl text-white font-bold">Raj Mandir</div>
+          <div className="font-serif-sc text-[#9ed1ee] text-[11px] tracking-[0.5em] mt-2 font-bold">JODHPUR · EST. 1894</div>
         </Link>
 
         <div className="divider-gold max-w-md mx-auto mt-8">

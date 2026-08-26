@@ -80,21 +80,21 @@ export const Rooms = () => {
   }, []);
 
   return (
-    <section id="rooms" ref={sectionRef} className="relative py-32 overflow-hidden bg-royal-deep">
+    <section id="rooms" ref={sectionRef} className="relative py-32 overflow-hidden bg-[#eef7fc] border-y border-[#9ed1ee]/40">
       {/* Background ambient light & texture */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.08),transparent_70%)] pointer-events-none" />
-      <div className="absolute inset-0 stone-texture opacity-30 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(158,209,238,0.2),transparent_70%)] pointer-events-none" />
+      <div className="absolute inset-0 stone-texture opacity-40 pointer-events-none" />
 
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 relative z-10">
         <div className="text-center mb-16 md:mb-24 rooms-eyebrow">
-          <div className="font-serif-sc text-gold tracking-[0.5em] text-xs mb-4 uppercase">★ The Chambers ★</div>
-          <h2 className="font-display text-5xl md:text-7xl text-ivory">
-            Royal <span className="text-gold-gradient italic">Quarters</span>
+          <div className="font-serif-sc text-[#20638b] tracking-[0.5em] text-xs md:text-sm mb-4 uppercase font-bold">★ The Chambers ★</div>
+          <h2 className="font-display text-5xl md:text-7xl text-[#091a26] font-bold">
+            Royal <span className="text-[#20638b] italic">Quarters</span>
           </h2>
           <div className="divider-gold max-w-md mx-auto mt-6">
-            <span className="font-display text-gold text-xl">❖</span>
+            <span className="font-display text-[#20638b] text-xl">❖</span>
           </div>
-          <p className="mt-6 font-serif italic text-xl text-ivory/70 max-w-2xl mx-auto">
+          <p className="mt-6 font-serif italic text-xl md:text-2xl text-[#13374f] max-w-2xl mx-auto font-medium">
             Sanctuaries of silence — each a different verse from the same royal poem.
           </p>
         </div>

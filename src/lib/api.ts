@@ -202,6 +202,34 @@ export const useAttractions = () => useQuery({
   queryFn: fetchAttractions,
 });
 
+export const fetchAttractionBySlugOrId = async (identifier: string) => {
+  if (!identifier) return null;
+  let { data, error } = await supabase
+    .from("attractions")
+    .select("*, attraction_images(*)")
+    .eq("slug", identifier)
+    .maybeSingle();
+
+  if (!data) {
+    const res = await supabase
+      .from("attractions")
+      .select("*, attraction_images(*)")
+      .eq("id", identifier)
+      .maybeSingle();
+    data = res.data;
+    error = res.error;
+  }
+
+  if (error && error.code !== 'PGRST116') throw error;
+  return data;
+};
+
+export const useAttraction = (identifier: string) => useQuery({
+  queryKey: ["attraction", identifier],
+  queryFn: () => fetchAttractionBySlugOrId(identifier),
+  enabled: !!identifier,
+});
+
 export const fetchStoryBySlug = async (slug: string) => {
   const { data, error } = await supabase
     .from("travel_stories")

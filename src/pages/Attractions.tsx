@@ -11,6 +11,16 @@ import heroImgFallback from "@/assets/story-bluecity.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
+import { Link } from "react-router-dom";
+
+const fallbackCards = [
+  { id: "blue-city", slug: "blue-city", title: "Blue City", location: "Navchokiya, Old City", short_description: "Narrow, winding indigo blue lanes right below Mehrangarh Fort." },
+  { id: "mehrangarh", slug: "mehrangarh", title: "Mehrangarh Fort", location: "1.2 km from Raj Mandir", short_description: "Imposing fortress on a rocky cliff overlooking Marwar." },
+  { id: "jaswant-thada", slug: "jaswant-thada", title: "Jaswant Thada", location: "1.8 km from Raj Mandir", short_description: "Carved white marble cenotaph shining in desert sunlight." },
+  { id: "clock-tower", slug: "clock-tower", title: "Clock Tower & Sardar Market", location: "800 m from Raj Mandir", short_description: "Bustling heritage market famed for spices and handicrafts." },
+  { id: "umaid-bhawan", slug: "umaid-bhawan", title: "Umaid Bhawan Palace", location: "6.5 km from Raj Mandir", short_description: "Grand Art Deco royal residence built of golden sandstone." }
+];
+
 const Attractions = () => {
   const { data: attractions } = useAttractions();
   const { data: sections } = useHomepageSections();
@@ -18,6 +28,7 @@ const Attractions = () => {
   const { data: pageHero } = usePageHero('attractions');
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const displayAttractions = (attractions && attractions.length > 0) ? attractions : fallbackCards;
   const heroImgFallbackCurrent = sections?.find(s => s.section_key === 'attractions')?.content?.image_url || heroImgFallback;
 
   const defaultSliderSettings: SliderSettings = {
@@ -50,7 +61,7 @@ const Attractions = () => {
       );
     }, containerRef);
     return () => ctx.revert();
-  }, [attractions]);
+  }, [displayAttractions]);
 
   return (
     <PageShell
@@ -78,28 +89,38 @@ const Attractions = () => {
               </div>
 
               <div className="attraction-grid grid md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16">
-                 {attractions?.map((item: any) => (
-                    <div key={item.id} className="attraction-card group">
-                       <div className="aspect-square mb-8 overflow-hidden shadow-frame border border-gold/20 relative group-hover:shadow-gold transition-all duration-700">
-                             <UnifiedSlider 
-                                images={item.attraction_images?.length > 0 ? item.attraction_images.map((img: any) => img.image_url) : [heroImgFallbackCurrent]} 
-                                settings={finalSliderSettings as unknown as SliderSettings}
-                                className="w-full h-full"
-                             />
-                          <div className="absolute top-4 left-4 z-20 px-3 py-1 bg-royal-deep/80 backdrop-blur-md border border-gold/30 text-gold font-serif-sc text-[9px] tracking-widest uppercase">
-                             {item.location || "Nearby"}
-                          </div>
-                       </div>
-                       <div className="text-center">
-                          <div className="font-serif-sc text-gold text-[10px] tracking-widest mb-2 uppercase">HERITAGE</div>
-                          <h3 className="font-display text-3xl text-foreground group-hover:text-gold transition-colors duration-500 uppercase tracking-tight">{item.title}</h3>
-                          <div className="w-8 h-px bg-gold/30 mx-auto my-4" />
-                          <p className="font-serif text-sm text-muted-foreground/80 leading-relaxed italic px-4 line-clamp-3">
-                             {item.short_description || item.full_description}
-                          </p>
-                       </div>
-                    </div>
-                 ))}
+                 {displayAttractions.map((item: any) => {
+                    const itemTarget = item.slug || item.id || item.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                    return (
+                      <Link 
+                        to={`/attractions/${itemTarget}`} 
+                        key={item.id || item.title} 
+                        className="attraction-card group block text-left bg-card border border-gold/20 p-4 rounded-sm shadow-frame hover:shadow-gold hover:border-gold/50 transition-all duration-500"
+                      >
+                         <div className="aspect-square mb-6 overflow-hidden shadow-frame border border-gold/20 relative group-hover:shadow-gold transition-all duration-700">
+                               <UnifiedSlider 
+                                  images={item.attraction_images?.length > 0 ? item.attraction_images.map((img: any) => img.image_url) : [heroImgFallbackCurrent]} 
+                                  settings={finalSliderSettings as unknown as SliderSettings}
+                                  className="w-full h-full pointer-events-none"
+                               />
+                            <div className="absolute top-4 left-4 z-20 px-3 py-1 bg-royal-deep/80 backdrop-blur-md border border-gold/30 text-gold font-serif-sc text-[9px] tracking-widest uppercase">
+                               {item.location || "Nearby"}
+                            </div>
+                         </div>
+                         <div className="text-center px-2 pb-4">
+                            <div className="font-serif-sc text-gold text-[10px] tracking-widest mb-2 uppercase font-semibold">HERITAGE WONDER</div>
+                            <h3 className="font-display text-3xl text-foreground group-hover:text-gold transition-colors duration-500 uppercase tracking-tight">{item.title}</h3>
+                            <div className="w-8 h-px bg-gold/30 mx-auto my-3" />
+                            <p className="font-serif text-sm text-muted-foreground leading-relaxed italic px-2 line-clamp-3 mb-4">
+                               {item.short_description || item.full_description}
+                            </p>
+                            <span className="inline-block font-serif-sc text-xs tracking-[0.2em] text-gold group-hover:text-gold-glow uppercase font-bold">
+                              DISCOVER STORY →
+                            </span>
+                         </div>
+                      </Link>
+                    );
+                 })}
               </div>
            </div>
         </section>
