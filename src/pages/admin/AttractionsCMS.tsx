@@ -41,10 +41,15 @@ export default function AttractionsCMS() {
 
       if (error) throw error;
 
-      const formatted = data?.map((item: any) => ({
-        ...item,
-        images: item.attraction_images?.map((img: any) => img.image_url) || []
-      })) || [];
+      const formatted = data?.map((item: any) => {
+        let imgs: string[] = item.attraction_images?.map((img: any) => img.image_url) || [];
+        if (imgs.length === 0 && item.image_url) imgs = [item.image_url];
+        if (imgs.length === 0 && Array.isArray(item.images)) imgs = item.images;
+        return {
+          ...item,
+          images: imgs
+        };
+      }) || [];
 
       setItems(formatted);
     } catch (error: any) {
@@ -61,15 +66,19 @@ export default function AttractionsCMS() {
     try {
       const mainData: any = {
         title: editingItem.title,
-        slug: editingItem.slug,
-        short_description: editingItem.short_description,
-        full_description: editingItem.full_description,
-        location: editingItem.location,
-        map_link: editingItem.map_link,
+        slug: editingItem.slug || editingItem.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        short_description: editingItem.short_description || "",
+        full_description: editingItem.full_description || "",
+        location: editingItem.location || "",
+        map_link: editingItem.map_link || "",
         featured: editingItem.featured || false,
         active: editingItem.active !== false,
         sort_order: editingItem.sort_order ?? items.length,
       };
+
+      if (editingItem.images && editingItem.images.length > 0) {
+        mainData.image_url = editingItem.images[0];
+      }
 
       if (editingItem.subtitle !== undefined) mainData.subtitle = editingItem.subtitle;
       if (editingItem.eyebrow !== undefined) mainData.eyebrow = editingItem.eyebrow;
@@ -81,18 +90,24 @@ export default function AttractionsCMS() {
       if (itemId) {
         const { error } = await supabase.from("attractions").update(mainData).eq("id", itemId);
         if (error) {
-          // If schema columns don't exist yet, retry without optional columns
           delete mainData.subtitle;
           delete mainData.eyebrow;
           delete mainData.architecture_text;
           delete mainData.tips;
+          delete mainData.image_url;
           await supabase.from("attractions").update(mainData).eq("id", itemId);
         }
         await supabase.from("attraction_images").delete().eq("attraction_id", itemId);
       } else {
         const { data, error } = await supabase.from("attractions").insert([mainData]).select().single();
-        if (error) throw error;
-        itemId = data.id;
+        if (error) {
+          delete mainData.image_url;
+          const { data: retryData, error: retryErr } = await supabase.from("attractions").insert([mainData]).select().single();
+          if (retryErr) throw retryErr;
+          itemId = retryData.id;
+        } else {
+          itemId = data.id;
+        }
       }
 
       if (editingItem.images && editingItem.images.length > 0) {
@@ -101,7 +116,10 @@ export default function AttractionsCMS() {
           image_url: url,
           sort_order: idx
         }));
-        await supabase.from("attraction_images").insert(imageInserts);
+        const { error: imgErr } = await supabase.from("attraction_images").insert(imageInserts);
+        if (imgErr) {
+          console.warn("attraction_images table insert warning:", imgErr);
+        }
       }
       
       toast.success("Attraction updated successfully.");

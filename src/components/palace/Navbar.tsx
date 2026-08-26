@@ -4,13 +4,16 @@ import gsap from "gsap";
 import { Menu, X, Globe } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
-const defaultLinks = [
-  { to: "/rooms", label: "Chambers" },
-  { to: "/dining", label: "Feasts" },
-  { to: "/experiences", label: "Journeys" },
-  { to: "/attractions", label: "Wonders" },
-  { to: "/stories", label: "Chronicles" },
-  { to: "/about", label: "Legacy" },
+const leftNavLinks = [
+  { to: "/rooms", label: "CHAMBERS" },
+  { to: "/dining", label: "FEASTS" },
+  { to: "/experiences", label: "JOURNEYS" },
+];
+
+const rightNavLinks = [
+  { to: "/attractions", label: "WONDERS" },
+  { to: "/stories", label: "CHRONICLES" },
+  { to: "/about", label: "LEGACY" },
 ];
 
 export const Navbar = () => {
@@ -20,7 +23,6 @@ export const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState("EN");
-  const [navLinks, setNavLinks] = useState(defaultLinks);
   const drawerRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLDivElement>(null);
 
@@ -48,7 +50,7 @@ export const Navbar = () => {
     setCurrentLang(langCode);
     setLangOpen(false);
     setOpen(false);
-    
+
     if (gtCode === 'en') {
       document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
       document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname}`;
@@ -56,23 +58,9 @@ export const Navbar = () => {
       document.cookie = `googtrans=/en/${gtCode}; path=/;`;
       document.cookie = `googtrans=/en/${gtCode}; path=/; domain=${window.location.hostname}`;
     }
-    
+
     window.location.reload();
   };
-
-  useEffect(() => {
-    const fetchLinks = async () => {
-      try {
-        const { data } = await supabase.from("settings").select("value").eq("key", "navbar_items").single();
-        if (data && data.value && Array.isArray(data.value) && data.value.length > 0) {
-          setNavLinks(data.value);
-        }
-      } catch (err) {
-        console.error("Failed to load nav links:", err);
-      }
-    };
-    fetchLinks();
-  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -101,36 +89,30 @@ export const Navbar = () => {
   return (
     <>
       <header
-        className={`fixed top-0 inset-x-0 z-40 transition-all duration-700 ${
-          scrolled
-            ? "backdrop-blur-xl bg-[#091a26]/95 border-b border-[#9ed1ee]/40 shadow-lg"
-            : "backdrop-blur-md bg-[#091a26]/80 border-b border-[#9ed1ee]/20"
-        }`}
+        className={`fixed top-0 inset-x-0 z-40 transition-all duration-700 ${scrolled
+          ? "backdrop-blur-xl bg-[#091a28]/95 border-b border-[#5eb3e4]/30 shadow-xl"
+          : "backdrop-blur-md bg-[#091a28]/85 border-b border-[#5eb3e4]/20"
+          }`}
       >
-        {/* Subtle gold thread under bar */}
-        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#9ed1ee]/50 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#5eb3e4]/40 to-transparent" />
+        <div className="relative mx-auto max-w-[1650px] px-4 md:px-8 py-4 flex items-center justify-between min-h-[80px]">
 
-        <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-[#9ed1ee] to-[#aed9f1] flex items-center justify-center shadow-md transition-transform duration-700 group-hover:rotate-[20deg]">
-              <span className="font-display text-[#0a1b28] text-lg font-bold">R</span>
-            </div>
-            <div className="leading-tight">
-              <div className="font-display text-white text-lg tracking-wider font-bold drop-shadow-md">Raj Mandir</div>
-              <div className="font-serif-sc text-[10px] tracking-[0.4em] text-[#9ed1ee] font-bold drop-shadow-md">JODHPUR · 1894</div>
-            </div>
+          {/* Mobile Logo Left (visible only on small screens < lg) */}
+          <Link to="/" className="flex lg:hidden flex-col">
+            <span className="font-serif-sc text-[8px] tracking-[0.35em] text-[#5eb3e4] uppercase font-semibold">THE</span>
+            <span className="font-display text-white text-base tracking-wider font-bold">RAJ MANDIR</span>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map((l) => (
+          {/* Desktop Left Nav Links */}
+          <nav className="hidden lg:flex items-center justify-end gap-6 xl:gap-10 flex-1 pr-6 xl:pr-20">
+            {leftNavLinks.map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}
                 className={({ isActive }) =>
-                  `font-serif-sc text-xs tracking-[0.3em] transition-colors duration-500 relative after:absolute after:left-0 after:-bottom-1 after:h-px after:bg-[#9ed1ee] after:transition-all after:duration-500 drop-shadow-md ${
-                    isActive
-                      ? "text-[#9ed1ee] font-bold after:w-full"
-                      : "text-white font-semibold hover:text-[#9ed1ee] after:w-0 hover:after:w-full"
+                  `font-serif-sc text-xs xl:text-sm tracking-[0.25em] whitespace-nowrap transition-colors duration-300 relative after:absolute after:left-0 after:-bottom-1 after:h-px after:bg-[#5eb3e4] after:transition-all after:duration-300 ${isActive
+                    ? "text-[#5eb3e4] font-bold after:w-full"
+                    : "text-white/90 font-medium hover:text-[#5eb3e4] after:w-0 hover:after:w-full"
                   }`
                 }
               >
@@ -139,23 +121,55 @@ export const Navbar = () => {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
-            
-            {/* Language Switcher Desktop */}
-            <div className="hidden lg:relative lg:block">
-              <button 
-                onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1 font-serif-sc text-[10px] tracking-widest text-white font-semibold hover:text-[#9ed1ee] transition-colors px-2 py-1 drop-shadow-md"
+          {/* ABSOLUTE CENTER LOGO TYPOGRAPHY */}
+          <Link
+            to="/"
+            className="hidden lg:flex flex-col items-center justify-center text-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group shrink-0"
+          >
+            <div className="font-serif-sc text-[8px] tracking-[0.4em] text-[#5eb3e4] uppercase font-semibold mb-0.5">THE</div>
+            <div className="font-display text-white text-xl xl:text-2xl tracking-[0.2em] font-bold drop-shadow-sm leading-tight transition-colors group-hover:text-[#5eb3e4] whitespace-nowrap">
+              RAJ MANDIR
+            </div>
+            <div className="font-serif-sc text-[8px] tracking-[0.4em] text-[#5eb3e4] uppercase font-semibold mt-0.5">
+              GUEST HOUSE
+            </div>
+          </Link>
+
+          {/* Desktop Right Nav Links (Aligned to the right side using justify-end pr-8 xl:pr-14 so WONDERS is far away from center logo) */}
+          <nav className="hidden lg:flex items-center justify-end gap-5 xl:gap-8 flex-1 pr-30 xl:pr-144 pl-10">
+            {rightNavLinks.map((l) => (
+              <NavLink
+                key={l.to}
+                to={l.to}
+                className={({ isActive }) =>
+                  `font-serif-sc text-xs xl:text-sm tracking-[0.25em] whitespace-nowrap transition-colors duration-300 relative after:absolute after:left-0 after:-bottom-1 after:h-px after:bg-[#5eb3e4] after:transition-all after:duration-300 ${isActive
+                    ? "text-[#5eb3e4] font-bold after:w-full"
+                    : "text-white/90 font-medium hover:text-[#5eb3e4] after:w-0 hover:after:w-full"
+                  }`
+                }
               >
-                <Globe size={14} className="text-[#9ed1ee]" /> {currentLang}
+                {l.label.toUpperCase()}
+              </NavLink>
+            ))}
+          </nav>
+
+          {/* Far Right Action Buttons (RESERVE button + Language switcher + Mobile menu toggle) - ALWAYS VISIBLE AT RIGHT CORNER! */}
+          <div className="flex items-center gap-3 shrink-0">
+            {/* Language Switcher Desktop */}
+            <div className="hidden xl:relative xl:block">
+              <button
+                onClick={() => setLangOpen(!langOpen)}
+                className="flex items-center gap-1 font-serif-sc text-[10px] tracking-widest text-white/80 font-medium hover:text-[#5eb3e4] transition-colors px-1 py-1"
+              >
+                <Globe size={13} className="text-[#5eb3e4]" /> {currentLang}
               </button>
               {langOpen && (
-                <div className="absolute top-full right-0 mt-2 w-32 bg-card border border-[#9ed1ee]/30 shadow-xl py-2 flex flex-col z-50 animate-fade-in backdrop-blur-md">
+                <div className="absolute top-full right-0 mt-2 w-32 bg-[#091a28] border border-[#5eb3e4]/30 shadow-xl py-2 flex flex-col z-50 animate-fade-in backdrop-blur-md">
                   {languages.map(lang => (
                     <button
                       key={lang.code}
                       onClick={() => handleLanguageChange(lang.code, lang.gtCode)}
-                      className={`text-left px-4 py-2 font-serif text-sm transition-colors ${currentLang === lang.code ? "text-[#0a1b28] font-bold bg-[#bee0f4]" : "text-foreground hover:text-[#0a1b28] hover:bg-[#cee8f6]"}`}
+                      className={`text-left px-4 py-2 font-serif text-sm transition-colors ${currentLang === lang.code ? "text-[#5eb3e4] font-bold bg-[#1e406d]" : "text-white hover:text-[#5eb3e4] hover:bg-[#1e406d]"}`}
                     >
                       {lang.name}
                     </button>
@@ -164,15 +178,18 @@ export const Navbar = () => {
               )}
             </div>
 
+            {/* Outline Reserve Button - ALWAYS VISIBLE ON ALL SCREENS! */}
             <Link
               to="/booking"
-              className="hidden sm:inline-flex font-serif-sc tracking-[0.2em] text-xs px-5 py-3 rounded-sm bg-gradient-to-r from-[#9ed1ee] to-[#aed9f1] text-[#0a1b28] font-bold hover:shadow-md hover:-translate-y-0.5 transition-all duration-500"
+              className="font-serif-sc tracking-[0.25em] text-xs px-4 md:px-6 py-2 md:py-2.5 border border-[#5eb3e4]/80 text-white font-semibold hover:bg-[#5eb3e4] hover:text-[#091a28] transition-all duration-300 shadow-sm whitespace-nowrap"
             >
               RESERVE
             </Link>
+
+            {/* Mobile menu toggle */}
             <button
               onClick={() => setOpen(true)}
-              className="lg:hidden text-white hover:text-gold p-2 hover:bg-gold/10 rounded-sm transition-colors drop-shadow-md"
+              className="lg:hidden text-white hover:text-[#5eb3e4] p-2 hover:bg-[#5eb3e4]/10 rounded-sm transition-colors"
               aria-label="Open palace menu"
             >
               <Menu size={24} />
@@ -201,31 +218,31 @@ export const Navbar = () => {
             </button>
           </div>
 
-          <div ref={itemsRef} className="flex flex-col items-center justify-center h-[calc(100vh-64px)] gap-7 px-6">
-            {navLinks.map((l) => (
+          <div ref={itemsRef} className="flex flex-col items-center justify-center h-[calc(100vh-64px)] gap-6 px-6 bg-[#0b2038] text-white">
+            {[...leftNavLinks, ...rightNavLinks].map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}
-                className="m-link font-display text-3xl tracking-widest text-foreground hover:text-gold transition-colors duration-500"
+                className="m-link font-display text-2xl md:text-3xl tracking-widest text-white hover:text-[#5eb3e4] transition-colors duration-500"
               >
                 {l.label}
               </NavLink>
             ))}
-            <div className="m-link divider-gold w-32 mt-2"><span className="text-gold">❖</span></div>
+            <div className="m-link divider-gold w-32 mt-2"><span className="text-[#5eb3e4]">❖</span></div>
             <Link
               to="/booking"
-              className="m-link mt-4 px-10 py-4 bg-gradient-gold text-royal-deep font-bold font-serif-sc tracking-[0.3em] text-sm shadow-gold hover:-translate-y-1 transition-transform duration-500"
+              className="m-link mt-2 px-10 py-4 bg-gradient-to-r from-[#5eb3e4] to-[#2563eb] text-white font-bold font-serif-sc tracking-[0.3em] text-sm shadow-md hover:-translate-y-1 transition-transform duration-500"
             >
               RESERVE A CHAMBER
             </Link>
-            
+
             {/* Language Switcher Mobile */}
-            <div className="m-link mt-8 flex gap-4">
+            <div className="m-link mt-6 flex gap-4">
               {languages.map(lang => (
                 <button
                   key={lang.code}
                   onClick={() => handleLanguageChange(lang.code, lang.gtCode)}
-                  className={`font-serif-sc text-[10px] tracking-widest transition-colors ${currentLang === lang.code ? "text-gold border-b border-gold" : "text-muted-foreground hover:text-gold"}`}
+                  className={`font-serif-sc text-xs tracking-widest transition-colors ${currentLang === lang.code ? "text-[#5eb3e4] font-bold border-b border-[#5eb3e4]" : "text-white/70 hover:text-white"}`}
                 >
                   {lang.code}
                 </button>

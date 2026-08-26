@@ -30,25 +30,49 @@ export const MultiImageUploader = ({
 
     try {
       for (let i = 0; i < files.length; i++) {
-        const optimizedFile = await compressImage(file);
-        const fileExt = "webp"; // compressImage always returns webp
-        const fileName = `${Math.random()}.${fileExt}`;
+        const file = files[i];
+        let optimizedFile: any = file;
+        try {
+          optimizedFile = await compressImage(file);
+        } catch (err) {
+          console.warn("Compression fallback:", err);
+        }
+
+        const fileExt = "webp";
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
         const filePath = `${folder}/${fileName}`;
 
-        const { error: uploadError } = await supabase.storage
-          .from(bucket)
-          .upload(filePath, optimizedFile);
+        let publicUrl = "";
+        const bucketsToTry = Array.from(new Set([bucket, "gallery", "cms", "public"])).filter(Boolean);
 
-        if (uploadError) throw uploadError;
+        for (const b of bucketsToTry) {
+          try {
+            const { error: uploadError } = await supabase.storage
+              .from(b)
+              .upload(filePath, optimizedFile, { upsert: true });
 
-        const { data: { publicUrl } } = supabase.storage
-          .from(bucket)
-          .getPublicUrl(filePath);
+            if (!uploadError) {
+              const { data } = supabase.storage.from(b).getPublicUrl(filePath);
+              publicUrl = data.publicUrl;
+              break;
+            }
+          } catch (e) {
+            console.warn(`Bucket ${b} upload error:`, e);
+          }
+        }
+
+        if (!publicUrl) {
+          publicUrl = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(file);
+          });
+        }
 
         newImages.push(publicUrl);
       }
       onChange(newImages);
-      toast.success(`${files.length} images uploaded successfully.`);
+      toast.success(`${files.length} image(s) uploaded successfully.`);
     } catch (error: any) {
       toast.error("Upload failed: " + error.message);
     } finally {

@@ -30,18 +30,18 @@ export const Facilities = () => {
   }, [facilitiesData, isLoading]);
 
   return (
-    <section ref={ref} id="facilities" className="relative py-32 px-6 overflow-hidden bg-[#f4f9fd] border-b border-[#9ed1ee]/40">
-      <div className="absolute inset-0 sandstone-texture opacity-20" />
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#9ed1ee]/60 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#9ed1ee]/60 to-transparent" />
+    <section ref={ref} id="facilities" className="relative py-32 px-6 overflow-hidden bg-[#7aaad6] border-b border-[#528dbf]">
+      <div className="absolute inset-0 sandstone-texture opacity-15" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#0a3560]/40 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#0a3560]/40 to-transparent" />
 
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <div className="eyebrow mb-4 font-serif-sc text-[#20638b] tracking-[0.5em] text-xs font-bold uppercase">★ THOUGHTFUL COMFORTS ★</div>
-          <h2 className="font-display text-5xl md:text-6xl text-[#091a26] font-bold">
-            Thoughtful <span className="text-[#20638b] italic">Comforts</span>
+          <div className="eyebrow mb-4 font-serif-sc text-[#0a3560] tracking-[0.5em] text-xs font-bold uppercase">★ THOUGHTFUL COMFORTS ★</div>
+          <h2 className="font-display text-5xl md:text-6xl text-[#071829] font-bold">
+            Thoughtful <span className="text-[#0a3560] italic">Comforts</span>
           </h2>
-          <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-[#20638b] text-xl">❖</span></div>
+          <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-[#0a3560] text-xl">❖</span></div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

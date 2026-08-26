@@ -8,7 +8,6 @@ import { Footer } from "@/components/palace/Footer";
 import { Gallery } from "@/components/palace/Gallery";
 import { Facilities } from "@/components/palace/Facilities";
 import { FeedbackSection } from "@/components/palace/FeedbackSection";
-import { Offers } from "@/components/palace/HomepageExperiences";
 
 const Index = () => {
   const [opened, setOpened] = useState(false);
@@ -34,7 +33,6 @@ const Index = () => {
       <Hero start={opened} />
       <About />
       <Rooms />
-      <Offers />
       <Facilities />
       <Gallery />
       <FeedbackSection />

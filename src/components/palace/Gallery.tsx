@@ -28,11 +28,14 @@ export const Gallery = () => {
 
   const activePhotos = useMemo(() => {
     if (dbGallery && dbGallery.length > 0) {
-      const mappedDb = dbGallery.map((item, index) => ({
-        src: item.storage_path || item.image_url || photos[index % photos.length].src,
-        alt: item.title || "Gallery image",
-        span: photos[index % photos.length].span
-      }));
+      const mappedDb = dbGallery.map((item, index) => {
+        const titleText = item.title && !item.title.match(/\.(jpg|jpeg|png|webp|gif|svg)$/i) ? item.title : "Raj Mandir Gallery";
+        return {
+          src: item.storage_path || item.image_url || photos[index % photos.length].src,
+          alt: titleText,
+          span: photos[index % photos.length].span
+        };
+      });
       
       const combined = [...mappedDb];
       while (combined.length < 6) {
@@ -92,15 +95,15 @@ export const Gallery = () => {
   }, [active]);
 
   return (
-    <section ref={ref} id="gallery" className="relative py-32 px-6 overflow-hidden bg-[#dceef9] border-b border-[#9ed1ee]/40">
+    <section ref={ref} id="gallery" className="relative py-32 px-6 overflow-hidden bg-[#6ba3d6] border-b border-[#528dbf]">
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <div className="eyebrow mb-4 font-serif-sc text-[#20638b] tracking-[0.5em] text-xs font-bold uppercase">★ CAPTURED MEMORIES ★</div>
-          <h2 className="font-display text-5xl md:text-6xl text-[#091a26] font-bold">
-            A Glimpse of <span className="text-[#20638b] italic">Raj Mandir</span>
+          <div className="eyebrow mb-4 font-serif-sc text-[#0a3560] tracking-[0.5em] text-xs font-bold uppercase">★ CAPTURED MEMORIES ★</div>
+          <h2 className="font-display text-5xl md:text-6xl text-[#071829] font-bold">
+            A Glimpse of <span className="text-[#0a3560] italic">Raj Mandir</span>
           </h2>
-          <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-[#20638b] text-xl">❖</span></div>
-          <p className="font-serif italic mt-6 text-lg md:text-xl text-[#13374f] max-w-2xl mx-auto font-medium">
+          <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-[#0a3560] text-xl">❖</span></div>
+          <p className="font-serif italic mt-6 text-lg md:text-xl text-[#0a2745] max-w-2xl mx-auto font-medium">
             Frames suspended in stone — moments from a palace that has watched a century pass.
           </p>
         </div>
@@ -111,20 +114,17 @@ export const Gallery = () => {
               key={i}
               onClick={() => setActive(i)}
               className={`g-tile group relative overflow-hidden jharokha-frame ${p.span} ${i % 3 === 0 ? "col-span-2" : ""}`}
-              aria-label={`Open ${p.alt}`}
+              aria-label="View photo"
             >
               <div className="absolute inset-0 overflow-hidden">
                 <img
                   src={p.src}
-                  alt={p.alt}
+                  alt="Raj Mandir"
                   loading="lazy"
                   className="g-img absolute inset-0 h-[120%] w-full object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-110"
                 />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/80 via-royal-deep/10 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-700" />
-              <div className="absolute inset-0 flex items-end p-5 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                <div className="font-serif-sc text-ivory text-[11px] tracking-[0.3em]">{p.alt.toUpperCase()}</div>
-              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/60 via-transparent to-transparent opacity-50 group-hover:opacity-80 transition-opacity duration-700" />
               <div className="absolute inset-0 ring-1 ring-inset ring-gold/0 group-hover:ring-gold/60 transition-all duration-700 pointer-events-none" />
             </button>
           ))}

@@ -80,21 +80,21 @@ export const Rooms = () => {
   }, []);
 
   return (
-    <section id="rooms" ref={sectionRef} className="relative py-32 overflow-hidden bg-[#eef7fc] border-y border-[#9ed1ee]/40">
+    <section id="rooms" ref={sectionRef} className="relative py-32 overflow-hidden bg-[#6ba3d6] border-y border-[#528dbf]">
       {/* Background ambient light & texture */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(158,209,238,0.2),transparent_70%)] pointer-events-none" />
-      <div className="absolute inset-0 stone-texture opacity-40 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.15),transparent_70%)] pointer-events-none" />
+      <div className="absolute inset-0 stone-texture opacity-30 pointer-events-none" />
 
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 relative z-10">
         <div className="text-center mb-16 md:mb-24 rooms-eyebrow">
-          <div className="font-serif-sc text-[#20638b] tracking-[0.5em] text-xs md:text-sm mb-4 uppercase font-bold">★ The Chambers ★</div>
-          <h2 className="font-display text-5xl md:text-7xl text-[#091a26] font-bold">
-            Royal <span className="text-[#20638b] italic">Quarters</span>
+          <div className="font-serif-sc text-[#0a3560] tracking-[0.5em] text-xs md:text-sm mb-4 uppercase font-bold">★ The Chambers ★</div>
+          <h2 className="font-display text-5xl md:text-7xl text-[#071829] font-bold">
+            Royal <span className="text-[#0a3560] italic">Quarters</span>
           </h2>
           <div className="divider-gold max-w-md mx-auto mt-6">
-            <span className="font-display text-[#20638b] text-xl">❖</span>
+            <span className="font-display text-[#0a3560] text-xl">❖</span>
           </div>
-          <p className="mt-6 font-serif italic text-xl md:text-2xl text-[#13374f] max-w-2xl mx-auto font-medium">
+          <p className="mt-6 font-serif italic text-xl md:text-2xl text-[#0a2745] max-w-2xl mx-auto font-medium">
             Sanctuaries of silence — each a different verse from the same royal poem.
           </p>
         </div>
