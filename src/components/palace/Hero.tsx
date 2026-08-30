@@ -83,7 +83,7 @@ export const Hero = ({ start }: { start: boolean }) => {
   const currentHeroImage = cmsData.image_url || heroImg;
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center pt-28 pb-20 bg-sky-100">
+    <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center pt-28 pb-20 bg-[#091a28]">
       {/* Hero background image container - single original hero image, NEVER disappears */}
       <div 
         ref={imgRef} 

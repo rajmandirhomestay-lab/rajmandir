@@ -1,19 +1,19 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Loader2, Utensils } from "lucide-react";
 import { PageShell } from "@/components/palace/PageShell";
 import { PageHero } from "@/components/palace/PageHero";
 import { useDiningAreas, useDishes, useHomepageSections, usePageHero } from "@/lib/api";
 import { UnifiedSlider, SliderSettings } from "@/components/palace/UnifiedSlider";
-import { useState } from "react";
 
 import heroImgFallback from "@/assets/page-dining-hero.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Dining = () => {
+  const { data: dishes, isLoading: dishesLoading, error: dishesError } = useDishes();
   const { data: areas } = useDiningAreas();
-  const { data: dishes } = useDishes();
   const { data: sections } = useHomepageSections();
   const { data: pageHero } = usePageHero('dining');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -66,31 +66,26 @@ const Dining = () => {
           {
             opacity: 1,
             y: 0,
-            duration: 1.5,
+            duration: 1.2,
             ease: "power3.out",
             scrollTrigger: {
               trigger: text,
-              start: "top 85%",
+              start: "top 90%",
             }
           }
         );
       });
 
-      // Dish cards animation
-      gsap.fromTo(".dish-card",
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          stagger: 0.1,
-          duration: 1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: ".dishes-grid",
-            start: "top 80%",
-          }
-        }
-      );
+      // Smooth entrance for dish cards without forcing opacity: 0 state
+      if (dishes && dishes.length > 0) {
+        gsap.from(".dish-card", {
+          opacity: 0,
+          y: 20,
+          stagger: 0.08,
+          duration: 0.6,
+          ease: "power2.out"
+        });
+      }
     }, containerRef);
     return () => ctx.revert();
   }, [areas, dishes]);
@@ -148,33 +143,58 @@ const Dining = () => {
         </section>
 
         {/* Section 2: Special Dishes Showcase */}
-        <section className="relative py-32 px-6 bg-card/30 border-y border-gold/10 overflow-hidden">
+        <section className="relative py-20 md:py-32 px-4 md:px-6 bg-card/30 border-y border-gold/10 overflow-hidden">
           <div className="absolute inset-0 lattice-pattern opacity-5" />
           <div className="max-w-7xl mx-auto relative z-10">
-            <div className="text-center mb-24 editorial-text">
+            <div className="text-center mb-16 md:mb-24 editorial-text">
               <div className="font-serif-sc text-gold tracking-[0.4em] text-xs mb-4 uppercase">SIGNATURE CREATIONS</div>
-              <h2 className="font-display text-5xl md:text-6xl text-foreground mb-4">
+              <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-foreground mb-4">
                 The Royal <span className="text-gold-gradient italic">Menu</span>
               </h2>
               <div className="divider-gold mt-6 max-w-xs mx-auto"><span className="text-gold text-sm">❖</span></div>
             </div>
 
-            <div className="dishes-grid grid md:grid-cols-2 lg:grid-cols-3 gap-12">
-              {dishes?.map((dish, i) => (
-                <div key={dish.id} className="dish-card group relative">
-                  <div className="aspect-square mb-6 overflow-hidden jharokha-frame border border-gold/20 shadow-gold transition-transform duration-700 group-hover:scale-[1.02]">
-                    <img src={dish.image_url} alt={dish.name} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-royal-deep/40 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            {dishesLoading ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="animate-spin text-gold w-8 h-8" />
+              </div>
+            ) : dishesError ? (
+              <div className="text-center py-12 max-w-xl mx-auto space-y-4">
+                <div className="font-serif text-gold text-lg font-bold">Supabase Row Level Security (RLS) Policy Required</div>
+                <p className="font-serif text-sm text-muted-foreground">
+                  The dishes exist in the admin database but public visitors need read permission. Run the script <code className="bg-royal-deep text-gold px-2 py-1 rounded border border-gold/30">src/sql/dishes_rls.sql</code> in your Supabase SQL Editor.
+                </p>
+              </div>
+            ) : dishes && dishes.length > 0 ? (
+              <div className="dishes-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+                {dishes.map((dish) => (
+                  <div key={dish.id} className="dish-card group relative">
+                    <div className="aspect-square mb-6 overflow-hidden jharokha-frame border border-gold/20 shadow-gold transition-transform duration-700 group-hover:scale-[1.02] bg-royal-deep/30">
+                      {dish.image_url ? (
+                        <img src={dish.image_url} alt={dish.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gold/5">
+                          <Utensils className="text-gold/40 w-12 h-12" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-royal-deep/40 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    </div>
+                    <div className="text-center">
+                      <div className="font-serif-sc text-gold text-[10px] tracking-widest mb-2 uppercase">{dish.category || "SIGNATURE"}</div>
+                      <h3 className="font-display text-2xl text-foreground mb-3">{dish.name}</h3>
+                      {dish.description && (
+                        <p className="font-serif text-muted-foreground/80 text-sm leading-relaxed mb-4 italic px-4 line-clamp-2">{dish.description}</p>
+                      )}
+                      <div className="font-serif text-gold tracking-widest text-lg">{dish.price}</div>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <div className="font-serif-sc text-gold text-[10px] tracking-widest mb-2 uppercase">{dish.category}</div>
-                    <h3 className="font-display text-2xl text-foreground mb-3">{dish.name}</h3>
-                    <p className="font-serif text-muted-foreground/80 text-sm leading-relaxed mb-4 italic px-4 line-clamp-2">{dish.description}</p>
-                    <div className="font-serif text-gold tracking-widest text-lg">{dish.price}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-muted-foreground font-serif italic">
+                Our culinary team is crafting today's special menu. Please check back shortly.
+              </div>
+            )}
           </div>
         </section>
 

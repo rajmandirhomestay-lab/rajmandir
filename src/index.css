@@ -11,55 +11,54 @@
 
 @layer base {
   :root {
-    /* Perfect Medium Gel-Pen Sky Blue System */
-    --background: 207 58% 69%; /* #81b3de - Medium Vibrant Gel Pen Sky Blue */
-    --foreground: 215 75% 10%; /* #071829 - Deep Dark Navy Crisp Text */
+    /* Royal Jodhpur Blue City & Palace Palette */
+    --background: 214 62% 11%; /* #0b1c2e - Deep Majestic Jodhpur Indigo Navy */
+    --foreground: 210 40% 98%; /* #f8fafc - Crisp Regal White Text */
 
-    --card: 0 0% 100%; /* #ffffff - Pure White Cards for Maximum Contrast & Visibility */
-    --card-foreground: 215 75% 10%; /* #071829 */
+    --card: 214 55% 15%; /* #0f273f - Rich Jodhpur Blue City Cards */
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 75% 10%;
+    --popover: 214 55% 14%;
+    --popover-foreground: 210 40% 98%;
 
-    /* Primary: Sapphire Gel Pen #1d68a7 */
-    --primary: 207 70% 38%;
+    --primary: 207 70% 38%; /* #1d68a7 - Jodhpur Azure Indigo */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 40 80% 45%;
-    --secondary-foreground: 215 75% 10%;
+    --secondary: 40 80% 48%;
+    --secondary-foreground: 214 62% 11%;
 
-    --muted: 207 40% 82%;
-    --muted-foreground: 215 40% 25%;
+    --muted: 214 35% 20%;
+    --muted-foreground: 210 30% 75%;
 
-    --accent: 207 63% 46%; /* #2b7cc0 */
+    --accent: 207 63% 46%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 70% 45%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 207 45% 55%;
-    --input: 207 45% 55%;
-    --ring: 207 70% 38%;
+    --border: 214 40% 22%;
+    --input: 214 40% 22%;
+    --ring: 40 80% 48%;
 
     /* Brand tokens */
-    --gold: 40 80% 45%;
+    --gold: 40 80% 48%;
     --gold-glow: 42 90% 55%;
     --royal: 207 70% 38%;
-    --royal-deep: 215 70% 14%; /* #091a2d */
-    --ivory: 207 55% 94%;
-    --shade-gelpen-medium: 207 58% 69%; /* #81b3de */
-    --shade-gelpen-card: 0 0% 100%;    /* #ffffff */
-    --shade-gelpen-navy: 215 75% 10%;   /* #071829 */
+    --royal-deep: 214 62% 10%; /* #091a28 */
+    --ivory: 210 40% 95%;
+    --shade-gelpen-medium: 214 62% 11%;
+    --shade-gelpen-card: 214 55% 15%;
+    --shade-gelpen-navy: 210 40% 98%;
     --saffron: 28 80% 55%;
 
-    --gradient-royal: linear-gradient(135deg, #1d68a7, #2b7cc0, #091a2d);
-    --gradient-gold: linear-gradient(135deg, hsl(40 80% 45%), hsl(42 90% 55%), hsl(36 80% 40%));
-    --gradient-ivory: radial-gradient(ellipse at top, #ffffff, #d3e5f5);
-    --gradient-sky: linear-gradient(135deg, #6ba3d6 0%, #81b3de 50%, #9bc2e6 100%);
+    --gradient-royal: linear-gradient(135deg, #091a28, #163656, #0b1c2e);
+    --gradient-gold: linear-gradient(135deg, hsl(40 80% 48%), hsl(42 90% 58%), hsl(36 80% 42%));
+    --gradient-ivory: radial-gradient(ellipse at top, #0f273f, #0b1c2e);
+    --gradient-sky: linear-gradient(135deg, #0f273f 0%, #163656 50%, #0b1c2e 100%);
 
-    --shadow-royal: 0 20px 60px -15px rgba(29, 104, 167, 0.4);
+    --shadow-royal: 0 20px 60px -15px rgba(9, 26, 40, 0.6);
     --shadow-gold: 0 0 40px hsl(42 75% 55% / 0.3), 0 15px 30px -10px hsl(42 75% 35% / 0.3);
-    --shadow-frame: 0 15px 45px -20px rgba(7, 24, 41, 0.25), inset 0 0 0 1px hsl(42 75% 55% / 0.3);
+    --shadow-frame: 0 15px 45px -20px rgba(7, 24, 41, 0.4), inset 0 0 0 1px hsl(42 75% 55% / 0.3);
 
     --transition-cinematic: cubic-bezier(0.77, 0, 0.175, 1);
 
@@ -68,23 +67,23 @@
 
   /* Custom shades across all themes */
   .dark {
-    --background: 207 58% 69%;
-    --foreground: 215 75% 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 215 75% 10%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 75% 10%;
+    --background: 214 62% 11%;
+    --foreground: 210 40% 98%;
+    --card: 214 55% 15%;
+    --card-foreground: 210 40% 98%;
+    --popover: 214 55% 14%;
+    --popover-foreground: 210 40% 98%;
     --primary: 207 70% 38%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 40 80% 45%;
-    --secondary-foreground: 215 75% 10%;
-    --muted: 207 40% 82%;
-    --muted-foreground: 215 40% 25%;
+    --secondary: 40 80% 48%;
+    --secondary-foreground: 214 62% 11%;
+    --muted: 214 35% 20%;
+    --muted-foreground: 210 30% 75%;
     --accent: 207 63% 46%;
     --accent-foreground: 0 0% 100%;
-    --border: 207 45% 55%;
-    --input: 207 45% 55%;
-    --ring: 207 70% 38%;
+    --border: 214 40% 22%;
+    --input: 214 40% 22%;
+    --ring: 40 80% 48%;
   }
 }
 

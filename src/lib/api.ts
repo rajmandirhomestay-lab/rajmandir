@@ -132,12 +132,19 @@ export const useDiningAreas = () => useQuery({
 
 // 3.5 Dishes (Menu Items)
 export const fetchDishes = async () => {
-  const { data, error } = await supabase
-    .from("dishes")
-    .select("*")
-    .order("sort_order", { ascending: true });
-  if (error) throw error;
-  return data;
+  try {
+    const { data, error } = await supabase
+      .from("dishes")
+      .select("*");
+    if (error) {
+      console.error("fetchDishes error:", error);
+      return [];
+    }
+    return data || [];
+  } catch (err) {
+    console.error("fetchDishes catch error:", err);
+    return [];
+  }
 };
 
 export const useDishes = () => useQuery({
