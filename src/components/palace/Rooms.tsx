@@ -80,21 +80,21 @@ export const Rooms = () => {
   }, []);
 
   return (
-    <section id="rooms" ref={sectionRef} className="relative py-32 overflow-hidden bg-[#6ba3d6] border-y border-[#528dbf]">
+    <section id="rooms" ref={sectionRef} className="relative py-32 overflow-hidden bg-background marble-texture border-y border-gold/20">
       {/* Background ambient light & texture */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.15),transparent_70%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.06),transparent_70%)] pointer-events-none" />
       <div className="absolute inset-0 stone-texture opacity-30 pointer-events-none" />
 
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 relative z-10">
         <div className="text-center mb-16 md:mb-24 rooms-eyebrow">
-          <div className="font-serif-sc text-[#0a3560] tracking-[0.5em] text-xs md:text-sm mb-4 uppercase font-bold">★ The Chambers ★</div>
-          <h2 className="font-display text-5xl md:text-7xl text-[#071829] font-bold">
-            Royal <span className="text-[#0a3560] italic">Quarters</span>
+          <div className="font-serif-sc text-gold tracking-[0.5em] text-xs md:text-sm mb-4 uppercase font-bold">★ The Chambers ★</div>
+          <h2 className="font-display text-5xl md:text-7xl text-foreground font-bold">
+            Royal <span className="text-gold-gradient italic">Quarters</span>
           </h2>
           <div className="divider-gold max-w-md mx-auto mt-6">
-            <span className="font-display text-[#0a3560] text-xl">❖</span>
+            <span className="font-display text-gold text-xl">❖</span>
           </div>
-          <p className="mt-6 font-serif italic text-xl md:text-2xl text-[#0a2745] max-w-2xl mx-auto font-medium">
+          <p className="mt-6 font-serif italic text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-medium">
             Sanctuaries of silence — each a different verse from the same royal poem.
           </p>
         </div>

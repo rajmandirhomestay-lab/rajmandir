@@ -15,10 +15,9 @@ type HomepageSection = {
 export default function HomepageCMS() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [activeSection, setActiveSection] = useState("hero");
+  const [activeSection, setActiveSection] = useState("rooms");
     
   const [sections, setSections] = useState<Record<string, HomepageSection>>({
-    hero: { section_key: "hero", title: "Raj Mandir", subtitle: "Where history meets luxury.", is_visible: true, content: {} },
     rooms: { section_key: "rooms", title: "Royal Chambers", subtitle: "Experience the legacy.", is_visible: true, content: {} },
     dining: { section_key: "dining", title: "Palace Dining", subtitle: "A culinary journey.", is_visible: true, content: {} },
     experiences: { section_key: "experiences", title: "Curated Experiences", subtitle: "Bespoke adventures.", is_visible: true, content: {} },
@@ -107,7 +106,6 @@ export default function HomepageCMS() {
   }
 
   const navItems = [
-    { id: "hero", label: "HERO", icon: LayoutTemplate, bucket: 'hero-assets' },
     { id: "rooms", label: "ROOMS", icon: BedDouble, bucket: 'room-categories' },
     { id: "dining", label: "DINING", icon: Utensils, bucket: 'dining-images' },
     { id: "experiences", label: "EXPERIENCES", icon: Compass, bucket: 'experience-images' },

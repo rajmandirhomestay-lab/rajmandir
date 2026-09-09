@@ -3,48 +3,51 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
-import Rooms from "./pages/Rooms.tsx";
-import RoomDetail from "./pages/RoomDetail.tsx";
-import Stories from "./pages/Stories.tsx";
-import Dining from "./pages/Dining.tsx";
-import Experiences from "./pages/Experiences.tsx";
-import Attractions from "./pages/Attractions.tsx";
-import AttractionDetail from "./pages/AttractionDetail.tsx";
-import About from "./pages/About.tsx";
-import Contact from "./pages/Contact.tsx";
-import Booking from "./pages/Booking.tsx";
-import Payment from "./pages/Payment.tsx";
-import BookingSuccess from "./pages/BookingSuccess.tsx";
-import BookingFailed from "./pages/BookingFailed.tsx";
-import Feedback from "./pages/Feedback.tsx";
-import GalleryPage from "./pages/Gallery.tsx";
-import FAQ from "./pages/FAQ.tsx";
-import AdminLogin from "./pages/admin/Login.tsx";
-import { ProtectedRoute } from "./components/admin/ProtectedRoute.tsx";
-import { AdminLayout } from "./components/admin/AdminLayout.tsx";
-import Dashboard from "./pages/admin/Dashboard.tsx";
-import HomepageCMS from "./pages/admin/HomepageCMS.tsx";
-import RoomsCMS from "./pages/admin/RoomsCMS.tsx";
-import RoomCategoriesCMS from "./pages/admin/RoomCategoriesCMS.tsx";
-import PhysicalRoomsCMS from "./pages/admin/PhysicalRoomsCMS.tsx";
-import GalleryCMS from "./pages/admin/GalleryCMS.tsx";
-import StoriesCMS from "./pages/admin/StoriesCMS.tsx";
-import DiningCMS from "./pages/admin/DiningCMS.tsx";
-import DiningDishesCMS from "./pages/admin/DiningDishesCMS.tsx";
-import AttractionsCMS from "./pages/admin/AttractionsCMS.tsx";
-import ExperiencesCMS from "./pages/admin/ExperiencesCMS.tsx";
-import BookingsCMS from "./pages/admin/BookingsCMS.tsx";
-import ReviewsCMS from "./pages/admin/ReviewsCMS.tsx";
-import FAQCMS from "./pages/admin/FAQCMS.tsx";
-import SettingsCMS from "./pages/admin/SettingsCMS.tsx";
-import NavigationCMS from "./pages/admin/NavigationCMS.tsx";
-import SliderSettingsCMS from "./pages/admin/SliderSettingsCMS.tsx";
-import PaymentSettingsCMS from "./pages/admin/PaymentSettingsCMS.tsx";
-import ManualPaymentsCMS from "./pages/admin/ManualPaymentsCMS.tsx";
-import AmenitiesCMS from "./pages/admin/AmenitiesCMS.tsx";
-import AboutCMS from "./pages/admin/AboutCMS.tsx";
+import Index from "./pages/Index";
+import NotFound from "./pages/NotFound";
+import Rooms from "./pages/Rooms";
+import RoomDetail from "./pages/RoomDetail";
+import Stories from "./pages/Stories";
+import Dining from "./pages/Dining";
+import Experiences from "./pages/Experiences";
+import Attractions from "./pages/Attractions";
+import AttractionDetail from "./pages/AttractionDetail";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Booking from "./pages/Booking";
+import Payment from "./pages/Payment";
+import BookingSuccess from "./pages/BookingSuccess";
+import BookingFailed from "./pages/BookingFailed";
+import Feedback from "./pages/Feedback";
+import GalleryPage from "./pages/Gallery";
+import FAQ from "./pages/FAQ";
+import DayAtRajMandir from "./pages/DayAtRajMandir";
+import AdminLogin from "./pages/admin/Login";
+import { ProtectedRoute } from "./components/admin/ProtectedRoute";
+import { AdminLayout } from "./components/admin/AdminLayout";
+import Dashboard from "./pages/admin/Dashboard";
+import PageHeroesCMS from "./pages/admin/PageHeroesCMS";
+import DayAtRajMandirCMS from "./pages/admin/DayAtRajMandirCMS";
+import EventsCMS from "./pages/admin/EventsCMS";
+import RoomsCMS from "./pages/admin/RoomsCMS";
+import RoomCategoriesCMS from "./pages/admin/RoomCategoriesCMS";
+import PhysicalRoomsCMS from "./pages/admin/PhysicalRoomsCMS";
+import GalleryCMS from "./pages/admin/GalleryCMS";
+import StoriesCMS from "./pages/admin/StoriesCMS";
+import DiningCMS from "./pages/admin/DiningCMS";
+import DiningDishesCMS from "./pages/admin/DiningDishesCMS";
+import AttractionsCMS from "./pages/admin/AttractionsCMS";
+import ExperiencesCMS from "./pages/admin/ExperiencesCMS";
+import BookingsCMS from "./pages/admin/BookingsCMS";
+import ReviewsCMS from "./pages/admin/ReviewsCMS";
+import FAQCMS from "./pages/admin/FAQCMS";
+import SettingsCMS from "./pages/admin/SettingsCMS";
+import NavigationCMS from "./pages/admin/NavigationCMS";
+import SliderSettingsCMS from "./pages/admin/SliderSettingsCMS";
+import PaymentSettingsCMS from "./pages/admin/PaymentSettingsCMS";
+import ManualPaymentsCMS from "./pages/admin/ManualPaymentsCMS";
+import AmenitiesCMS from "./pages/admin/AmenitiesCMS";
+import AboutCMS from "./pages/admin/AboutCMS";
 
 import React from "react";
 
@@ -55,10 +58,10 @@ class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasErr
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ padding: 40, color: 'red', backgroundColor: '#fee' }}>
-          <h1>Something went wrong.</h1>
-          <pre style={{ whiteSpace: 'pre-wrap' }}>{this.state.error?.toString()}</pre>
-          <pre style={{ whiteSpace: 'pre-wrap' }}>{this.state.error?.stack}</pre>
+        <div style={{ padding: 40, color: '#900', backgroundColor: '#fee', minHeight: '100vh' }}>
+          <h1 style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>Something went wrong.</h1>
+          <pre style={{ whiteSpace: 'pre-wrap', backgroundColor: '#fff', padding: 16, border: '1px solid #fcc' }}>{this.state.error?.toString()}</pre>
+          <pre style={{ whiteSpace: 'pre-wrap', backgroundColor: '#fff', padding: 16, border: '1px solid #fcc', marginTop: 12 }}>{this.state.error?.stack}</pre>
         </div>
       );
     }
@@ -71,63 +74,66 @@ const queryClient = new QueryClient();
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/rooms" element={<Rooms />} />
-          <Route path="/rooms/:id" element={<RoomDetail />} />
-          <Route path="/stories" element={<Stories />} />
-          <Route path="/dining" element={<Dining />} />
-          <Route path="/experiences" element={<Experiences />} />
-          <Route path="/attractions" element={<Attractions />} />
-          <Route path="/attractions/:id" element={<AttractionDetail />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/booking" element={<Booking />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/booking-success" element={<BookingSuccess />} />
-          <Route path="/booking-failed" element={<BookingFailed />} />
-          <Route path="/feedback" element={<Feedback />} />
-          <Route path="/gallery" element={<GalleryPage />} />
-          <Route path="/faq" element={<FAQ />} />
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/rooms" element={<Rooms />} />
+            <Route path="/rooms/:id" element={<RoomDetail />} />
+            <Route path="/stories" element={<Stories />} />
+            <Route path="/dining" element={<Dining />} />
+            <Route path="/experiences" element={<Experiences />} />
+            <Route path="/attractions" element={<Attractions />} />
+            <Route path="/attractions/:id" element={<AttractionDetail />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/booking" element={<Booking />} />
+            <Route path="/payment" element={<Payment />} />
+            <Route path="/booking-success" element={<BookingSuccess />} />
+            <Route path="/booking-failed" element={<BookingFailed />} />
+            <Route path="/feedback" element={<Feedback />} />
+            <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/day-at-raj-mandir" element={<DayAtRajMandir />} />
 
-          {/* ADMIN ROUTES */}
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route element={<ProtectedRoute />}>
-            <Route element={<AdminLayout />}>
-              <Route path="/admin/dashboard" element={<Dashboard />} />
-              <Route path="/admin/homepage" element={<HomepageCMS />} />
-              <Route path="/admin/rooms" element={<RoomsCMS />} />
-              <Route path="/admin/room-categories" element={<RoomCategoriesCMS />} />
-              <Route path="/admin/physical-rooms" element={<PhysicalRoomsCMS />} />
-              <Route path="/admin/bookings" element={<BookingsCMS />} />
-              <Route path="/admin/gallery" element={<GalleryCMS />} />
-              <Route path="/admin/dining" element={<DiningCMS />} />
-              <Route path="/admin/dining-dishes" element={<DiningDishesCMS />} />
-              <Route path="/admin/experiences" element={<ExperiencesCMS />} />
-              <Route path="/admin/attractions" element={<AttractionsCMS />} />
-              <Route path="/admin/stories" element={<StoriesCMS />} />
-              <Route path="/admin/reviews" element={<ReviewsCMS />} />
-              <Route path="/admin/faq" element={<FAQCMS />} />
-              <Route path="/admin/navigation" element={<NavigationCMS />} />
-              <Route path="/admin/settings" element={<SettingsCMS />} />
-              <Route path="/admin/sliders" element={<SliderSettingsCMS />} />
-              <Route path="/admin/payment-settings" element={<PaymentSettingsCMS />} />
-              <Route path="/admin/manual-payments" element={<ManualPaymentsCMS />} />
-              <Route path="/admin/amenities" element={<AmenitiesCMS />} />
-              <Route path="/admin/about" element={<AboutCMS />} />
+            {/* ADMIN ROUTES */}
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route element={<ProtectedRoute />}>
+              <Route element={<AdminLayout />}>
+                <Route path="/admin/dashboard" element={<Dashboard />} />
+                <Route path="/admin/page-heroes" element={<PageHeroesCMS />} />
+                <Route path="/admin/day-at-raj-mandir" element={<DayAtRajMandirCMS />} />
+                <Route path="/admin/events" element={<EventsCMS />} />
+                <Route path="/admin/rooms" element={<RoomsCMS />} />
+                <Route path="/admin/room-categories" element={<RoomCategoriesCMS />} />
+                <Route path="/admin/physical-rooms" element={<PhysicalRoomsCMS />} />
+                <Route path="/admin/bookings" element={<BookingsCMS />} />
+                <Route path="/admin/gallery" element={<GalleryCMS />} />
+                <Route path="/admin/dining" element={<DiningCMS />} />
+                <Route path="/admin/dining-dishes" element={<DiningDishesCMS />} />
+                <Route path="/admin/experiences" element={<ExperiencesCMS />} />
+                <Route path="/admin/attractions" element={<AttractionsCMS />} />
+                <Route path="/admin/stories" element={<StoriesCMS />} />
+                <Route path="/admin/reviews" element={<ReviewsCMS />} />
+                <Route path="/admin/faq" element={<FAQCMS />} />
+                <Route path="/admin/navigation" element={<NavigationCMS />} />
+                <Route path="/admin/settings" element={<SettingsCMS />} />
+                <Route path="/admin/sliders" element={<SliderSettingsCMS />} />
+                <Route path="/admin/payment-settings" element={<PaymentSettingsCMS />} />
+                <Route path="/admin/manual-payments" element={<ManualPaymentsCMS />} />
+                <Route path="/admin/amenities" element={<AmenitiesCMS />} />
+                <Route path="/admin/about" element={<AboutCMS />} />
+              </Route>
             </Route>
-          </Route>
 
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+            {/* CATCH-ALL ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
   </ErrorBoundary>
 );
 

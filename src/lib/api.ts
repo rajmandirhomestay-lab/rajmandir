@@ -357,14 +357,31 @@ export const usePageHeroes = () => useQuery({
 });
 
 export const fetchPageHero = async (page_slug: string) => {
-  const { data, error } = await supabase
-    .from("page_heroes")
-    .select("*")
-    .eq("page_slug", page_slug)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("page_heroes")
+      .select("*")
+      .eq("page_slug", page_slug)
+      .limit(1)
+      .maybeSingle();
 
-  if (error && error.code !== 'PGRST116') throw error; // PGRST116 is no rows returned
-  return data;
+    if (error && error.code !== 'PGRST116') console.warn("fetchPageHero error:", error);
+    if (!data) return null;
+
+    const cleanStr = (val?: string | null) => (val && val.trim().length > 0 ? val.trim() : undefined);
+
+    return {
+      ...data,
+      eyebrow: cleanStr(data.eyebrow),
+      title: cleanStr(data.title),
+      accent: cleanStr(data.accent),
+      subtitle: cleanStr(data.subtitle),
+      image_url: cleanStr(data.image_url),
+    };
+  } catch (err) {
+    console.warn("fetchPageHero catch error:", err);
+    return null;
+  }
 };
 
 export const usePageHero = (page_slug: string) => useQuery({
@@ -546,4 +563,68 @@ export const useAboutGallery = () => useQuery({
     if (error) throw error;
     return data;
   },
+});
+
+// 16. Day at Raj Mandir
+export const fetchDayAtRajMandir = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("day_at_raj_mandir")
+      .select(`
+        *,
+        day_at_raj_mandir_images (
+          id,
+          image_url,
+          alt_text,
+          sort_order
+        )
+      `)
+      .order("sort_order", { ascending: true });
+
+    if (error) {
+      console.warn("fetchDayAtRajMandir error:", error);
+      return [];
+    }
+    return data || [];
+  } catch (err) {
+    console.warn("fetchDayAtRajMandir catch error:", err);
+    return [];
+  }
+};
+
+export const useDayAtRajMandir = () => useQuery({
+  queryKey: ["day_at_raj_mandir"],
+  queryFn: fetchDayAtRajMandir,
+});
+
+// 17. Events at Raj Mandir
+export const fetchEvents = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("events")
+      .select(`
+        *,
+        event_images (
+          id,
+          image_url,
+          alt_text,
+          sort_order
+        )
+      `)
+      .order("sort_order", { ascending: true });
+
+    if (error) {
+      console.warn("fetchEvents error:", error);
+      return [];
+    }
+    return data || [];
+  } catch (err) {
+    console.warn("fetchEvents catch error:", err);
+    return [];
+  }
+};
+
+export const useEvents = () => useQuery({
+  queryKey: ["events"],
+  queryFn: fetchEvents,
 });

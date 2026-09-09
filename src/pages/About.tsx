@@ -47,16 +47,16 @@ const AboutPage = () => {
 
   return (
     <PageShell
-      title="About Us — Raj Mandir Guest House, Jodhpur"
+      title="About Us — Raj Mandir Hotel, Jodhpur"
       description="The story of Raj Mandir — where heritage meets hospitality."
     >
       <PageHero
         eyebrow={pageHero?.eyebrow || "OUR HERITAGE"}
         title={pageHero?.title || "Raj Mandir"}
-        accent={pageHero?.accent || "Guest House"}
+        accent={pageHero?.accent || "Hotel"}
         subtitle={pageHero?.subtitle || "Experience the authentic Jodhpur hospitality in our beautifully restored heritage home."}
         image={pageHero?.image_url || heroImgFallback}
-        alt="About Raj Mandir Guest House"
+        alt="About Raj Mandir Hotel"
       />
 
       {/* SECTION 1: ABOUT RAJ MANDIR */}

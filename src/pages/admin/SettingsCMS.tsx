@@ -118,7 +118,7 @@ export default function SettingsCMS() {
             <div className="grid gap-6">
               <SettingField
                 label="SITE TITLE"
-                value={settings.site_title || "Raj Mandir Guest House"}
+                value={settings.site_title || "Raj Mandir Hotel"}
                 onChange={(v) => handleUpdate("site_title", v)}
               />
               <SettingField

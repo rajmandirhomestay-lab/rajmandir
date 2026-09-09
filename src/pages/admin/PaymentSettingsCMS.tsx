@@ -120,7 +120,7 @@ export default function PaymentSettingsCMS() {
                 value={formData.account_name || ""}
                 onChange={(e) => setFormData({ ...formData, account_name: e.target.value })}
                 className="w-full bg-background border border-gold/20 p-3 text-foreground focus:border-gold outline-none"
-                placeholder="Raj Mandir Guest House"
+                placeholder="Raj Mandir Hotel"
               />
             </div>
 
@@ -193,7 +193,7 @@ export default function PaymentSettingsCMS() {
               
               <div className="space-y-2">
                 <div className="font-serif-sc text-[10px] tracking-widest text-gold">ACCOUNT NAME</div>
-                <div className="font-display text-xl text-foreground">{formData.account_name || "Raj Mandir Guest House"}</div>
+                <div className="font-display text-xl text-foreground">{formData.account_name || "Raj Mandir Hotel"}</div>
                 
                 <div className="font-serif-sc text-[10px] tracking-widest text-gold mt-6">UPI ID</div>
                 <div className="font-serif text-md text-foreground bg-muted px-4 py-2 inline-block rounded-sm border border-gold/20">{formData.upi_id || "rajmandir@upi"}</div>

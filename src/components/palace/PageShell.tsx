@@ -32,11 +32,8 @@ export const PageShell = ({ children, title, description }: PageShellProps) => {
     canon.setAttribute("href", window.location.origin + pathname);
   }, [title, description, pathname]);
 
-  // cinematic page-in fade
+  // Reset scroll on navigation
   useEffect(() => {
-    const el = document.getElementById("page-root");
-    if (!el) return;
-    gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.9, ease: "power2.out" });
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   }, [pathname]);
 

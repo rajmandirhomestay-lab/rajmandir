@@ -51,7 +51,7 @@ const Contact = () => {
     email: settings?.contact_email || "reservations@rajmandir.com",
     phone: settings?.contact_phone || "+91 98290 12345",
     whatsapp: settings?.contact_whatsapp || "+91 98290 12345",
-    address: settings?.contact_address || "Raj Mandir Guest House, Makrana Mohalla, Jodhpur, Rajasthan 342001",
+    address: settings?.contact_address || "Raj Mandir Hotel, Makrana Mohalla, Jodhpur, Rajasthan 342001",
     mapsUrl: settings?.contact_maps_url || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14309.846506305615!2d73.01357605!3d26.29740265!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39418c460a5d2eb1%3A0x6b442ff98ed7fc92!2sMehrangarh%20Fort!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin",
     instagram: settings?.social_instagram || "#",
     facebook: settings?.social_facebook || "#",

@@ -9,30 +9,43 @@ export const CurtainOpener = ({ onComplete }: { onComplete?: () => void }) => {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
+    let completed = false;
+    const finish = () => {
+      if (completed) return;
+      completed = true;
+      setDone(true);
+      onComplete?.();
+    };
+
     const tl = gsap.timeline({
-      onComplete: () => {
-        setDone(true);
-        onComplete?.();
-      },
+      onComplete: finish,
     });
 
     tl.fromTo(
       titleRef.current,
-      { opacity: 0, scale: 0.92, y: 20 },
-      { opacity: 1, scale: 1, y: 0, duration: 1.6, ease: "power3.out" }
+      { opacity: 0, scale: 0.95, y: 15 },
+      { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: "power3.out" }
     )
-      .to(titleRef.current, { opacity: 0, duration: 0.8, ease: "power2.in" }, "+=1.1")
+      .to(titleRef.current, { opacity: 0, duration: 0.4, ease: "power2.in" }, "+=0.3")
       .to(
         leftRef.current,
-        { xPercent: -102, duration: 2.2, ease: "power4.inOut" },
-        "-=0.4"
+        { xPercent: -102, duration: 1.2, ease: "power4.inOut" },
+        "-=0.15"
       )
       .to(
         rightRef.current,
-        { xPercent: 102, duration: 2.2, ease: "power4.inOut" },
+        { xPercent: 102, duration: 1.2, ease: "power4.inOut" },
         "<"
       )
-      .to(wrapRef.current, { autoAlpha: 0, duration: 0.4, pointerEvents: "none" }, "-=0.2");
+      .to(wrapRef.current, { autoAlpha: 0, duration: 0.2, pointerEvents: "none" }, "-=0.2");
+
+    // Safety fallback so curtain guaranteed completes within 2.5s max
+    const timer = setTimeout(finish, 2500);
+
+    return () => {
+      clearTimeout(timer);
+      tl.kill();
+    };
   }, [onComplete]);
 
   if (done) return null;

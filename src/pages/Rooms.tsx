@@ -110,7 +110,7 @@ const RoomsPage = () => {
 
   return (
     <PageShell
-      title="Plan Your Stay — Raj Mandir Guest House, Jodhpur"
+      title="Plan Your Stay — Raj Mandir Hotel, Jodhpur"
       description="Step inside the royal chambers of Raj Mandir — Maharaja Suite, Rajwada Chamber and Haveli Courtyard. Heritage rooms with jharokha views in old Jodhpur."
     >
       <PageHero
@@ -119,7 +119,7 @@ const RoomsPage = () => {
         accent={pageHero?.accent || "Quarters"}
         subtitle={pageHero?.subtitle || "Sanctuaries — each a different verse from the same royal poem."}
         image={pageHero?.image_url || heroImgFallbackCurrent}
-        alt="Frescoed royal bedchamber of Raj Mandir Guest House at golden hour"
+        alt="Frescoed royal bedchamber of Raj Mandir Hotel at golden hour"
       />
       {activeChambers.map((r, i) => (
         <RoomBlock key={r.name} room={r} index={i} />

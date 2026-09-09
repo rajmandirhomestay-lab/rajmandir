@@ -8,15 +8,16 @@ import { Footer } from "@/components/palace/Footer";
 import { Gallery } from "@/components/palace/Gallery";
 import { Facilities } from "@/components/palace/Facilities";
 import { FeedbackSection } from "@/components/palace/FeedbackSection";
+import { DayAtRajMandirSection } from "@/components/palace/DayAtRajMandirSection";
 
 const Index = () => {
   const [opened, setOpened] = useState(false);
 
   useEffect(() => {
-    document.title = "Raj Mandir Guest House — Heritage Palace Stay in Jodhpur";
+    document.title = "Raj Mandir Hotel — Heritage Palace Stay in Jodhpur";
     const meta = document.querySelector('meta[name="description"]');
     const content =
-      "Raj Mandir Guest House — a 19th-century heritage palace in Jodhpur. Royal chambers, jharokha views, and Rajasthani hospitality at the foot of Mehrangarh Fort.";
+      "Raj Mandir Hotel — a 19th-century heritage palace in Jodhpur. Royal chambers, jharokha views, and Rajasthani hospitality at the foot of Mehrangarh Fort.";
     if (meta) meta.setAttribute("content", content);
     else {
       const m = document.createElement("meta");
@@ -32,6 +33,7 @@ const Index = () => {
       <Navbar />
       <Hero start={opened} />
       <About />
+      <DayAtRajMandirSection />
       <Rooms />
       <Facilities />
       <Gallery />

@@ -3,15 +3,16 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 const defaultLinks = [
-    { to: "/rooms", label: "CHAMBERS" },
-    { to: "/dining", label: "DINING" },
-    { to: "/experiences", label: "EXPERIENCES" },
-    { to: "/stories", label: "STORIES" },
-    { to: "/about", label: "HERITAGE" },
-    { to: "/contact", label: "CONTACT" },
-    { to: "/booking", label: "RESERVE" },
-    { to: "/feedback", label: "GUESTBOOK" },
-  ];
+  { to: "/rooms", label: "CHAMBERS" },
+  { to: "/dining", label: "DINING" },
+  { to: "/experiences", label: "EXPERIENCES" },
+  { to: "/day-at-raj-mandir", label: "A DAY AT RAJ MANDIR" },
+  { to: "/stories", label: "STORIES" },
+  { to: "/about", label: "HERITAGE" },
+  { to: "/contact", label: "CONTACT" },
+  { to: "/booking", label: "RESERVE" },
+  { to: "/feedback", label: "GUESTBOOK" },
+];
 
 export const Footer = () => {
   const [footerLinks, setFooterLinks] = useState(defaultLinks);
@@ -25,7 +26,7 @@ export const Footer = () => {
           .from("settings")
           .select("*")
           .in("key", ["footer_links", "contact_address", "contact_phone"]);
-        
+
         if (data) {
           const linksData = data.find(d => d.key === "footer_links")?.value;
           if (linksData && Array.isArray(linksData) && linksData.length > 0) {
@@ -44,29 +45,29 @@ export const Footer = () => {
   }, []);
 
   return (
-    <footer className="relative bg-[#091a26] text-white pt-20 pb-10 px-6 overflow-hidden">
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#9ed1ee] to-transparent" />
+    <footer className="relative bg-royal-deep text-white pt-20 pb-10 px-6 overflow-hidden border-t border-gold/20">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
 
       <div className="relative max-w-6xl mx-auto text-center">
         <Link to="/" className="inline-flex flex-col items-center">
-          <div className="mx-auto h-14 w-14 rounded-full bg-gradient-to-r from-[#9ed1ee] to-[#aed9f1] flex items-center justify-center shadow-lg mb-6">
-            <span className="font-display text-[#091a26] text-2xl font-bold">R</span>
+          <div className="mx-auto h-14 w-14 rounded-full bg-gradient-gold flex items-center justify-center shadow-gold mb-6">
+            <span className="font-display text-royal-deep text-2xl font-bold">R</span>
           </div>
-          <div className="font-display text-3xl md:text-4xl text-white font-bold">Raj Mandir</div>
-          <div className="font-serif-sc text-[#9ed1ee] text-[11px] tracking-[0.5em] mt-2 font-bold">JODHPUR · EST. 1894</div>
+          <div className="font-display text-3xl md:text-4xl text-white font-bold">The Raj Mandir</div>
+          <div className="font-serif-sc text-gold text-[11px] tracking-[0.5em] mt-2 font-bold">JODHPUR · EST. 1894</div>
         </Link>
 
         <div className="divider-gold max-w-md mx-auto mt-8">
           <span className="text-gold text-sm">❖</span>
         </div>
 
-        <p className="mt-8 font-serif italic text-ivory/70 max-w-xl mx-auto leading-relaxed">
+        <p className="mt-8 font-serif italic text-muted-foreground max-w-xl mx-auto leading-relaxed">
           {address}
           <br />
           Reservations whispered through brass telephones at {phone}
         </p>
 
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-3 font-serif-sc text-[11px] tracking-[0.3em] text-ivory/70">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-3 font-serif-sc text-[11px] tracking-[0.3em] text-muted-foreground">
           {footerLinks.map((l, i) => (
             <span key={l.to} className="flex items-center gap-3">
               <Link to={l.to} className="hover:text-gold transition-colors duration-500">{l.label}</Link>
@@ -75,8 +76,8 @@ export const Footer = () => {
           ))}
         </div>
 
-        <div className="mt-16 pt-8 border-t border-gold/20 font-serif-sc text-[10px] tracking-[0.4em] text-ivory/50">
-          © {new Date().getFullYear()} RAJ MANDIR GUEST HOUSE · ALL RIGHTS RESERVED
+        <div className="mt-16 pt-8 border-t border-gold/20 font-serif-sc text-[10px] tracking-[0.4em] text-muted-foreground/60">
+          © {new Date().getFullYear()} RAJ MANDIR HOTEL · ALL RIGHTS RESERVED
         </div>
       </div>
     </footer>

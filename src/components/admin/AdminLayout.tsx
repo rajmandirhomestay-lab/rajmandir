@@ -6,14 +6,17 @@ import {
   UtensilsCrossed, Compass, BookOpen, Star, MessageSquare, 
   LayoutTemplate, Settings, LogOut, Navigation, MapPin, Sliders, Coffee, ListTodo,
   IndianRupee,
-  Wallet
+  Wallet,
+  Clock,
+  Calendar
 } from "lucide-react";
 
 const navItems = [
   { name: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
   { name: "All Bookings", path: "/admin/bookings", icon: CalendarCheck },
-  { name: "Homepage CMS", path: "/admin/homepage", icon: LayoutTemplate },
   { name: "Page Heroes", path: "/admin/page-heroes", icon: LayoutTemplate },
+  { name: "Day at Raj Mandir", path: "/admin/day-at-raj-mandir", icon: Clock },
+  { name: "Events", path: "/admin/events", icon: Calendar },
   { name: "Rooms Management", path: "/admin/physical-rooms", icon: BedDouble },
   { name: "Room Categories", path: "/admin/room-categories", icon: LayoutTemplate },
   { name: "Gallery CMS", path: "/admin/gallery", icon: ImageIcon },

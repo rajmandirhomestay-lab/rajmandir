@@ -126,7 +126,7 @@ const GalleryPage = () => {
   return (
     <PageShell
       title="A Glimpse of Raj Mandir"
-      description="Immerse yourself in the visual heritage, luxurious rooms, and unforgettable dining experiences of Raj Mandir Guest House."
+      description="Immerse yourself in the visual heritage, luxurious rooms, and unforgettable dining experiences of Raj Mandir Hotel."
     >
       <PageHero
         eyebrow={pageHero?.eyebrow || "A VISUAL JOURNEY"}

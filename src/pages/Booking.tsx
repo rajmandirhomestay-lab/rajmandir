@@ -144,8 +144,10 @@ const Booking = () => {
 
   const room = activeRooms.find((r) => r.id === roomId) || null;
   const nights = range.from && range.to ? Math.max(1, Math.ceil((+range.to - +range.from) / 86400000)) : 0;
-  const baseSubtotal = room ? room.price * Math.max(nights, 1) * numRooms : 0;
-  const mattressPrice = room ? (dbCategories?.find(c => c.id === room.id)?.extra_mattress_price || 0) : 0;
+  const selectedCategory = room ? dbCategories?.find(c => c.id === room.id) : null;
+  const mattressPrice = selectedCategory && selectedCategory.extra_mattress_price !== undefined && selectedCategory.extra_mattress_price !== null
+    ? Number(selectedCategory.extra_mattress_price)
+    : 2500;
   const mattressTotal = extraMattress * Number(mattressPrice) * Math.max(nights, 1);
   const subtotal = baseSubtotal + mattressTotal;
   const gstRate = globalSettings?.gst_percentage ? Number(globalSettings.gst_percentage) / 100 : 0.12;
@@ -230,7 +232,7 @@ const Booking = () => {
           key: import.meta.env.VITE_RAZORPAY_KEY_ID || "", 
           amount: orderData.amount,
           currency: orderData.currency,
-          name: "Raj Mandir Guest House",
+          name: "Raj Mandir Hotel",
           description: `Advance for ${bookingData.booking_number}`,
           order_id: orderData.id,
           handler: async function (response: any) {
@@ -290,8 +292,8 @@ const Booking = () => {
 
   return (
     <PageShell
-      title="Reserve a Royal Chamber — Raj Mandir Guest House"
-      description="A four-step royal reservation flow at Raj Mandir Guest House, Jodhpur."
+      title="Reserve a Royal Chamber — Raj Mandir Hotel"
+      description="A four-step royal reservation flow at Raj Mandir Hotel, Jodhpur."
     >
       <PageHero
         eyebrow={pageHero?.eyebrow || "ROYAL RESERVATION"}
@@ -414,7 +416,7 @@ const Booking = () => {
 
                   <div className="step-anim grid md:grid-cols-2 gap-6 mb-8">
                     <Counter label="ROOMS" sub="of selected chamber" value={numRooms} setValue={setNumRooms} min={1} max={room?.available || 3} />
-                    <Counter label="EXTRA MATTRESS" sub={`+ ₹${EXTRA_MATTRESS_PRICE.toLocaleString("en-IN")} / night`} value={extraMattress} setValue={setExtraMattress} min={0} max={2} icon={<Bed size={14} />} />
+                    <Counter label="EXTRA MATTRESS" sub={`+ ₹${mattressPrice.toLocaleString("en-IN")} / night`} value={extraMattress} setValue={setExtraMattress} min={0} max={2} icon={<Bed size={14} />} />
                   </div>
 
                   {/* Room type swap */}

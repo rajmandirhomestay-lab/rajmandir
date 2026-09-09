@@ -69,6 +69,9 @@ const RoomDetail = () => {
     tagline: `Max Occupancy: ${dbRoom.occupancy} Guests`,
     story: dbRoom.description || "",
     price: Number(dbRoom.price),
+    extraBedPrice: dbRoom.extra_mattress_price !== undefined && dbRoom.extra_mattress_price !== null 
+      ? Number(dbRoom.extra_mattress_price) 
+      : 2500,
     size: "48 sq.m",
     bed: "King Bed",
     view: "City View",
@@ -101,7 +104,7 @@ const RoomDetail = () => {
 
   return (
     <PageShell
-      title={`${room.name} — Raj Mandir Guest House, Jodhpur`}
+      title={`${room.name} — Raj Mandir Hotel, Jodhpur`}
       description={`${room.tagline} ${room.story.slice(0, 110)}`}
     >
       {/* HERO */}
@@ -215,7 +218,7 @@ const RoomDetail = () => {
         <div className="relative max-w-5xl mx-auto grid md:grid-cols-3 gap-10 items-center">
           <CapacityCard label="ADULTS" count={room.adults} sub="comfortable" />
           <CapacityCard label="CHILDREN" count={room.children} sub="under 12" />
-          <CapacityCard label="EXTRA BED" count={1} sub="on request · ₹2,500" />
+          <CapacityCard label="EXTRA BED" count={1} sub={`on request · ₹${room.extraBedPrice.toLocaleString("en-IN")}`} />
         </div>
       </section>
 

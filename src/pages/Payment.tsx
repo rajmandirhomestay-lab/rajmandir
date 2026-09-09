@@ -137,7 +137,7 @@ export default function Payment() {
   }
 
   return (
-    <PageShell title="Verify Payment — Raj Mandir Guest House">
+    <PageShell title="Verify Payment — Raj Mandir Hotel">
       <div className="pt-32 pb-24 px-6 max-w-6xl mx-auto grid lg:grid-cols-2 gap-12">
         
         {/* LEFT: PAYMENT INSTRUCTIONS & QR */}

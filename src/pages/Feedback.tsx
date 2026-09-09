@@ -34,7 +34,7 @@ const fallbackFeatured = [
 
 const fallbackTestimonials = [
   { name: "Sophie Laurent", loc: "Paris, France", text: "The most immersive heritage stay in Jodhpur. Every corner is a photograph waiting to happen.", rating: 5 },
-  { name: "Rahul Verma", loc: "Delhi, India", text: "Not just a guest house, it's a living museum. The family treats you like royalty.", rating: 5 },
+  { name: "Rahul Verma", loc: "Delhi, India", text: "Not just a hotel, it's a living museum. The family treats you like royalty.", rating: 5 },
   { name: "Michael Chen", loc: "Singapore", text: "Incredible attention to detail. The rooms are restored with such love and respect for history.", rating: 4 },
   { name: "Emma Thompson", loc: "Sydney, Australia", text: "The morning light hitting the jharokhas is something I will never forget. Magical.", rating: 5 },
   { name: "David & Sarah", loc: "New York, USA", text: "We extended our stay twice. Raj Mandir feels like a luxurious secret you want to keep to yourself.", rating: 5 },

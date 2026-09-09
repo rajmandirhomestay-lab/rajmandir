@@ -2,16 +2,19 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import heroImg from "@/assets/palace-hero.jpg";
 import { DustParticles } from "./DustParticles";
-import { useHomepageSections } from "@/lib/api";
+import { useHomepageSections, usePageHero } from "@/lib/api";
 
 export const Hero = ({ start }: { start: boolean }) => {
   const titleRef = useRef<HTMLHeadingElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const subRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const archRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLDivElement>(null);
+  const [fontSize, setFontSize] = useState<number>(64);
 
   const [cmsData, setCmsData] = useState({
+    eyebrow: "HERITAGE HOTEL · JODHPUR",
     title: "Where Heritage Meets Hospitality",
     subtitle: "Experience warm hospitality and heritage architecture in the heart of Jodhpur's vibrant culture.",
     image_url: null as string | null,
@@ -45,13 +48,27 @@ export const Hero = ({ start }: { start: boolean }) => {
     .catch(() => {});
   }, []);
 
+  const { data: pageHero } = usePageHero("home");
   const { data: sections } = useHomepageSections();
 
   useEffect(() => {
-    if (sections) {
+    if (pageHero) {
+      const combinedTitle = pageHero.title 
+        ? (pageHero.accent ? `${pageHero.title} ${pageHero.accent}` : pageHero.title)
+        : "Where Heritage Meets Hospitality";
+
+      setCmsData({
+        eyebrow: pageHero.eyebrow || "HERITAGE HOTEL · JODHPUR",
+        title: combinedTitle,
+        subtitle: pageHero.subtitle || "Experience warm hospitality and heritage architecture in the heart of Jodhpur's vibrant culture.",
+        image_url: pageHero.image_url || null,
+        isVisible: true
+      });
+    } else if (sections) {
       const heroSection = sections.find(s => s.section_key === "hero");
       if (heroSection) {
         setCmsData({
+          eyebrow: "HERITAGE HOTEL · JODHPUR",
           title: heroSection.content?.title || "Where Heritage Meets Hospitality",
           subtitle: heroSection.content?.subtitle || "Experience warm hospitality and heritage architecture in the heart of Jodhpur's vibrant culture.",
           image_url: heroSection.content?.image_url || null,
@@ -59,10 +76,65 @@ export const Hero = ({ start }: { start: boolean }) => {
         });
       }
     }
-  }, [sections]);
+  }, [pageHero, sections]);
+
+  const title = cmsData.title;
+
+  // Dynamic font-size calculation based on title character length & available container width
+  useEffect(() => {
+    const calculateFontSize = () => {
+      if (!containerRef.current || !title) return;
+
+      const containerWidth = containerRef.current.clientWidth;
+      if (!containerWidth) return;
+
+      const textLength = title.length;
+      if (textLength === 0) return;
+
+      // Available width for heading with safe padding
+      const availableWidth = Math.max(containerWidth - 64, 260);
+
+      // Display serif font in uppercase has character width ratio ~0.72
+      let estimatedSize = availableWidth / (textLength * 0.72);
+
+      // Clamp limits based on container width & screen size
+      const maxAllowed = Math.min(containerWidth * 0.065, 68);
+      const minAllowed = 12;
+
+      let targetSize = Math.min(Math.max(estimatedSize, minAllowed), maxAllowed);
+      setFontSize(targetSize);
+
+      // Precise 2nd pass adjustment to guarantee single line fit without side-clipping
+      requestAnimationFrame(() => {
+        if (!titleRef.current || !containerRef.current) return;
+        const scrollW = titleRef.current.scrollWidth;
+        const clientW = containerRef.current.clientWidth - 64;
+        if (scrollW > clientW && scrollW > 0) {
+          const exactSize = Math.max(targetSize * (clientW / scrollW) * 0.94, minAllowed);
+          setFontSize(exactSize);
+        }
+      });
+    };
+
+    calculateFontSize();
+
+    let observer: ResizeObserver | null = null;
+    if (containerRef.current) {
+      observer = new ResizeObserver(() => {
+        calculateFontSize();
+      });
+      observer.observe(containerRef.current);
+    }
+
+    window.addEventListener("resize", calculateFontSize);
+    return () => {
+      window.removeEventListener("resize", calculateFontSize);
+      if (observer) observer.disconnect();
+    };
+  }, [title]);
 
   useEffect(() => {
-    if (!start || !cmsData.isVisible) return;
+    if (!cmsData.isVisible) return;
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
     tl.fromTo(imgRef.current, { scale: 1.1, opacity: 0.8 }, { scale: 1, opacity: 1, duration: 1.8 })
       .fromTo(archRef.current, { scaleY: 0, transformOrigin: "top" }, { scaleY: 1, duration: 1.2 }, "-=1.2")
@@ -76,14 +148,12 @@ export const Hero = ({ start }: { start: boolean }) => {
       .fromTo(ctaRef.current, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.7 }, "-=0.3");
   }, [start, cmsData.isVisible]);
 
-  const title = cmsData.title;
-
   if (!cmsData.isVisible) return null;
 
   const currentHeroImage = cmsData.image_url || heroImg;
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center pt-28 pb-20 bg-[#091a28]">
+    <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center pt-28 pb-20 bg-royal-deep">
       {/* Hero background image container - single original hero image, NEVER disappears */}
       <div 
         ref={imgRef} 
@@ -99,7 +169,7 @@ export const Hero = ({ start }: { start: boolean }) => {
       </div>
 
       {/* Central hero content */}
-      <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+      <div ref={containerRef} className="relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-6 text-center">
         <div
           ref={archRef}
           className="mx-auto mb-8 w-28 h-16 jharokha bg-gradient-gold opacity-95 shadow-lg relative"
@@ -109,21 +179,29 @@ export const Hero = ({ start }: { start: boolean }) => {
         </div>
 
         <div className="font-serif-sc text-gold tracking-[0.5em] text-xs sm:text-sm mb-6 font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
-          ★ HERITAGE GUEST HOUSE · JODHPUR ★
+          ★ {cmsData.eyebrow ? cmsData.eyebrow.toUpperCase() : "HERITAGE HOTEL · JODHPUR"} ★
         </div>
 
-        <h1
-          ref={titleRef}
-          className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.95] text-white font-bold drop-shadow-[0_8px_30px_rgba(0,0,0,0.8)]"
-        >
-          <span className="inline-block overflow-hidden align-bottom pb-2">
-            {title.split("").map((c, i) => (
-              <span key={i} className="reveal-char inline-block">
-                {c === " " ? "\u00A0" : c}
+        <div className="w-full flex justify-center items-center py-2">
+          <h1
+            ref={titleRef}
+            style={{ fontSize: `${fontSize}px` }}
+            className="font-display leading-[1.08] text-white font-bold drop-shadow-[0_8px_30px_rgba(0,0,0,0.8)] whitespace-nowrap text-center select-none max-w-full px-2"
+          >
+            {title.split(" ").map((word, wordIndex, wordsArr) => (
+              <span key={wordIndex} className="inline-block whitespace-nowrap">
+                {word.split("").map((c, charIndex) => (
+                  <span key={charIndex} className="reveal-char inline-block">
+                    {c}
+                  </span>
+                ))}
+                {wordIndex < wordsArr.length - 1 && (
+                  <span className="reveal-char inline-block">&nbsp;</span>
+                )}
               </span>
             ))}
-          </span>
-        </h1>
+          </h1>
+        </div>
 
         <div className="divider-gold mt-6 max-w-md mx-auto opacity-90">
           <span className="font-display text-gold text-xl drop-shadow-md">❖</span>

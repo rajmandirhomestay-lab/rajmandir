@@ -18,7 +18,7 @@ const fallbackWonders: Record<string, any> = {
     full_description: `The Rani Mahal sits at the heart of Navchokiya — the oldest quarter of Jodhpur's walled city, directly on the slopes below Mehrangarh Fort. The lanes here are some of the most photogenic in Rajasthan: narrow, winding, and lined with houses painted in distinctive indigo blue.
 
 The blue was traditionally associated with the Brahmin community but spread across caste lines over generations. Today it is as much a cooling measure as a cultural marker — the indigo pigment reduces interior heat by several degrees in the summer months. Walking these lanes at dawn, before the city wakes, is an experience that no heritage site visit can replicate.`,
-    architecture_text: `The architecture of Navchokiya tells a social history of the old city. The carved jharokha window screens allowed women to observe the street without being seen — their intricacy signals the wealth and status of the family inside. Many of these windows date to the 17th and 18th century and have survived intact. Ask at the guest house front desk for a walking map. A family member can occasionally accompany guests on a 45-minute orientation walk through the lanes.`,
+    architecture_text: `The architecture of Navchokiya tells a social history of the old city. The carved jharokha window screens allowed women to observe the street without being seen — their intricacy signals the wealth and status of the family inside. Many of these windows date to the 17th and 18th century and have survived intact. Ask at the hotel front desk for a walking map. A family member can occasionally accompany guests on a 45-minute orientation walk through the lanes.`,
     tips: [
       "Dawn and dusk are the best light for the blue lanes — the colour is most intense in low sun",
       "The area is best explored on foot — vehicles can't navigate most lanes",
@@ -209,7 +209,7 @@ export default function AttractionDetail() {
                   Raj Mandir Homestay
                 </h4>
                 <p className="font-serif text-sm text-ivory/80 leading-relaxed italic">
-                  A 19th-century heritage guest house in Navchokiya — the old city's oldest quarter, 4 minutes from Mehrangarh Fort.
+                  A 19th-century heritage hotel in Navchokiya — the old city's oldest quarter, 4 minutes from Mehrangarh Fort.
                 </p>
                 <div className="space-y-3 pt-2">
                   <Link

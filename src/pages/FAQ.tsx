@@ -36,7 +36,7 @@ const initialFaqs = [
   {
     category: "Travel & Location",
     items: [
-      { q: "How far is the guest house from the airport and railway station?", a: "Raj Mandir is approximately 8 km (20 minutes) from Jodhpur Airport and 3 km (10 minutes) from the Jodhpur Junction Railway Station." },
+      { q: "How far is the hotel from the airport and railway station?", a: "Raj Mandir is approximately 8 km (20 minutes) from Jodhpur Airport and 3 km (10 minutes) from the Jodhpur Junction Railway Station." },
       { q: "Do you provide airport transfers?", a: "Yes, we offer chauffeur-driven airport and railway station transfers. This service can be added during your booking process." },
       { q: "Can you arrange local tours and desert safaris?", a: "Our concierge desk specializes in curating bespoke experiences, including Bishnoi village safaris, guided fort walks, and curated shopping tours in the Blue City." },
     ]
@@ -101,7 +101,7 @@ export const FAQ = () => {
   return (
     <PageShell
       title="FAQ & Inquiries — Raj Mandir"
-      description="Find answers to common questions regarding bookings, stay, dining, and travel at Raj Mandir Guest House."
+      description="Find answers to common questions regarding bookings, stay, dining, and travel at Raj Mandir Hotel."
     >
       <PageHero
         eyebrow={pageHero?.eyebrow || "GUEST CONCIERGE"}

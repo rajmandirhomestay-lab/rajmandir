@@ -45,7 +45,6 @@ export const Gallery = () => {
         });
       }
       
-      // Update spans to maintain masonry layout
       return combined.slice(0, 6).map((item, i) => ({
         ...item,
         span: photos[i].span
@@ -95,15 +94,15 @@ export const Gallery = () => {
   }, [active]);
 
   return (
-    <section ref={ref} id="gallery" className="relative py-32 px-6 overflow-hidden bg-[#6ba3d6] border-b border-[#528dbf]">
+    <section ref={ref} id="gallery" className="relative py-32 px-6 overflow-hidden bg-background marble-texture border-b border-gold/20">
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <div className="eyebrow mb-4 font-serif-sc text-[#0a3560] tracking-[0.5em] text-xs font-bold uppercase">★ CAPTURED MEMORIES ★</div>
-          <h2 className="font-display text-5xl md:text-6xl text-[#071829] font-bold">
-            A Glimpse of <span className="text-[#0a3560] italic">Raj Mandir</span>
+          <div className="eyebrow mb-4 font-serif-sc text-gold tracking-[0.5em] text-xs font-bold uppercase">★ CAPTURED MEMORIES ★</div>
+          <h2 className="font-display text-5xl md:text-6xl text-foreground font-bold">
+            A Glimpse of <span className="text-gold-gradient italic">Raj Mandir</span>
           </h2>
-          <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-[#0a3560] text-xl">❖</span></div>
-          <p className="font-serif italic mt-6 text-lg md:text-xl text-[#0a2745] max-w-2xl mx-auto font-medium">
+          <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold text-xl">❖</span></div>
+          <p className="font-serif italic mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
             Frames suspended in stone — moments from a palace that has watched a century pass.
           </p>
         </div>
