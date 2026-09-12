@@ -87,9 +87,6 @@ const Feedback = () => {
 
     // Auto-sliding testimonials
     if (reviewsRef.current) {
-      const clone = reviewsRef.current.innerHTML;
-      reviewsRef.current.innerHTML += clone; // Duplicate for infinite scroll
-      
       gsap.to(reviewsRef.current, {
         xPercent: -50,
         ease: "none",
@@ -156,11 +153,11 @@ const Feedback = () => {
         <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-10" />
         
         <div className="flex w-[200%] md:w-[150%] lg:w-[120%]" ref={reviewsRef}>
-          {testimonials.map((t, i) => (
-            <div key={i} className="w-[350px] shrink-0 p-6 mx-4 bg-card/60 backdrop-blur-sm border border-gold/20 shadow-md">
+          {[...testimonials, ...testimonials].map((t, i) => (
+            <div key={`${t.name}-${i}`} className="w-[350px] shrink-0 p-6 mx-4 bg-card/60 backdrop-blur-sm border border-gold/20 shadow-md">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex gap-1">
-                  {[...Array(t.rating)].map((_, i) => <span key={i} className="text-gold text-lg">★</span>)}
+                  {[...Array(t.rating)].map((_, starIdx) => <span key={starIdx} className="text-gold text-lg">★</span>)}
                 </div>
                 <div className="flex items-center gap-1 text-[10px] font-serif-sc text-gold/70 border border-gold/30 px-2 py-0.5 rounded-sm">
                   <CheckCircle2 size={10} /> VERIFIED

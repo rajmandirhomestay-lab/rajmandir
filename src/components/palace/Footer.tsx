@@ -1,23 +1,59 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { Globe } from "lucide-react";
 
 const defaultLinks = [
   { to: "/rooms", label: "CHAMBERS" },
   { to: "/dining", label: "DINING" },
-  { to: "/experiences", label: "EXPERIENCES" },
-  { to: "/day-at-raj-mandir", label: "A DAY AT RAJ MANDIR" },
-  { to: "/stories", label: "STORIES" },
+  { to: "/experiences", label: "CHRONICLES" },
+  { to: "/day-at-raj-mandir", label: "RITUALS" },
+  { to: "/stories", label: "JOURNEYS" },
   { to: "/about", label: "HERITAGE" },
   { to: "/contact", label: "CONTACT" },
   { to: "/booking", label: "RESERVE" },
   { to: "/feedback", label: "GUESTBOOK" },
 ];
 
+const languages = [
+  { code: "EN", name: "English", gtCode: "en" },
+  { code: "HI", name: "Hindi", gtCode: "hi" },
+  { code: "FR", name: "Français", gtCode: "fr" },
+  { code: "ES", name: "Español", gtCode: "es" },
+  { code: "DE", name: "Deutsch", gtCode: "de" },
+  { code: "JA", name: "日本語", gtCode: "ja" }
+];
+
 export const Footer = () => {
   const [footerLinks, setFooterLinks] = useState(defaultLinks);
   const [address, setAddress] = useState("Old City, near Mehrangarh Fort · Jodhpur, Rajasthan · 342001");
   const [phone, setPhone] = useState("+91 291 000 0000");
+  const [currentLang, setCurrentLang] = useState("EN");
+
+  useEffect(() => {
+    const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
+    if (match && match[1]) {
+      const gtCode = match[1];
+      const lang = languages.find(l => l.gtCode === gtCode);
+      if (lang) setCurrentLang(lang.code);
+    } else {
+      setCurrentLang("EN");
+    }
+  }, []);
+
+  const handleLanguageChange = (langCode: string, gtCode: string) => {
+    setCurrentLang(langCode);
+
+    if (gtCode === 'en') {
+      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname}`;
+    } else {
+      document.cookie = `googtrans=/en/${gtCode}; path=/;`;
+      document.cookie = `googtrans=/en/${gtCode}; path=/; domain=${window.location.hostname}`;
+    }
+
+    window.location.reload();
+  };
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -76,7 +112,27 @@ export const Footer = () => {
           ))}
         </div>
 
-        <div className="mt-16 pt-8 border-t border-gold/20 font-serif-sc text-[10px] tracking-[0.4em] text-muted-foreground/60">
+        {/* Footer Language Selector */}
+        <div className="mt-12 pt-6 border-t border-gold/15 flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto">
+          <div className="flex items-center gap-1.5 font-serif-sc text-[10px] tracking-[0.3em] text-gold font-bold mr-2">
+            <Globe size={13} className="text-gold" /> LANGUAGE:
+          </div>
+          {languages.map(lang => (
+            <button
+              key={lang.code}
+              onClick={() => handleLanguageChange(lang.code, lang.gtCode)}
+              className={`font-serif-sc text-[10px] tracking-[0.2em] px-3 py-1 border transition-all duration-300 rounded-sm ${
+                currentLang === lang.code
+                  ? "border-gold text-gold font-bold bg-gold/15 shadow-sm"
+                  : "border-gold/25 text-white/80 hover:text-gold hover:border-gold/60 hover:bg-gold/5"
+              }`}
+            >
+              {lang.name}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-12 pt-6 border-t border-gold/20 font-serif-sc text-[10px] tracking-[0.4em] text-muted-foreground/60">
           © {new Date().getFullYear()} RAJ MANDIR HOTEL · ALL RIGHTS RESERVED
         </div>
       </div>
