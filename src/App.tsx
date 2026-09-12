@@ -26,6 +26,7 @@ import AdminLogin from "./pages/admin/Login";
 import { ProtectedRoute } from "./components/admin/ProtectedRoute";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
+import HomepageCMS from "./pages/admin/HomepageCMS";
 import PageHeroesCMS from "./pages/admin/PageHeroesCMS";
 import DayAtRajMandirCMS from "./pages/admin/DayAtRajMandirCMS";
 import EventsCMS from "./pages/admin/EventsCMS";
@@ -103,6 +104,7 @@ const App = () => (
             <Route element={<ProtectedRoute />}>
               <Route element={<AdminLayout />}>
                 <Route path="/admin/dashboard" element={<Dashboard />} />
+                <Route path="/admin/homepage" element={<HomepageCMS />} />
                 <Route path="/admin/page-heroes" element={<PageHeroesCMS />} />
                 <Route path="/admin/day-at-raj-mandir" element={<DayAtRajMandirCMS />} />
                 <Route path="/admin/events" element={<EventsCMS />} />

@@ -2,7 +2,7 @@ import { ReactNode, useEffect } from "react";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { useLocation } from "react-router-dom";
-import gsap from "gsap";
+import { useTheme } from "@/lib/theme";
 
 interface PageShellProps {
   children: ReactNode;
@@ -12,6 +12,7 @@ interface PageShellProps {
 
 export const PageShell = ({ children, title, description }: PageShellProps) => {
   const { pathname } = useLocation();
+  useTheme();
 
   useEffect(() => {
     document.title = title;

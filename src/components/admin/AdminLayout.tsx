@@ -13,6 +13,7 @@ import {
 
 const navItems = [
   { name: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
+  { name: "Homepage CMS", path: "/admin/homepage", icon: LayoutTemplate },
   { name: "All Bookings", path: "/admin/bookings", icon: CalendarCheck },
   { name: "Page Heroes", path: "/admin/page-heroes", icon: LayoutTemplate },
   { name: "Day at Raj Mandir", path: "/admin/day-at-raj-mandir", icon: Clock },

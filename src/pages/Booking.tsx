@@ -148,6 +148,7 @@ const Booking = () => {
   const mattressPrice = selectedCategory && selectedCategory.extra_mattress_price !== undefined && selectedCategory.extra_mattress_price !== null
     ? Number(selectedCategory.extra_mattress_price)
     : 2500;
+  const baseSubtotal = (room ? room.price : 0) * numRooms * Math.max(nights, 1);
   const mattressTotal = extraMattress * Number(mattressPrice) * Math.max(nights, 1);
   const subtotal = baseSubtotal + mattressTotal;
   const gstRate = globalSettings?.gst_percentage ? Number(globalSettings.gst_percentage) / 100 : 0.12;

@@ -4,14 +4,35 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "react-router-dom";
 import { Clock, ArrowRight, Sun, Coffee, Sparkles } from "lucide-react";
 import { DustParticles } from "./DustParticles";
-import previewImg from "@/assets/gallery-4.jpg";
+import previewImgFallback from "@/assets/gallery-4.jpg";
+import { useHomepageSections } from "@/lib/api";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export const DayAtRajMandirSection = () => {
   const ref = useRef<HTMLElement>(null);
+  const { data: sections } = useHomepageSections();
+
+  const daySection = sections?.find(s => s.section_key === 'day_at_raj_mandir' || s.section_key === 'day-at-raj-mandir');
+  const title = daySection?.content?.title || "A Day at Raj Mandir";
+  const subtitle = daySection?.content?.subtitle || "From your first morning chai to dinner beneath the Jodhpur sky, discover how a day at Raj Mandir can become part of your journey.";
+  const description = daySection?.content?.description || "Experience the rhythmic flow of a royal day — sunrise chai, rooftop breakfasts, heritage walking tours, lazy afternoon siestas, and sunset dinner overlooking Mehrangarh Fort.";
+  const sectionImage = daySection?.content?.image_url || daySection?.content?.image || previewImgFallback;
+  const isVisible = daySection?.is_visible !== false;
+
+  const textColor = daySection?.content?.text_color;
+  const bgMode = daySection?.content?.bg_mode;
+
+  const bgClass = bgMode === 'cream' 
+    ? 'bg-[#faf6f0] text-[#091a28]' 
+    : bgMode === 'white' 
+    ? 'bg-white text-[#091a28]' 
+    : bgMode === 'royal' 
+    ? 'bg-royal-deep text-white' 
+    : 'bg-card text-card-foreground';
 
   useEffect(() => {
+    if (!isVisible) return;
     const ctx = gsap.context(() => {
       gsap.from(".day-preview-text > *", {
         scrollTrigger: { trigger: ref.current, start: "top 75%" },
@@ -30,10 +51,12 @@ export const DayAtRajMandirSection = () => {
       });
     }, ref);
     return () => ctx.revert();
-  }, []);
+  }, [isVisible]);
+
+  if (!isVisible) return null;
 
   return (
-    <section ref={ref} className="relative py-28 px-6 bg-royal-deep text-white overflow-hidden border-b border-gold/20">
+    <section ref={ref} className={`relative py-28 px-6 overflow-hidden border-b border-gold/20 ${bgClass}`}>
       <div className="absolute inset-0 marble-texture opacity-30 pointer-events-none" />
       <DustParticles count={15} />
 
@@ -46,20 +69,22 @@ export const DayAtRajMandirSection = () => {
             ★ PALACE JOURNEY ★
           </div>
 
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-white font-bold leading-tight">
-            A Day at <span className="text-gold-gradient italic">Raj Mandir</span>
+          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold leading-tight" style={textColor ? { color: textColor } : undefined}>
+            {title.includes("Raj Mandir") ? (
+              <>A Day at <span className="text-gold italic">Raj Mandir</span></>
+            ) : title}
           </h2>
 
           <div className="divider-gold max-w-xs">
             <span className="text-gold text-lg">❖</span>
           </div>
 
-          <p className="font-serif text-xl md:text-2xl italic text-ivory/95 leading-relaxed font-medium">
-            From your first morning chai to dinner beneath the Jodhpur sky, discover how a day at Raj Mandir can become part of your journey.
+          <p className="font-serif text-xl md:text-2xl italic opacity-95 leading-relaxed font-medium">
+            {subtitle}
           </p>
 
-          <p className="font-serif text-base text-ivory/70 leading-relaxed max-w-2xl">
-            Experience the rhythmic flow of a royal day — sunrise chai, rooftop breakfasts, heritage walking tours, lazy afternoon siestas, and sunset dinner overlooking Mehrangarh Fort.
+          <p className="font-serif text-base opacity-75 leading-relaxed max-w-2xl">
+            {description}
           </p>
 
           {/* Quick Highlights Row */}
@@ -91,8 +116,8 @@ export const DayAtRajMandirSection = () => {
         {/* IMAGE COLUMN */}
         <div className="day-preview-img lg:col-span-5 relative aspect-[4/5] jharokha-frame shadow-gold overflow-hidden">
           <img
-            src={previewImg}
-            alt="A Day at Raj Mandir preview visual"
+            src={sectionImage}
+            alt="A Day at Raj Mandir visual"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/70 via-transparent to-transparent pointer-events-none" />

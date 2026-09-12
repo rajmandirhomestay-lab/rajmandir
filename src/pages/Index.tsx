@@ -9,9 +9,11 @@ import { Gallery } from "@/components/palace/Gallery";
 import { Facilities } from "@/components/palace/Facilities";
 import { FeedbackSection } from "@/components/palace/FeedbackSection";
 import { DayAtRajMandirSection } from "@/components/palace/DayAtRajMandirSection";
+import { useTheme } from "@/lib/theme";
 
 const Index = () => {
   const [opened, setOpened] = useState(false);
+  useTheme();
 
   useEffect(() => {
     document.title = "Raj Mandir Hotel — Heritage Palace Stay in Jodhpur";

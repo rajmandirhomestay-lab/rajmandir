@@ -56,8 +56,8 @@ const Feedback = () => {
   const featuredStories = dbReviews && dbReviews.filter(r => r.is_featured).length > 0
     ? dbReviews.filter(r => r.is_featured).map((r, i) => ({
         id: r.id,
-        image: r.guest_image_url || fallbackFeatured[i % 2].image,
-        quote: r.review_text,
+        image: r.guest_image_url || fallbackFeatured[i % fallbackFeatured.length].image,
+        quote: r.comment || r.review_text || fallbackFeatured[i % fallbackFeatured.length].quote,
         name: r.guest_name,
         location: r.guest_location || "Global Guest",
         stay: r.room_stayed || "Palace Chamber"
@@ -65,11 +65,11 @@ const Feedback = () => {
     : fallbackFeatured;
 
   const testimonials = dbReviews && dbReviews.length > 0
-    ? dbReviews.map(r => ({
+    ? dbReviews.map((r, i) => ({
         name: r.guest_name,
         loc: r.guest_location || "Global Guest",
-        text: r.review_text,
-        rating: r.rating || 5
+        text: r.comment || r.review_text || fallbackTestimonials[i % fallbackTestimonials.length].text,
+        rating: Number(r.rating) || 5
       }))
     : fallbackTestimonials;
 

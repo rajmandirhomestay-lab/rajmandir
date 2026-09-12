@@ -1,15 +1,36 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import about from "@/assets/about-palace.jpg";
+import aboutFallback from "@/assets/about-palace.jpg";
 import { Link } from "react-router-dom";
+import { useHomepageSections } from "@/lib/api";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export const About = () => {
   const ref = useRef<HTMLElement>(null);
+  const { data: sections } = useHomepageSections();
+
+  const storySection = sections?.find(s => s.section_key === 'story' || s.section_key === 'about');
+  const sectionTitle = storySection?.content?.title || "A Legacy of Warm Welcome.";
+  const sectionSubtitle = storySection?.content?.subtitle || "Built in 1894 at the foot of Mehrangarh Fort, Raj Mandir was once the summer residence of a Marwari noble. Sandstone carved by hand, jharokha balconies that catch the desert wind, and frescoes touched by both Mughal and Rajput hands.";
+  const sectionDesc = storySection?.content?.description || "Today, our family opens these doors as guardians — not owners — inviting travelers to walk softly through history.";
+  const sectionImage = storySection?.content?.image_url || storySection?.content?.image || aboutFallback;
+  const isVisible = storySection?.is_visible !== false;
+
+  const textColor = storySection?.content?.text_color;
+  const bgMode = storySection?.content?.bg_mode;
+
+  const bgClass = bgMode === 'royal' 
+    ? 'bg-royal-deep text-white' 
+    : bgMode === 'white' 
+    ? 'bg-white text-[#091a28]' 
+    : bgMode === 'cream' 
+    ? 'bg-[#faf6f0] text-[#091a28]' 
+    : 'bg-background text-foreground';
 
   useEffect(() => {
+    if (!isVisible) return;
     const ctx = gsap.context(() => {
       gsap.from(".about-img", {
         scrollTrigger: { trigger: ref.current, start: "top 75%" },
@@ -25,54 +46,54 @@ export const About = () => {
       });
     }, ref);
     return () => ctx.revert();
-  }, []);
+  }, [isVisible]);
+
+  if (!isVisible) return null;
 
   return (
-    <section id="about" ref={ref} className="relative py-32 px-6 bg-gradient-to-b from-[#071927] via-[#0b334d] to-[#082438] text-white overflow-hidden border-b border-[#0284c7]/30">
-      {/* Subtle sandstone carved pattern & cyan ambient glow */}
+    <section id="about" ref={ref} className={`relative py-32 px-6 overflow-hidden border-b border-gold/20 ${bgClass}`}>
+      {/* Subtle sandstone carved pattern & radial soft glow */}
       <div className="absolute inset-0 sandstone-texture opacity-15 pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(6,182,212,0.18),transparent_60%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.08),transparent_60%)] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center z-10">
-        <div className="about-img jharokha-frame aspect-[4/5] relative shadow-2xl border border-[#0284c7]/40 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+        <div className="about-img jharokha-frame aspect-[4/5] relative shadow-2xl border border-gold/30 shadow-[0_15px_40px_rgba(9,26,40,0.12)]">
           <img
-            src={about}
-            alt="Candlelit hall of Raj Mandir Hotel at night"
+            src={sectionImage}
+            alt="Raj Mandir Hotel"
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover"
             width={1536}
             height={1280}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#071927]/80 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#091a28]/60 via-transparent to-transparent pointer-events-none" />
         </div>
 
         <div className="about-text">
-          <div className="font-serif-sc text-[#38bdf8] tracking-[0.5em] text-xs mb-4 font-bold uppercase drop-shadow-[0_0_10px_rgba(56,189,248,0.4)]">★ OUR STORY ★</div>
-          <h2 className="font-display text-5xl md:text-6xl leading-tight text-white font-bold">
-            A Legacy of <span className="text-[#38bdf8] italic">Warm Welcome</span>.
+          <div className="font-serif-sc text-gold tracking-[0.5em] text-xs mb-4 font-bold uppercase">★ OUR STORY ★</div>
+          <h2 className="font-display text-5xl md:text-6xl leading-tight font-bold" style={textColor ? { color: textColor } : undefined}>
+            {sectionTitle.includes("Warm") ? (
+              <>A Legacy of <span className="text-primary italic" style={textColor ? { color: textColor } : undefined}>Warm Welcome</span>.</>
+            ) : sectionTitle}
           </h2>
           <div className="divider-gold mt-6 max-w-xs">
-            <span className="font-display text-[#38bdf8] text-xl">❖</span>
+            <span className="font-display text-gold text-xl">❖</span>
           </div>
-          <p className="mt-8 font-serif text-xl leading-relaxed text-sky-100/90 font-medium">
-            Built in 1894 at the foot of Mehrangarh Fort, Raj Mandir was once the
-            summer residence of a Marwari noble. Sandstone carved by hand,
-            jharokha balconies that catch the desert wind, and frescoes touched
-            by both Mughal and Rajput hands.
+          <p className="mt-8 font-serif text-xl leading-relaxed opacity-90 font-medium">
+            {sectionSubtitle}
           </p>
-          <p className="mt-5 font-serif italic text-lg leading-relaxed text-sky-200/80">
-            Today, our family opens these doors as guardians — not owners —
-            inviting travelers to walk softly through history.
+          <p className="mt-5 font-serif italic text-lg leading-relaxed opacity-75">
+            {sectionDesc}
           </p>
 
-          <div className="stats-row mt-12 grid grid-cols-3 gap-6 border-t border-[#0284c7]/30 pt-10">
+          <div className="stats-row mt-12 grid grid-cols-3 gap-6 border-t border-gold/20 pt-10">
             {[
               { n: "130+", l: "YEARS OF LEGACY" },
               { n: "12", l: "ROYAL CHAMBERS" },
               { n: "4.9", l: "GUEST RATING" },
             ].map((s) => (
               <div key={s.l} className="about-stat text-center">
-                <div className="font-display text-4xl md:text-5xl text-[#38bdf8] font-bold drop-shadow-[0_0_12px_rgba(56,189,248,0.3)]">{s.n}</div>
+                <div className="font-display text-4xl md:text-5xl text-primary font-bold">{s.n}</div>
                 <div className="mt-2 font-serif-sc text-[10px] tracking-[0.3em] text-gold font-bold">{s.l}</div>
               </div>
             ))}
@@ -81,7 +102,7 @@ export const About = () => {
           <div className="mt-10 pt-2">
             <Link
               to="/about"
-              className="inline-flex items-center gap-2 font-serif-sc tracking-[0.3em] text-xs px-8 py-4 bg-gradient-to-r from-[#0284c7] via-[#06b6d4] to-[#0284c7] text-white font-bold rounded-sm shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] hover:scale-[1.02] transition-all duration-300 uppercase border border-cyan-300/40"
+              className="inline-flex items-center gap-2 font-serif-sc tracking-[0.3em] text-xs px-8 py-4 bg-gradient-gold text-royal-deep font-bold rounded-sm shadow-gold hover:scale-[1.02] transition-all duration-300 uppercase"
             >
               DISCOVER OUR LEGACY →
             </Link>

@@ -133,8 +133,13 @@ export const Hero = ({ start }: { start: boolean }) => {
     };
   }, [title]);
 
+  const hasAnimatedRef = useRef(false);
+
   useEffect(() => {
-    if (!cmsData.isVisible) return;
+    if (!cmsData.isVisible || hasAnimatedRef.current) return;
+
+    hasAnimatedRef.current = true;
+
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
     tl.fromTo(imgRef.current, { scale: 1.1, opacity: 0.8 }, { scale: 1, opacity: 1, duration: 1.8 })
       .fromTo(archRef.current, { scaleY: 0, transformOrigin: "top" }, { scaleY: 1, duration: 1.2 }, "-=1.2")
