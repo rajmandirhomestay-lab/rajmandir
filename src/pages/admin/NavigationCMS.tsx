@@ -56,7 +56,7 @@ export default function NavigationCMS() {
           { id: "f5", to: "/about", label: "HERITAGE" },
           { id: "f6", to: "/contact", label: "CONTACT" },
           { id: "f7", to: "/booking", label: "RESERVE" },
-          { id: "f8", to: "/feedback", label: "GUESTBOOK" },
+          { id: "f8", to: "/corner", label: "CORNER" },
         ]);
       }
     } catch (error: any) {

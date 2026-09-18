@@ -22,6 +22,7 @@ import Feedback from "./pages/Feedback";
 import GalleryPage from "./pages/Gallery";
 import FAQ from "./pages/FAQ";
 import DayAtRajMandir from "./pages/DayAtRajMandir";
+import Corner from "./pages/Corner";
 import AdminLogin from "./pages/admin/Login";
 import { ProtectedRoute } from "./components/admin/ProtectedRoute";
 import { AdminLayout } from "./components/admin/AdminLayout";
@@ -98,6 +99,7 @@ const App = () => (
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/day-at-raj-mandir" element={<DayAtRajMandir />} />
+            <Route path="/corner" element={<Corner />} />
 
             {/* ADMIN ROUTES */}
             <Route path="/admin" element={<AdminLogin />} />

@@ -21,6 +21,7 @@ const PAGES = [
   { slug: "attractions", label: "Attractions & Wonders" },
   { slug: "booking", label: "Booking & Reservations" },
   { slug: "contact", label: "Contact Us" },
+  { slug: "corner", label: "Corner Page" },
   { slug: "day-at-raj-mandir", label: "A Day at Raj Mandir" },
   { slug: "dining", label: "Palace Dining" },
   { slug: "experiences", label: "Curated Experiences" },

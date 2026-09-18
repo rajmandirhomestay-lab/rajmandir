@@ -12,7 +12,7 @@ const defaultLinks = [
   { to: "/about", label: "HERITAGE" },
   { to: "/contact", label: "CONTACT" },
   { to: "/booking", label: "RESERVE" },
-  { to: "/feedback", label: "GUESTBOOK" },
+  { to: "/corner", label: "CORNER" },
 ];
 
 const languages = [
@@ -81,7 +81,13 @@ export const Footer = () => {
   }, []);
 
   return (
-    <footer className="relative bg-royal-deep text-white pt-20 pb-10 px-6 overflow-hidden border-t border-gold/20">
+    <footer
+      className="relative pt-20 pb-10 px-6 overflow-hidden border-t border-gold/20"
+      style={{
+        backgroundColor: 'var(--custom-footer-bg, #091a28)',
+        color: 'var(--custom-footer-fg, #ffffff)'
+      }}
+    >
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
 
       <div className="relative max-w-6xl mx-auto text-center">

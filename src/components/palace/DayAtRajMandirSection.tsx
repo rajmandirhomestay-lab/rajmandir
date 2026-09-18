@@ -89,17 +89,17 @@ export const DayAtRajMandirSection = () => {
 
           {/* Quick Highlights Row */}
           <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gold/20">
-            <div className="text-center p-3 bg-royal-deep/60 border border-gold/20 rounded-sm">
-              <Coffee size={18} className="mx-auto text-gold mb-1" />
-              <div className="font-serif-sc text-[10px] tracking-wider text-gold">MORNING CHAI</div>
+            <div className="text-center p-3 bg-gradient-gold text-royal-deep font-bold rounded-sm shadow-gold border border-gold/40 hover:scale-[1.02] transition-all duration-300">
+              <Coffee size={18} className="mx-auto text-royal-deep mb-1" />
+              <div className="font-serif-sc text-[10px] tracking-wider text-royal-deep font-bold">MORNING CHAI</div>
             </div>
-            <div className="text-center p-3 bg-royal-deep/60 border border-gold/20 rounded-sm">
-              <Sun size={18} className="mx-auto text-gold mb-1" />
-              <div className="font-serif-sc text-[10px] tracking-wider text-gold">GOLDEN HOUR</div>
+            <div className="text-center p-3 bg-gradient-gold text-royal-deep font-bold rounded-sm shadow-gold border border-gold/40 hover:scale-[1.02] transition-all duration-300">
+              <Sun size={18} className="mx-auto text-royal-deep mb-1" />
+              <div className="font-serif-sc text-[10px] tracking-wider text-royal-deep font-bold">GOLDEN HOUR</div>
             </div>
-            <div className="text-center p-3 bg-royal-deep/60 border border-gold/20 rounded-sm">
-              <Sparkles size={18} className="mx-auto text-gold mb-1" />
-              <div className="font-serif-sc text-[10px] tracking-wider text-gold">ROOFTOP DINING</div>
+            <div className="text-center p-3 bg-gradient-gold text-royal-deep font-bold rounded-sm shadow-gold border border-gold/40 hover:scale-[1.02] transition-all duration-300">
+              <Sparkles size={18} className="mx-auto text-royal-deep mb-1" />
+              <div className="font-serif-sc text-[10px] tracking-wider text-royal-deep font-bold">ROOFTOP DINING</div>
             </div>
           </div>
 

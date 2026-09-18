@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Loader2, UploadCloud, Trash2, Save, Image as ImageIcon, Plus } from "lucide-react";
+import { Loader2, UploadCloud, Trash2, Image as ImageIcon, Sparkles, Filter } from "lucide-react";
 import { compressImage } from "@/lib/imageCompression";
 import { useDropzone } from "react-dropzone";
 
@@ -13,13 +13,14 @@ type GalleryItem = {
   sort_order: number;
 };
 
-const CATEGORIES = ["Rooms", "Dining", "Experiences", "Heritage", "Jodhpur"];
+const CATEGORIES = ["Rooms", "Dining", "Experiences", "Heritage", "Jodhpur", "Corner"];
 
 export default function GalleryCMS() {
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [category, setCategory] = useState("Heritage");
+  const [category, setCategory] = useState("Corner");
+  const [filterCategory, setFilterCategory] = useState("All");
   const [title, setTitle] = useState("");
 
   useEffect(() => {
@@ -63,7 +64,6 @@ export default function GalleryCMS() {
           .from("gallery-images")
           .getPublicUrl(fileName);
 
-        
         // Save to gallery table
         await supabase.from("gallery").insert([{
           storage_path: publicUrl,
@@ -73,7 +73,7 @@ export default function GalleryCMS() {
         }]);
       }
       
-      toast.success("Upload complete", { id: toastId });
+      toast.success(`Upload complete for category "${category}"`, { id: toastId });
       setTitle("");
       fetchGallery();
     } catch (error: any) {
@@ -88,7 +88,6 @@ export default function GalleryCMS() {
     accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'] }
   });
 
-  
   const handleDelete = async (id: string) => {
     if (!window.confirm("Remove this image from the gallery?")) return;
     try {
@@ -101,6 +100,11 @@ export default function GalleryCMS() {
     }
   };
 
+  const filteredItems = useMemo(() => {
+    if (filterCategory === "All") return items;
+    return items.filter(item => item.category && item.category.toLowerCase() === filterCategory.toLowerCase());
+  }, [items, filterCategory]);
+
   if (loading) {
     return <div className="flex items-center justify-center h-[50vh]"><Loader2 className="animate-spin text-gold w-10 h-10" /></div>;
   }
@@ -108,8 +112,16 @@ export default function GalleryCMS() {
   return (
     <div className="animate-fade-in space-y-8 pb-20">
       <div>
-        <h1 className="font-display text-4xl text-foreground mb-2">Gallery Management</h1>
-        <p className="font-serif text-muted-foreground">Upload and categorize high-resolution WebP images to your royal portfolio.</p>
+        <h1 className="font-display text-4xl text-foreground mb-2">Gallery & Corner CMS</h1>
+        <p className="font-serif text-muted-foreground">Upload and categorize high-resolution images for the website gallery and the dedicated Corner Page.</p>
+      </div>
+
+      {/* Helpful Banner */}
+      <div className="bg-gold/10 border border-gold/30 p-4 rounded-sm flex items-center gap-3">
+        <Sparkles className="text-gold shrink-0" size={20} />
+        <p className="font-serif text-sm text-foreground">
+          <strong>Tip for Corner Page:</strong> Select the <span className="text-gold font-bold uppercase">"CORNER"</span> category when uploading images to display them directly on the new <a href="/corner" target="_blank" className="underline font-bold text-gold hover:text-gold-glow">Corner Page (/corner)</a>.
+        </p>
       </div>
 
       {/* Uploader Section */}
@@ -138,43 +150,66 @@ export default function GalleryCMS() {
             </div>
             
             <div>
-              <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-2">CATEGORY</label>
+              <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-2">TARGET CATEGORY / PAGE</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {CATEGORIES.map(cat => (
                   <button
                     key={cat}
                     onClick={() => setCategory(cat)}
-                    className={`font-serif-sc text-[10px] tracking-widest py-2 px-3 border transition-all duration-300 ${category === cat ? "bg-gold/10 text-gold border-gold/40" : "bg-transparent text-muted-foreground border-gold/10 hover:border-gold/30"}`}
+                    className={`font-serif-sc text-[10px] tracking-widest py-2.5 px-3 border transition-all duration-300 relative ${
+                      category === cat 
+                        ? "bg-gold/20 text-gold border-gold font-bold shadow-sm" 
+                        : "bg-transparent text-muted-foreground border-gold/10 hover:border-gold/30"
+                    }`}
                   >
-                    {cat.toUpperCase()}
+                    {cat.toUpperCase()} {cat === "Corner" && "★"}
                   </button>
                 ))}
               </div>
             </div>
-
           </div>
         </div>
       </div>
 
       {/* Gallery Grid */}
       <div className="bg-card border border-gold/20 shadow-frame p-8">
-        <h2 className="font-serif-sc text-sm tracking-widest text-gold mb-6 border-b border-gold/10 pb-4 flex items-center gap-2">
-          <ImageIcon size={18} /> CURRENT EXHIBITION ({items.length} IMAGES)
-        </h2>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gold/10 pb-4 mb-6">
+          <h2 className="font-serif-sc text-sm tracking-widest text-gold flex items-center gap-2">
+            <ImageIcon size={18} /> CURRENT EXHIBITION ({filteredItems.length} IMAGES)
+          </h2>
+
+          {/* Filter Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+            <Filter size={14} className="text-gold shrink-0 mr-1" />
+            {["All", ...CATEGORIES].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setFilterCategory(cat)}
+                className={`font-serif-sc text-[10px] tracking-wider px-3 py-1 border transition-all duration-300 whitespace-nowrap shrink-0 ${
+                  filterCategory === cat
+                    ? "border-gold bg-gold text-royal-deep font-bold"
+                    : "border-gold/20 text-muted-foreground hover:text-foreground hover:border-gold/50"
+                }`}
+              >
+                {cat.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
         
-        {items.length === 0 ? (
+        {filteredItems.length === 0 ? (
           <div className="text-center py-12">
-            <p className="font-serif text-muted-foreground">The gallery is currently empty.</p>
+            <p className="font-serif text-muted-foreground">No images found for category "{filterCategory}".</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {items.map((item) => (
-              <div key={item.id} className="group relative aspect-square overflow-hidden border border-gold/10 jharokha-frame">
+            {filteredItems.map((item) => (
+              <div key={item.id} className="group relative aspect-square overflow-hidden border border-gold/20 rounded-sm shadow-md">
                 <img src={item.image_url} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
-                <div className="absolute inset-0 bg-royal-deep/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-4 text-center backdrop-blur-sm">
+                <div className="absolute inset-0 bg-royal-deep/85 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-4 text-center backdrop-blur-sm">
                   <div className="font-serif-sc text-[9px] tracking-widest text-gold mb-1">{item.category.toUpperCase()}</div>
-                  <h3 className="font-display text-sm text-foreground mb-4 leading-tight">{item.title}</h3>
-                  <button onClick={() => handleDelete(item.id)} className="p-2 bg-red-900/40 text-red-400 rounded-full hover:bg-red-900/80 transition-colors">
+                  <h3 className="font-display text-sm text-white mb-4 leading-tight font-bold">{item.title}</h3>
+                  <button onClick={() => handleDelete(item.id)} className="p-2 bg-red-900/60 text-red-200 rounded-full hover:bg-red-800 transition-colors">
                     <Trash2 size={14} />
                   </button>
                 </div>
@@ -183,8 +218,6 @@ export default function GalleryCMS() {
           </div>
         )}
       </div>
-
-      
     </div>
   );
 }

@@ -78,6 +78,16 @@ export default function SettingsCMS() {
     applyThemeToDOM(updated);
   };
 
+  const handleThemeFieldChange = (field: keyof ThemeConfig, val: string) => {
+    const updated = { ...selectedTheme, [field]: val };
+    setSelectedTheme(updated);
+    if (updated.id === "custom" || updated.isCustom) {
+      setCustomTheme(updated);
+    }
+    handleUpdate("theme_config", updated);
+    applyThemeToDOM(updated);
+  };
+
   const saveSettings = async () => {
     setSaving(true);
     try {
@@ -346,6 +356,93 @@ export default function SettingsCMS() {
                 <div className="p-4 rounded-sm border" style={{ backgroundColor: customTheme.card, color: customTheme.cardFg, borderColor: customTheme.gold }}>
                   <div className="font-serif-sc text-xs font-bold mb-1" style={{ color: customTheme.primary }}>PREVIEW CARD</div>
                   <div className="font-serif text-sm">Cards and interactive components render with this background and copy contrast.</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Navbar & Footer Color Customization Section */}
+            <div className="border-t border-gold/20 pt-8 mt-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center text-gold">
+                  <Palette size={18} />
+                </div>
+                <div>
+                  <h3 className="font-display text-2xl text-foreground">Navbar & Footer Color Customization</h3>
+                  <p className="font-serif text-xs text-muted-foreground">Customize background and text colors for the Navigation Bar and Footer across the website.</p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 bg-background/50 border border-gold/20 p-6 rounded-sm">
+                <div className="space-y-4">
+                  <label className="block font-serif-sc text-[10px] tracking-widest text-gold font-bold">NAVBAR BACKGROUND</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={selectedTheme.navbarBg || "#091a28"}
+                      onChange={(e) => handleThemeFieldChange("navbarBg", e.target.value)}
+                      className="w-10 h-10 rounded border border-gold/30 cursor-pointer bg-transparent"
+                    />
+                    <input
+                      type="text"
+                      value={selectedTheme.navbarBg || "#091a28"}
+                      onChange={(e) => handleThemeFieldChange("navbarBg", e.target.value)}
+                      className="flex-1 bg-background border border-gold/20 px-3 py-2 text-xs font-mono text-foreground"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="block font-serif-sc text-[10px] tracking-widest text-gold font-bold">NAVBAR TEXT / LINKS</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={selectedTheme.navbarFg || "#ffffff"}
+                      onChange={(e) => handleThemeFieldChange("navbarFg", e.target.value)}
+                      className="w-10 h-10 rounded border border-gold/30 cursor-pointer bg-transparent"
+                    />
+                    <input
+                      type="text"
+                      value={selectedTheme.navbarFg || "#ffffff"}
+                      onChange={(e) => handleThemeFieldChange("navbarFg", e.target.value)}
+                      className="flex-1 bg-background border border-gold/20 px-3 py-2 text-xs font-mono text-foreground"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="block font-serif-sc text-[10px] tracking-widest text-gold font-bold">FOOTER BACKGROUND</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={selectedTheme.footerBg || "#091a28"}
+                      onChange={(e) => handleThemeFieldChange("footerBg", e.target.value)}
+                      className="w-10 h-10 rounded border border-gold/30 cursor-pointer bg-transparent"
+                    />
+                    <input
+                      type="text"
+                      value={selectedTheme.footerBg || "#091a28"}
+                      onChange={(e) => handleThemeFieldChange("footerBg", e.target.value)}
+                      className="flex-1 bg-background border border-gold/20 px-3 py-2 text-xs font-mono text-foreground"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="block font-serif-sc text-[10px] tracking-widest text-gold font-bold">FOOTER TEXT / LINKS</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={selectedTheme.footerFg || "#ffffff"}
+                      onChange={(e) => handleThemeFieldChange("footerFg", e.target.value)}
+                      className="w-10 h-10 rounded border border-gold/30 cursor-pointer bg-transparent"
+                    />
+                    <input
+                      type="text"
+                      value={selectedTheme.footerFg || "#ffffff"}
+                      onChange={(e) => handleThemeFieldChange("footerFg", e.target.value)}
+                      className="flex-1 bg-background border border-gold/20 px-3 py-2 text-xs font-mono text-foreground"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

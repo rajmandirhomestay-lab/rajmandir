@@ -3,22 +3,50 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { X } from "lucide-react";
 import { useGallery } from "@/lib/api";
+
 import g1 from "@/assets/gallery-1.jpg";
 import g2 from "@/assets/gallery-2.jpg";
 import g3 from "@/assets/gallery-3.jpg";
 import g4 from "@/assets/gallery-4.jpg";
 import g5 from "@/assets/gallery-5.jpg";
 import g6 from "@/assets/gallery-6.jpg";
+import room1 from "@/assets/room-haveli.jpg";
+import room2 from "@/assets/room-maharaja.jpg";
+import room3 from "@/assets/room-rajwada.jpg";
+import dining1 from "@/assets/dining-rooftop.jpg";
+import dining2 from "@/assets/dining-thali.jpg";
+import exp1 from "@/assets/exp-cultural.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const photos = [
-  { src: g1, alt: "Painted royal hall with gilded portraits", span: "row-span-2" },
-  { src: g2, alt: "Carved jharokha overlooking the blue city", span: "" },
-  { src: g3, alt: "Lantern-lit courtyard at twilight", span: "row-span-2" },
-  { src: g4, alt: "Maharaja chamber with canopy bed", span: "" },
-  { src: g5, alt: "Rooftop dining facing Mehrangarh fort", span: "" },
-  { src: g6, alt: "Carved sandstone elephant doorway", span: "" },
+const fallbackPhotos = [
+  { src: g1, alt: "Painted royal hall with gilded portraits" },
+  { src: g2, alt: "Carved jharokha overlooking the blue city" },
+  { src: g3, alt: "Lantern-lit courtyard at twilight" },
+  { src: g4, alt: "Maharaja chamber with canopy bed" },
+  { src: g5, alt: "Rooftop dining facing Mehrangarh fort" },
+  { src: g6, alt: "Carved sandstone elephant doorway" },
+  { src: room1, alt: "Haveli Suite Interior" },
+  { src: room2, alt: "Maharaja Chamber Suite" },
+  { src: room3, alt: "Rajwada Room Heritage Details" },
+  { src: dining1, alt: "Rooftop Dining Ambience" },
+  { src: dining2, alt: "Traditional Thali Feast" },
+  { src: exp1, alt: "Cultural Music Performance" },
+];
+
+const aspectRatios = [
+  "aspect-[4/3]",   // Horizontal
+  "aspect-[3/4]",   // Tall Vertical
+  "aspect-[3/5]",   // Extra Tall Vertical
+  "aspect-[3/4]",   // Tall Vertical
+  "aspect-[16/9]",  // Wide Landscape
+  "aspect-[4/5]",   // Medium Portrait
+  "aspect-[3/4]",   // Tall Vertical
+  "aspect-[16/9]",  // Wide Landscape
+  "aspect-[4/3]",   // Horizontal
+  "aspect-[3/5]",   // Tall Vertical
+  "aspect-[3/4]",   // Medium Portrait
+  "aspect-[16/9]"   // Landscape
 ];
 
 export const Gallery = () => {
@@ -27,60 +55,47 @@ export const Gallery = () => {
   const { data: dbGallery } = useGallery();
 
   const activePhotos = useMemo(() => {
+    let photosList = fallbackPhotos;
     if (dbGallery && dbGallery.length > 0) {
       const mappedDb = dbGallery.map((item, index) => {
         const titleText = item.title && !item.title.match(/\.(jpg|jpeg|png|webp|gif|svg)$/i) ? item.title : "Raj Mandir Gallery";
         return {
-          src: item.storage_path || item.image_url || photos[index % photos.length].src,
+          src: item.storage_path || item.image_url || fallbackPhotos[index % fallbackPhotos.length].src,
           alt: titleText,
-          span: photos[index % photos.length].span
         };
       });
       
       const combined = [...mappedDb];
-      while (combined.length < 6) {
-        combined.push({
-          ...photos[combined.length],
-          span: photos[combined.length].span
-        });
+      while (combined.length < 12) {
+        combined.push(fallbackPhotos[combined.length % fallbackPhotos.length]);
       }
-      
-      return combined.slice(0, 6).map((item, i) => ({
-        ...item,
-        span: photos[i].span
-      }));
+      photosList = combined.slice(0, 12);
     }
-    return photos;
+
+    return photosList.map((photo, i) => ({
+      ...photo,
+      aspect: aspectRatios[i % aspectRatios.length]
+    }));
   }, [dbGallery]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         ".g-tile",
-        { y: 80, opacity: 0 },
+        { y: 50, opacity: 0, scale: 0.95 },
         {
           y: 0,
           opacity: 1,
-          duration: 1.2,
+          scale: 1,
+          duration: 1.0,
           ease: "power3.out",
-          stagger: 0.12,
+          stagger: 0.08,
           scrollTrigger: { trigger: ref.current, start: "top 75%" },
         }
       );
-      gsap.utils.toArray<HTMLElement>(".g-img").forEach((img) => {
-        gsap.fromTo(
-          img,
-          { yPercent: -8 },
-          {
-            yPercent: 8,
-            ease: "none",
-            scrollTrigger: { trigger: img.parentElement, start: "top bottom", end: "bottom top", scrub: true },
-          }
-        );
-      });
     }, ref);
     return () => ctx.revert();
-  }, []);
+  }, [activePhotos]);
 
   useEffect(() => {
     if (active === null) return;
@@ -91,10 +106,10 @@ export const Gallery = () => {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [active]);
+  }, [active, activePhotos]);
 
   return (
-    <section ref={ref} id="gallery" className="relative py-32 px-6 overflow-hidden bg-background marble-texture border-b border-gold/20">
+    <section ref={ref} id="gallery" className="relative py-28 px-6 overflow-hidden bg-background marble-texture border-b border-gold/20">
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <div className="eyebrow mb-4 font-serif-sc text-gold tracking-[0.5em] text-xs font-bold uppercase">★ CAPTURED MEMORIES ★</div>
@@ -107,25 +122,29 @@ export const Gallery = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[180px] md:auto-rows-[220px] gap-4 md:gap-6">
+        {/* Multi-Column Photo Collage Masonry */}
+        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 md:gap-6 space-y-4 md:space-y-6">
           {activePhotos.map((p, i) => (
-            <button
-              key={i}
-              onClick={() => setActive(i)}
-              className={`g-tile group relative overflow-hidden jharokha-frame ${p.span} ${i % 3 === 0 ? "col-span-2" : ""}`}
-              aria-label="View photo"
-            >
-              <div className="absolute inset-0 overflow-hidden">
-                <img
-                  src={p.src}
-                  alt="Raj Mandir"
-                  loading="lazy"
-                  className="g-img absolute inset-0 h-[120%] w-full object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-110"
-                />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/60 via-transparent to-transparent opacity-50 group-hover:opacity-80 transition-opacity duration-700" />
-              <div className="absolute inset-0 ring-1 ring-inset ring-gold/0 group-hover:ring-gold/60 transition-all duration-700 pointer-events-none" />
-            </button>
+            <div key={i} className="break-inside-avoid">
+              <button
+                onClick={() => setActive(i)}
+                className={`g-tile group relative w-full overflow-hidden rounded-sm shadow-md hover:shadow-gold transition-all duration-500 border border-gold/20 block ${p.aspect}`}
+                aria-label={`View photo ${i + 1}`}
+              >
+                <div className="absolute inset-0 overflow-hidden">
+                  <img
+                    src={p.src}
+                    alt={p.alt}
+                    loading="lazy"
+                    className="g-img absolute inset-0 w-full h-full object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-110"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-4">
+                  <div className="font-serif-sc text-xs text-gold font-semibold truncate text-left w-full">{p.alt}</div>
+                </div>
+                <div className="absolute inset-0 ring-1 ring-inset ring-gold/0 group-hover:ring-gold/60 transition-all duration-500 pointer-events-none" />
+              </button>
+            </div>
           ))}
         </div>
       </div>
@@ -138,7 +157,7 @@ export const Gallery = () => {
         >
           <button
             onClick={() => setActive(null)}
-            className="absolute top-6 right-6 text-gold hover:text-gold-glow p-2"
+            className="absolute top-6 right-6 text-gold hover:text-gold-glow p-2 bg-black/40 rounded-full"
             aria-label="Close viewer"
           >
             <X size={28} />
@@ -148,9 +167,9 @@ export const Gallery = () => {
             <img
               src={activePhotos[active].src}
               alt={activePhotos[active].alt}
-              className="relative w-full max-h-[80vh] object-contain shadow-gold"
+              className="relative w-full max-h-[80vh] object-contain shadow-gold border border-gold/40"
             />
-            <div className="text-center mt-6 font-serif italic text-ivory/80">{activePhotos[active].alt}</div>
+            <div className="text-center mt-6 font-serif italic text-ivory/90 text-lg font-medium">{activePhotos[active].alt}</div>
           </div>
         </div>
       )}

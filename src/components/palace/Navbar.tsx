@@ -14,7 +14,7 @@ const leftNavLinks = [
 const rightNavLinks = [
   { to: "/stories", label: "JOURNEYS" },
   { to: "/day-at-raj-mandir", label: "RITUALS" },
-  { to: "/feedback", label: "GUESTBOOK" },
+  { to: "/corner", label: "CORNER" },
   { to: "/about", label: "LEGACY" },
 ];
 
@@ -52,10 +52,13 @@ export const Navbar = () => {
   return (
     <>
       <header
-        className={`fixed top-0 inset-x-0 z-40 transition-all duration-700 ${scrolled
-          ? "backdrop-blur-xl bg-royal-deep/95 border-b border-gold/30 shadow-xl"
-          : "backdrop-blur-md bg-royal-deep/85 border-b border-gold/20"
-          }`}
+        className={`fixed top-0 inset-x-0 z-40 transition-all duration-700 backdrop-blur-xl border-b border-gold/30 shadow-xl ${
+          scrolled ? "opacity-95" : "opacity-90"
+        }`}
+        style={{
+          backgroundColor: 'var(--custom-navbar-bg, #091a28)',
+          color: 'var(--custom-navbar-fg, #ffffff)'
+        }}
       >
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
         <div className="relative mx-auto max-w-[1750px] px-3 md:px-6 py-4 flex items-center justify-between min-h-[80px]">

@@ -10,6 +10,10 @@ export interface ThemeConfig {
   cardFg: string;
   primary: string;
   gold: string;
+  navbarBg?: string;
+  navbarFg?: string;
+  footerBg?: string;
+  footerFg?: string;
   isCustom?: boolean;
 }
 
@@ -169,6 +173,19 @@ export const applyThemeToDOM = (theme: ThemeConfig) => {
   root.style.setProperty("--custom-card-fg", theme.cardFg || theme.foreground);
   root.style.setProperty("--custom-primary", theme.primary);
   root.style.setProperty("--custom-gold", theme.gold);
+
+  // Set navbar and footer colors
+  if (theme.navbarBg) root.style.setProperty("--custom-navbar-bg", theme.navbarBg);
+  else root.style.removeProperty("--custom-navbar-bg");
+
+  if (theme.navbarFg) root.style.setProperty("--custom-navbar-fg", theme.navbarFg);
+  else root.style.removeProperty("--custom-navbar-fg");
+
+  if (theme.footerBg) root.style.setProperty("--custom-footer-bg", theme.footerBg);
+  else root.style.removeProperty("--custom-footer-bg");
+
+  if (theme.footerFg) root.style.setProperty("--custom-footer-fg", theme.footerFg);
+  else root.style.removeProperty("--custom-footer-fg");
 
   // Directly update body inline background & color
   document.body.style.backgroundColor = theme.background;
