@@ -38,31 +38,37 @@ export const Facilities = () => {
 
       <div className="relative max-w-7xl mx-auto z-10">
         <div className="text-center mb-16">
-          <div className="eyebrow mb-4 font-serif-sc text-[#b45309] tracking-[0.5em] text-xs font-bold uppercase">★ THOUGHTFUL COMFORTS ★</div>
+          <div className="eyebrow mb-4 font-serif-sc text-gold tracking-[0.5em] text-xs font-bold uppercase">★ THOUGHTFUL COMFORTS ★</div>
           <h2 className="font-display text-5xl md:text-6xl text-[#091a28] font-bold">
-            Thoughtful <span className="text-[#145992] italic">Comforts</span>
+            Thoughtful <span className="text-gold-gradient italic">Comforts</span>
           </h2>
-          <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-[#b45309] text-xl">❖</span></div>
+          <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold text-xl">❖</span></div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {facilitiesData?.map((facility: any) => {
+            const isCustomImage = facility.icon?.startsWith("http://") || facility.icon?.startsWith("https://") || facility.icon?.startsWith("/");
             const Icon = (LucideIcons as any)[facility.icon] || LucideIcons.Sparkles;
             return (
               <div
                 key={facility.id}
-                className="f-card group relative p-8 bg-white/95 backdrop-blur-md border border-[#e5dac9] hover:border-[#145992] transition-all duration-700 hover:-translate-y-2 shadow-md hover:shadow-xl rounded-sm"
+                className="f-card group relative p-8 bg-gradient-to-br from-white via-white to-[#faf3e6] border border-gold/30 hover:border-gold transition-all duration-700 hover:-translate-y-2 shadow-md hover:shadow-gold rounded-sm"
               >
-                {/* Carved corners */}
-                <span className="absolute top-0 left-0 w-4 h-4 border-t border-l border-gold/40" />
-                <span className="absolute top-0 right-0 w-4 h-4 border-t border-r border-gold/40" />
-                <span className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-gold/40" />
-                <span className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-gold/40" />
+                {/* Carved golden corners */}
+                <span className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-gold/70" />
+                <span className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-gold/70" />
+                <span className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-gold/70" />
+                <span className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-gold/70" />
 
-                <div className="relative mx-auto mb-6 w-16 h-12 jharokha bg-gradient-to-br from-[#145992]/10 to-gold/10 border border-[#145992]/30 flex items-center justify-center group-hover:bg-[#145992]/20 transition-all duration-700">
-                  <Icon className="text-[#145992]" size={20} />
+                {/* Golden Icon Badge matching Day at Raj Mandir box style */}
+                <div className="relative mx-auto mb-6 w-16 h-12 rounded-sm bg-gradient-gold text-royal-deep border border-gold/50 shadow-gold flex items-center justify-center group-hover:scale-110 transition-all duration-500">
+                  {isCustomImage ? (
+                    <img src={facility.icon} alt={facility.label} className="w-7 h-7 object-contain filter drop-shadow" />
+                  ) : (
+                    <Icon className="text-royal-deep font-bold" size={22} />
+                  )}
                 </div>
-                <h3 className="font-display text-xl text-[#091a28] text-center mb-3 group-hover:text-[#145992] transition-colors duration-500 font-bold">
+                <h3 className="font-display text-xl text-[#091a28] text-center mb-3 group-hover:text-gold transition-colors duration-500 font-bold">
                   {facility.label}
                 </h3>
                 <p className="font-serif italic text-[#2c4d6f] text-center text-sm leading-relaxed font-medium">

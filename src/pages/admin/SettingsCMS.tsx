@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Loader2, Save, Globe, Phone, MapPin, Mail, Share2, Palette, Check, Sparkles, Plus, RefreshCw } from "lucide-react";
+import { Loader2, Save, Globe, Phone, MapPin, Mail, Share2, Palette, Check, Sparkles, Plus, RefreshCw, UploadCloud, Image as ImageIcon } from "lucide-react";
 import { PRESET_THEMES, ThemeConfig, applyThemeToDOM } from "@/lib/theme";
+import { compressImage } from "@/lib/imageCompression";
 
 type Settings = {
   id: string;
@@ -28,6 +29,35 @@ export default function SettingsCMS() {
     gold: "#b45309",
     isCustom: true,
   });
+
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+
+  const handleLogoUpload = async (file: File) => {
+    setUploadingLogo(true);
+    const toastId = toast.loading("Uploading logo image...");
+    try {
+      const optimized = await compressImage(file);
+      const fileName = `logo-${Date.now()}.${optimized.name.split('.').pop() || 'webp'}`;
+      const filePath = `settings/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('content')
+        .upload(filePath, optimized, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('content')
+        .getPublicUrl(filePath);
+
+      handleUpdate("site_logo", publicUrl);
+      toast.success("Logo uploaded successfully! Click 'SAVE ALL CHANGES' to save.", { id: toastId });
+    } catch (error: any) {
+      toast.error("Failed to upload logo: " + error.message, { id: toastId });
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
 
   useEffect(() => {
     fetchSettings();
@@ -457,6 +487,52 @@ export default function SettingsCMS() {
                 value={settings.site_title || "Raj Mandir Hotel"}
                 onChange={(v) => handleUpdate("site_title", v)}
               />
+
+              {/* Site Logo Section */}
+              <div className="space-y-3 bg-background/50 border border-gold/20 p-6 rounded-sm">
+                <label className="block font-serif-sc text-xs tracking-widest text-gold font-bold">
+                  SITE LOGO (HEADER LEFT CORNER)
+                </label>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  {settings.site_logo ? (
+                    <div className="h-16 w-32 bg-royal-deep/80 border border-gold/30 rounded-sm p-2 flex items-center justify-center shrink-0">
+                      <img src={settings.site_logo} alt="Site Logo" className="max-h-full max-w-full object-contain" />
+                    </div>
+                  ) : (
+                    <div className="h-16 w-32 bg-background border border-dashed border-gold/40 rounded-sm flex flex-col items-center justify-center text-xs text-muted-foreground shrink-0">
+                      <ImageIcon size={18} className="text-gold/50 mb-1" />
+                      <span>No logo</span>
+                    </div>
+                  )}
+
+                  <div className="flex-1 w-full space-y-3">
+                    <input
+                      type="text"
+                      value={settings.site_logo || ""}
+                      onChange={(e) => handleUpdate("site_logo", e.target.value)}
+                      placeholder="Paste image URL or upload image file below..."
+                      className="w-full bg-background border border-gold/20 focus:border-gold outline-none px-4 py-2.5 font-serif text-xs text-foreground transition-all"
+                    />
+
+                    <label className="inline-flex items-center gap-2 px-4 py-2 bg-gold/10 border border-gold/40 text-gold font-serif-sc text-[10px] tracking-widest cursor-pointer hover:bg-gold/20 transition-all">
+                      {uploadingLogo ? <Loader2 size={14} className="animate-spin" /> : <UploadCloud size={14} />}
+                      {uploadingLogo ? "UPLOADING LOGO..." : "UPLOAD LOGO IMAGE"}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            handleLogoUpload(e.target.files[0]);
+                          }
+                        }}
+                        disabled={uploadingLogo}
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
+
               <SettingField
                 label="META DESCRIPTION"
                 value={settings.meta_description || ""}

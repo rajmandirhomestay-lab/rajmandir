@@ -22,8 +22,21 @@ export const Navbar = () => {
   const { pathname } = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [siteLogo, setSiteLogo] = useState<string | null>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    supabase
+      .from("settings")
+      .select("value")
+      .eq("key", "site_logo")
+      .single()
+      .then(({ data }) => {
+        if (data?.value) setSiteLogo(data.value);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -63,10 +76,23 @@ export const Navbar = () => {
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
         <div className="relative mx-auto max-w-[1750px] px-3 md:px-6 py-4 flex items-center justify-between min-h-[80px]">
 
+          {/* Desktop Left Corner Logo */}
+          {siteLogo && (
+            <Link to="/" className="hidden lg:flex items-center shrink-0 mr-2 xl:mr-4 group">
+              <img src={siteLogo} alt="Site Logo" className="h-10 xl:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
+            </Link>
+          )}
+
           {/* Mobile Logo Left */}
-          <Link to="/" className="flex lg:hidden flex-col">
-            <span className="font-serif-sc text-[8px] tracking-[0.35em] text-gold uppercase font-semibold">THE</span>
-            <span className="font-display text-white text-base tracking-wider font-bold">RAJ MANDIR</span>
+          <Link to="/" className="flex lg:hidden items-center gap-2">
+            {siteLogo ? (
+              <img src={siteLogo} alt="Site Logo" className="h-9 w-auto object-contain" />
+            ) : (
+              <div className="flex flex-col">
+                <span className="font-serif-sc text-[8px] tracking-[0.35em] text-gold uppercase font-semibold">THE</span>
+                <span className="font-display text-white text-base tracking-wider font-bold">RAJ MANDIR</span>
+              </div>
+            )}
           </Link>
 
           {/* Desktop Left Nav Links (4 Links) */}
@@ -101,7 +127,7 @@ export const Navbar = () => {
             </div>
           </Link>
 
-          {/* Desktop Right Nav Items (4 Links + Reserve) */}
+          {/* Desktop Right Nav Items (4 Links) */}
           <div className="hidden lg:flex items-center justify-start gap-1.5 lg:gap-3 xl:gap-5 flex-1 min-w-0 pl-2 lg:pl-3 xl:pl-5">
             {rightNavLinks.map((l) => (
               <NavLink
@@ -117,11 +143,13 @@ export const Navbar = () => {
                 {l.label.toUpperCase()}
               </NavLink>
             ))}
+          </div>
 
-            {/* Outline Reserve Button */}
+          {/* DESKTOP FAR RIGHT CORNER RESERVE BUTTON */}
+          <div className="hidden lg:flex items-center shrink-0 ml-4 xl:ml-6">
             <Link
               to="/booking"
-              className="font-serif-sc tracking-wider xl:tracking-[0.18em] text-[10px] lg:text-[11px] xl:text-xs px-2.5 lg:px-3.5 xl:px-4 py-1.5 border border-gold/80 text-white font-semibold hover:bg-gradient-gold hover:text-royal-deep transition-all duration-300 shadow-sm whitespace-nowrap shrink-0 ml-1"
+              className="font-serif-sc tracking-wider xl:tracking-[0.18em] text-[10px] lg:text-[11px] xl:text-xs px-3.5 lg:px-4 xl:px-5 py-2 border border-gold text-royal-deep bg-gradient-gold font-bold hover:shadow-gold hover:scale-[1.03] transition-all duration-300 shadow-md whitespace-nowrap shrink-0"
             >
               RESERVE
             </Link>
@@ -131,7 +159,7 @@ export const Navbar = () => {
           <div className="flex lg:hidden items-center gap-3 shrink-0">
             <Link
               to="/booking"
-              className="font-serif-sc tracking-[0.2em] text-xs px-3 py-1.5 border border-gold/80 text-white font-semibold hover:bg-gradient-gold hover:text-royal-deep transition-all duration-300 shadow-sm whitespace-nowrap"
+              className="font-serif-sc tracking-[0.2em] text-xs px-3 py-1.5 border border-gold text-royal-deep bg-gradient-gold font-bold hover:shadow-gold transition-all duration-300 shadow-sm whitespace-nowrap"
             >
               RESERVE
             </Link>

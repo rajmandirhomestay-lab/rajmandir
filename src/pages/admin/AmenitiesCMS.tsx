@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Plus, Trash2, Edit, Save, X, GripVertical } from "lucide-react";
+import { Plus, Trash2, Edit, Save, X, GripVertical, Loader2, UploadCloud, Image as ImageIcon } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useHomepageAmenities } from "@/lib/api";
+import { compressImage } from "@/lib/imageCompression";
 import * as LucideIcons from "lucide-react";
 
 export default function AmenitiesCMS() {
@@ -13,11 +14,46 @@ export default function AmenitiesCMS() {
   const [formData, setFormData] = useState({ icon: "", label: "", description: "", display_order: 0 });
   const [isAdding, setIsAdding] = useState(false);
 
-  // Suggested popular icons for hotel amenities
+  const [uploadingIcon, setUploadingIcon] = useState(false);
+
+  // Expanded popular icons for hotel amenities, village & camel safaris, heritage tours & palace services
   const popularIcons = [
-    "Wifi", "Coffee", "Car", "Shield", "Crown", "Utensils", "Sun", "Bath", 
-    "BookOpen", "Sparkles", "GlassWater", "Monitor", "Dumbbell", "Waves", "Wind", "Key"
+    // Safaris & Outdoor Tours
+    "Trees", "Compass", "Sun", "Flame", "Tent", "Footprints", "Binoculars", "Camera", "Mountain", "Palmtree", "Navigation", "MapPin", "Map",
+    // Heritage & Royalty
+    "Crown", "Shield", "Landmark", "Castle", "Building2", "Sparkles",
+    // Dining & Beverages
+    "Coffee", "Utensils", "UtensilsCrossed", "Wine", "GlassWater", "Soup", "Music",
+    // Palace Comforts & Travel
+    "Wifi", "Car", "Bike", "Waves", "Bath", "Key", "PhoneCall", "Shirt", "Tv", "Dumbbell", "ShieldCheck"
   ];
+
+  const handleIconUpload = async (file: File) => {
+    setUploadingIcon(true);
+    const toastId = toast.loading("Uploading amenity logo image...");
+    try {
+      const optimized = await compressImage(file);
+      const fileName = `amenity-${Date.now()}.${optimized.name.split('.').pop() || 'webp'}`;
+      const filePath = `amenities/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('content')
+        .upload(filePath, optimized, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('content')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, icon: publicUrl }));
+      toast.success("Custom amenity logo uploaded!", { id: toastId });
+    } catch (error: any) {
+      toast.error("Failed to upload custom logo: " + error.message, { id: toastId });
+    } finally {
+      setUploadingIcon(false);
+    }
+  };
 
   const handleEdit = (amenity: any) => {
     setEditingId(amenity.id);
@@ -138,26 +174,60 @@ export default function AmenitiesCMS() {
 
             <div className="space-y-4">
               <div>
-                <label className="block font-serif-sc text-xs text-muted-foreground mb-1">ICON IDENTIFIER (Lucide React)</label>
-                <input
-                  type="text"
-                  value={formData.icon}
-                  onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                  className="w-full bg-background border border-gold/20 p-3 text-foreground focus:border-gold outline-none"
-                  placeholder="e.g. Wifi, Coffee, Car"
-                />
+                <label className="block font-serif-sc text-xs text-muted-foreground mb-1">
+                  ICON / LOGO (Lucide Icon Name OR Custom Image URL)
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    value={formData.icon}
+                    onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                    className="flex-1 bg-background border border-gold/20 p-3 text-foreground focus:border-gold outline-none"
+                    placeholder="e.g. Wifi, Compass, Trees, OR paste image URL..."
+                  />
+                  <label className="px-4 py-3 bg-gold/10 border border-gold/40 text-gold font-serif-sc text-xs shrink-0 cursor-pointer hover:bg-gold/20 flex items-center gap-2">
+                    {uploadingIcon ? <Loader2 size={16} className="animate-spin" /> : <UploadCloud size={16} />}
+                    {uploadingIcon ? "UPLOADING..." : "UPLOAD LOGO"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          handleIconUpload(e.target.files[0]);
+                        }
+                      }}
+                      disabled={uploadingIcon}
+                    />
+                  </label>
+                </div>
               </div>
-              
+
+              {/* Icon Preview */}
+              <div className="flex items-center gap-3 p-3 bg-background border border-gold/20 rounded-sm">
+                <span className="font-serif-sc text-xs text-gold">ICON PREVIEW:</span>
+                <div className="w-10 h-10 bg-gradient-gold text-royal-deep rounded-sm flex items-center justify-center shadow-gold font-bold">
+                  {formData.icon?.startsWith("http://") || formData.icon?.startsWith("https://") || formData.icon?.startsWith("/") ? (
+                    <img src={formData.icon} alt="Preview" className="w-6 h-6 object-contain" />
+                  ) : (
+                    (() => {
+                      const PreviewIcon = (LucideIcons as any)[formData.icon] || LucideIcons.Sparkles;
+                      return <PreviewIcon size={20} />;
+                    })()
+                  )}
+                </div>
+              </div>
+
               <div>
-                <label className="block font-serif-sc text-xs text-muted-foreground mb-2">QUICK SELECT ICON</label>
-                <div className="flex flex-wrap gap-2">
+                <label className="block font-serif-sc text-xs text-muted-foreground mb-2">QUICK SELECT BUILT-IN ICON (SAFARI, TOURS, PALACE)</label>
+                <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto no-scrollbar p-2 bg-background/50 border border-gold/10 rounded-sm">
                   {popularIcons.map((iconName) => {
                     const IconComponent = (LucideIcons as any)[iconName];
                     return (
                       <button
                         key={iconName}
                         onClick={() => setFormData({ ...formData, icon: iconName })}
-                        className={`p-3 border transition-colors ${
+                        className={`p-2.5 border transition-colors ${
                           formData.icon === iconName 
                             ? "bg-gold/20 border-gold text-gold" 
                             : "bg-background border-gold/20 text-muted-foreground hover:border-gold/50"
@@ -165,7 +235,7 @@ export default function AmenitiesCMS() {
                         title={iconName}
                         type="button"
                       >
-                        {IconComponent && <IconComponent size={20} />}
+                        {IconComponent && <IconComponent size={18} />}
                       </button>
                     );
                   })}
@@ -198,6 +268,7 @@ export default function AmenitiesCMS() {
           </div>
         ) : (
           amenities?.map((amenity) => {
+            const isCustomImage = amenity.icon?.startsWith("http://") || amenity.icon?.startsWith("https://") || amenity.icon?.startsWith("/");
             const IconComponent = (LucideIcons as any)[amenity.icon] || LucideIcons.Sparkles;
             
             return (
@@ -209,8 +280,12 @@ export default function AmenitiesCMS() {
                   <GripVertical size={24} />
                 </div>
                 
-                <div className="w-12 h-12 bg-gold/10 border border-gold/30 flex items-center justify-center text-gold">
-                  {IconComponent && <IconComponent size={24} />}
+                <div className="w-12 h-12 bg-gradient-gold text-royal-deep border border-gold/50 flex items-center justify-center rounded-sm shadow-gold">
+                  {isCustomImage ? (
+                    <img src={amenity.icon} alt={amenity.label} className="w-6 h-6 object-contain" />
+                  ) : (
+                    IconComponent && <IconComponent size={24} />
+                  )}
                 </div>
                 
                 <div className="flex-1">
