@@ -98,7 +98,7 @@ export const About = () => {
           <div className="mt-10 pt-2">
             <Link
               to="/about"
-              className="inline-flex items-center gap-2 font-serif-sc tracking-[0.3em] text-xs px-8 py-4 bg-gradient-gold text-royal-deep font-bold rounded-sm shadow-gold hover:scale-[1.02] transition-all duration-300 uppercase"
+              className="inline-flex items-center gap-2 font-serif-sc tracking-[0.3em] text-xs px-8 py-4 bg-heritage-brown text-white font-bold rounded-sm shadow-md hover:bg-heritage-orange hover:scale-[1.02] transition-all duration-300 uppercase"
             >
               DISCOVER OUR LEGACY →
             </Link>

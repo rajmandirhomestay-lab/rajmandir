@@ -72,7 +72,7 @@ const RoomBlock = ({ room, index }: { room: any; index: number }) => {
               <div className="font-display text-3xl text-heritage-gradient">{room.price}</div>
               <div className="font-serif-sc text-[10px] tracking-[0.3em] text-muted-foreground">PER NIGHT</div>
             </div>
-            <Link to={`/rooms/${room.slug}`} className="inline-block font-serif-sc tracking-[0.3em] text-xs px-7 py-4 bg-gradient-gold text-royal-deep rounded-sm hover:shadow-gold transition-all duration-700">
+            <Link to={`/rooms/${room.slug}`} className="inline-block font-serif-sc tracking-[0.3em] text-xs px-7 py-4 bg-heritage-brown text-white font-bold rounded-sm shadow-md hover:bg-heritage-orange transition-all duration-700">
               VIEW CHAMBER
             </Link>
           </div>

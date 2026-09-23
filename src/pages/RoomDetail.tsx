@@ -149,7 +149,7 @@ const RoomDetail = () => {
             </span>
             <Link
               to={`/booking?room=${room.id}`}
-              className="inline-flex items-center gap-3 font-serif-sc tracking-[0.3em] text-xs px-8 py-4 bg-gradient-gold text-royal-deep rounded-sm shadow-gold hover:scale-[1.03] transition-all duration-700"
+              className="inline-flex items-center gap-3 font-serif-sc tracking-[0.3em] text-xs px-8 py-4 bg-heritage-brown text-white font-bold rounded-sm shadow-md hover:bg-heritage-orange hover:scale-[1.03] transition-all duration-700"
             >
               RESERVE THIS CHAMBER <ChevronRight size={16} />
             </Link>
@@ -163,7 +163,7 @@ const RoomDetail = () => {
           <div className="text-center mb-12">
             <div className="eyebrow mb-3">★ THE GALLERY ★</div>
             <h2 className="font-display text-4xl md:text-5xl">Glimpses of the <span className="italic text-heritage-gradient">Chamber</span></h2>
-            <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold">❖</span></div>
+            <div className="divider-heritage mt-6 max-w-md mx-auto"><span className="text-heritage-orange">❖</span></div>
           </div>
 
           {/* Featured image */}
@@ -182,7 +182,7 @@ const RoomDetail = () => {
                 onClick={() => setActiveImg(i)}
                 className={cn(
                   "rd-gal-thumb relative aspect-[4/5] overflow-hidden jharokha-frame transition-all duration-700 hover:-translate-y-1",
-                  activeImg === i ? "ring-2 ring-gold shadow-gold scale-[1.02]" : "opacity-70 hover:opacity-100"
+                  activeImg === i ? "ring-2 ring-heritage-brown shadow-md scale-[1.02]" : "opacity-70 hover:opacity-100"
                 )}
               >
                 <img src={src} alt={`${room.name} thumbnail ${i + 1}`} className="w-full h-full object-cover" />
@@ -198,13 +198,13 @@ const RoomDetail = () => {
         <div className="relative max-w-5xl mx-auto text-center">
           <div className="rd-desc-line eyebrow mb-3">★ THE STORY OF THIS ROOM ★</div>
           <h2 className="rd-desc-line font-display text-4xl md:text-5xl mb-8">A chamber, <span className="italic text-heritage-gradient">a memory</span></h2>
-          <div className="rd-desc-line divider-gold max-w-md mx-auto mb-10"><span className="text-gold">❖</span></div>
+          <div className="rd-desc-line divider-heritage max-w-md mx-auto mb-10"><span className="text-heritage-orange">❖</span></div>
           <p className="rd-desc-line font-serif text-xl md:text-2xl leading-relaxed text-foreground/85 italic">{room.story}</p>
 
           <ul className="mt-14 grid md:grid-cols-3 gap-6 text-left">
             {room.highlights.map((h, i) => (
-              <li key={i} className="rd-desc-line relative p-6 bg-card/60 backdrop-blur-sm border border-gold/30 jharokha-frame">
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 bg-background text-gold font-display">✦</span>
+              <li key={i} className="rd-desc-line relative p-6 bg-card/60 backdrop-blur-sm border border-heritage-brown/30 jharokha-frame">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 bg-background text-heritage-orange font-display">✦</span>
                 <p className="font-serif italic text-lg text-foreground/85 mt-2">{h}</p>
               </li>
             ))}
@@ -227,11 +227,11 @@ const RoomDetail = () => {
       <section className="relative py-28 px-6 overflow-hidden">
         <div className="absolute inset-0 marble-texture" />
         <div className="relative max-w-4xl mx-auto">
-          <div className="relative p-10 md:p-14 bg-card/70 backdrop-blur-md border border-gold/40 shadow-frame text-center">
-            <span className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-gold" />
-            <span className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-gold" />
-            <span className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-gold" />
-            <span className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-gold" />
+          <div className="relative p-10 md:p-14 bg-card/70 backdrop-blur-md border border-heritage-brown/40 shadow-frame text-center">
+            <span className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-heritage-brown" />
+            <span className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-heritage-brown" />
+            <span className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-heritage-brown" />
+            <span className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-heritage-brown" />
 
             <div className="eyebrow mb-3">★ CHAMBER TARIFF ★</div>
             <h3 className="font-display text-3xl mb-6">From the Royal Ledger</h3>
@@ -250,11 +250,11 @@ const RoomDetail = () => {
               </div>
             )}
 
-            <div className="divider-gold max-w-md mx-auto my-8"><span className="text-gold">❖</span></div>
+            <div className="divider-heritage max-w-md mx-auto my-8"><span className="text-heritage-orange">❖</span></div>
 
             <Link
               to={`/booking?room=${room.id}`}
-              className="inline-flex items-center gap-3 font-serif-sc tracking-[0.3em] text-xs px-10 py-5 bg-gradient-gold text-royal-deep rounded-sm shadow-gold hover:scale-[1.03] transition-all duration-700"
+              className="inline-flex items-center gap-3 font-serif-sc tracking-[0.3em] text-xs px-10 py-5 bg-heritage-brown text-white font-bold rounded-sm shadow-md hover:bg-heritage-orange hover:scale-[1.03] transition-all duration-700"
             >
               <Sparkles size={16} /> RESERVE THIS CHAMBER <ChevronRight size={16} />
             </Link>

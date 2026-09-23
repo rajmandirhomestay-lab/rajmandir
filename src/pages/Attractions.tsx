@@ -130,7 +130,7 @@ const Attractions = () => {
            <div className="relative z-10 max-w-2xl mx-auto">
               <h2 className="font-display text-4xl text-foreground mb-8">Need a Royal Guide?</h2>
               <p className="font-serif italic text-lg text-muted-foreground mb-10">We can arrange private tours and cultural walks for all nearby attractions.</p>
-              <a href="/contact" className="inline-block font-serif-sc tracking-[0.3em] text-xs px-10 py-5 bg-gradient-gold text-royal-deep rounded-sm hover:shadow-gold transition-all duration-700">
+              <a href="/contact" className="inline-block font-serif-sc tracking-[0.3em] text-xs px-10 py-5 bg-heritage-brown text-white font-bold rounded-sm hover:bg-heritage-orange transition-all duration-700 shadow-md">
                  INQUIRE ABOUT TOURS
               </a>
            </div>
