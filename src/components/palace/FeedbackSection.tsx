@@ -71,10 +71,10 @@ export const FeedbackSection = () => {
       <div className="relative max-w-7xl mx-auto z-10">
         <div className="text-center mb-20">
           <div className="eyebrow mb-4 font-serif-sc text-[#b45309] tracking-[0.5em] text-xs font-bold uppercase">★ THE GUESTBOOK ★</div>
-          <h2 className="font-display text-5xl md:text-6xl text-[#091a28] font-bold">
-            Whispers from <span className="text-[#145992] italic">our guests</span>
+          <h2 className="font-display text-5xl md:text-6xl text-foreground font-bold">
+            Whispers from <span className="text-heritage-gradient italic">our guests</span>
           </h2>
-          <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-[#b45309] text-xl">❖</span></div>
+          <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold text-xl">❖</span></div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -93,23 +93,23 @@ const FeedbackCard = ({ quote, name, place }: { quote: string; name: string; pla
 
   return (
     <div
-      className="fs-card relative p-10 bg-white/95 backdrop-blur-md border border-[#e5dac9] shadow-md hover:border-[#145992] hover:shadow-xl transition-all duration-700 h-full flex flex-col rounded-sm"
+      className="fs-card relative p-10 bg-card/95 backdrop-blur-md border border-gold/20 shadow-md hover:border-gold hover:shadow-gold transition-all duration-700 h-full flex flex-col rounded-sm text-card-foreground"
       style={{ transformStyle: "preserve-3d" }}
     >
       <div className="absolute -top-5 left-1/2 -translate-x-1/2 w-10 h-6 jharokha bg-gradient-gold flex items-center justify-center text-royal-deep font-display text-xs shadow-md">
         ❖
       </div>
-      <div className="font-display text-[#145992] text-5xl leading-none mb-3 opacity-90">“</div>
+      <div className="font-display text-gold text-5xl leading-none mb-3 opacity-90">“</div>
       
       <div className="flex-grow flex flex-col">
-        <blockquote className={`font-serif italic text-lg leading-relaxed text-[#1c354d] transition-all duration-500 ${isExpanded ? '' : 'line-clamp-3'}`}>
+        <blockquote className={`font-serif italic text-lg leading-relaxed text-foreground/90 transition-all duration-500 ${isExpanded ? '' : 'line-clamp-3'}`}>
           {quote}
         </blockquote>
         
         {isLongText && (
           <button 
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-left mt-2 text-[#145992] font-serif-sc tracking-widest text-[10px] hover:text-[#091a28] transition-colors font-semibold"
+            className="text-left mt-2 text-gold font-serif-sc tracking-widest text-[10px] hover:text-foreground transition-colors font-semibold"
           >
             {isExpanded ? "READ LESS ↑" : "READ MORE ↓"}
           </button>

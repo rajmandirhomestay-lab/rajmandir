@@ -89,7 +89,7 @@ export const Rooms = () => {
         <div className="text-center mb-16 md:mb-24 rooms-eyebrow">
           <div className="font-serif-sc text-gold tracking-[0.5em] text-xs md:text-sm mb-4 uppercase font-bold">★ The Chambers ★</div>
           <h2 className="font-display text-5xl md:text-7xl text-foreground font-bold">
-            Royal <span className="text-gold-gradient italic">Quarters</span>
+            Royal <span className="text-heritage-gradient italic">Quarters</span>
           </h2>
           <div className="divider-gold max-w-md mx-auto mt-6">
             <span className="font-display text-gold text-xl">❖</span>

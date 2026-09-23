@@ -74,7 +74,7 @@ const Stories = () => {
     return () => ctx.revert();
   }, [isLoading, entries]);
 
-  if (isLoading) return <div className="min-h-screen bg-royal-deep flex items-center justify-center text-gold">Loading...</div>;
+  if (isLoading) return <div className="min-h-screen bg-background flex items-center justify-center text-gold">Loading...</div>;
 
   return (
     <PageShell

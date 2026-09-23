@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { X } from "lucide-react";
@@ -51,6 +52,7 @@ const aspectRatios = [
 
 export const Gallery = () => {
   const ref = useRef<HTMLElement>(null);
+  const navigate = useNavigate();
   const [active, setActive] = useState<number | null>(null);
   const { data: dbGallery } = useGallery();
 
@@ -114,7 +116,7 @@ export const Gallery = () => {
         <div className="text-center mb-16">
           <div className="eyebrow mb-4 font-serif-sc text-gold tracking-[0.5em] text-xs font-bold uppercase">★ CAPTURED MEMORIES ★</div>
           <h2 className="font-display text-5xl md:text-6xl text-foreground font-bold">
-            A Glimpse of <span className="text-gold-gradient italic">Raj Mandir</span>
+            A Glimpse of <span className="text-heritage-gradient italic">Raj Mandir</span>
           </h2>
           <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold text-xl">❖</span></div>
           <p className="font-serif italic mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
@@ -127,7 +129,7 @@ export const Gallery = () => {
           {activePhotos.map((p, i) => (
             <div key={i} className="break-inside-avoid">
               <button
-                onClick={() => setActive(i)}
+                onClick={() => navigate('/corner')}
                 className={`g-tile group relative w-full overflow-hidden rounded-sm shadow-md hover:shadow-gold transition-all duration-500 border border-gold/20 block ${p.aspect}`}
                 aria-label={`View photo ${i + 1}`}
               >

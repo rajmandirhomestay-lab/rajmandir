@@ -23,10 +23,6 @@ export const About = () => {
 
   const bgClass = bgMode === 'royal' 
     ? 'bg-royal-deep text-white' 
-    : bgMode === 'white' 
-    ? 'bg-white text-[#091a28]' 
-    : bgMode === 'cream' 
-    ? 'bg-[#faf6f0] text-[#091a28]' 
     : 'bg-background text-foreground';
 
   useEffect(() => {
@@ -71,9 +67,9 @@ export const About = () => {
 
         <div className="about-text">
           <div className="font-serif-sc text-gold tracking-[0.5em] text-xs mb-4 font-bold uppercase">★ OUR STORY ★</div>
-          <h2 className="font-display text-5xl md:text-6xl leading-tight font-bold" style={textColor ? { color: textColor } : undefined}>
+          <h2 className="font-display text-5xl md:text-6xl leading-tight font-bold">
             {sectionTitle.includes("Warm") ? (
-              <>A Legacy of <span className="text-primary italic" style={textColor ? { color: textColor } : undefined}>Warm Welcome</span>.</>
+              <>A Legacy of <span className="text-heritage-gradient italic">Warm Welcome</span>.</>
             ) : sectionTitle}
           </h2>
           <div className="divider-gold mt-6 max-w-xs">

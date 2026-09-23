@@ -61,11 +61,11 @@ export const Offers = () => {
       <div className="relative max-w-7xl mx-auto z-10">
         <div className="text-center mb-24">
           <div className="font-serif-sc text-[#b45309] tracking-[0.4em] text-xs mb-4 uppercase font-bold">THE COLLECTION</div>
-          <h2 className="font-display text-5xl md:text-6xl text-[#091a28] font-bold">
-            Curated <span className="text-[#145992] italic">Experiences</span>
+          <h2 className="font-display text-5xl md:text-6xl text-foreground font-bold">
+            Curated <span className="text-heritage-gradient italic">Experiences</span>
           </h2>
-          <div className="divider-gold mt-6 max-w-xs mx-auto"><span className="text-[#b45309] text-sm">❖</span></div>
-          <p className="font-serif italic mt-6 text-lg md:text-xl text-[#2c4d6f] max-w-2xl mx-auto font-medium">
+          <div className="divider-gold mt-6 max-w-xs mx-auto"><span className="text-gold text-sm">❖</span></div>
+          <p className="font-serif italic mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
             Immerse yourself in the cultural tapestry of Jodhpur through curated royal experiences.
           </p>
         </div>
@@ -81,8 +81,8 @@ export const Offers = () => {
             <CarouselContent className="-ml-4 md:-ml-8">
               {displayExperiences.map((exp: any) => (
                 <CarouselItem key={exp.id} className="pl-4 md:pl-8 sm:basis-1/2 md:basis-1/3">
-                  <div className="experience-card group h-full flex flex-col bg-white/95 backdrop-blur-md p-4 rounded-sm border border-[#e5dac9] hover:border-[#145992] transition-all duration-500 shadow-md hover:shadow-xl">
-                      <div className="aspect-[4/3] mb-6 overflow-hidden shadow-frame border border-[#e5dac9] relative shrink-0">
+                  <div className="experience-card group h-full flex flex-col bg-card/95 backdrop-blur-md p-4 rounded-sm border border-gold/20 hover:border-gold transition-all duration-500 shadow-md hover:shadow-gold text-card-foreground">
+                      <div className="aspect-[4/3] mb-6 overflow-hidden shadow-frame border border-gold/20 relative shrink-0">
                             <UnifiedSlider 
                               images={exp.experience_images?.length > 0 ? exp.experience_images.map((img: any) => img.image_url) : [roomBg]} 
                               settings={finalSliderSettings as unknown as SliderSettings}
@@ -90,16 +90,16 @@ export const Offers = () => {
                             />
                       </div>
                       <div className="space-y-4 flex-grow flex flex-col px-2 pb-2">
-                          <div className="flex items-center gap-2 text-[#145992] font-serif-sc text-[9px] md:text-[10px] tracking-widest uppercase font-bold">
-                            <MapPin size={12} className="shrink-0 text-[#145992]" /> {exp.type || "ROYAL EXPERIENCE"}
+                          <div className="flex items-center gap-2 text-gold font-serif-sc text-[9px] md:text-[10px] tracking-widest uppercase font-bold">
+                            <MapPin size={12} className="shrink-0 text-gold" /> {exp.type || "ROYAL EXPERIENCE"}
                           </div>
-                          <h3 className="font-display text-2xl md:text-3xl text-[#091a28] group-hover:text-[#145992] transition-colors duration-500 font-bold">{exp.title}</h3>
-                          <div className="w-8 h-px bg-[#145992]/30" />
-                          <p className="font-serif text-sm md:text-base text-[#2c4d6f] leading-relaxed italic line-clamp-3 flex-grow font-medium">
+                          <h3 className="font-display text-2xl md:text-3xl text-foreground group-hover:text-gold transition-colors duration-500 font-bold">{exp.title}</h3>
+                          <div className="w-8 h-px bg-gold/30" />
+                          <p className="font-serif text-sm md:text-base text-muted-foreground leading-relaxed italic line-clamp-3 flex-grow font-medium">
                             {exp.description || exp.short_description || exp.full_description}
                           </p>
-                          <div className="flex flex-wrap items-center gap-8 pt-4 border-t border-[#e5dac9] mt-auto">
-                            <Link to="/experiences" className="ml-auto font-serif-sc text-[9px] md:text-[10px] tracking-widest text-[#145992] hover:text-[#091a28] transition-colors font-bold">
+                          <div className="flex flex-wrap items-center gap-8 pt-4 border-t border-gold/10 mt-auto">
+                            <Link to="/experiences" className="ml-auto font-serif-sc text-[9px] md:text-[10px] tracking-widest text-gold hover:text-foreground transition-colors font-bold">
                                 DISCOVER MORE →
                             </Link>
                           </div>

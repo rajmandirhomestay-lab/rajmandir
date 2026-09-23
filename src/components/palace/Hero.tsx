@@ -39,13 +39,13 @@ export const Hero = ({ start }: { start: boolean }) => {
         'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || ""}`
       }
     })
-    .then(res => res.json())
-    .then(data => {
-      if (data && data.length > 0) {
-        setSliderSettings(prev => ({ ...prev, ...data[0] }));
-      }
-    })
-    .catch(() => {});
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          setSliderSettings(prev => ({ ...prev, ...data[0] }));
+        }
+      })
+      .catch(() => { });
   }, []);
 
   const { data: pageHero } = usePageHero("home");
@@ -53,7 +53,7 @@ export const Hero = ({ start }: { start: boolean }) => {
 
   useEffect(() => {
     if (pageHero) {
-      const combinedTitle = pageHero.title 
+      const combinedTitle = pageHero.title
         ? (pageHero.accent ? `${pageHero.title} ${pageHero.accent}` : pageHero.title)
         : "Where Heritage Meets Hospitality";
 
@@ -160,8 +160,8 @@ export const Hero = ({ start }: { start: boolean }) => {
   return (
     <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center pt-28 pb-20 bg-royal-deep">
       {/* Hero background image container - single original hero image, NEVER disappears */}
-      <div 
-        ref={imgRef} 
+      <div
+        ref={imgRef}
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000"
         style={{ backgroundImage: `url(${currentHeroImage})` }}
       >
@@ -177,13 +177,13 @@ export const Hero = ({ start }: { start: boolean }) => {
       <div ref={containerRef} className="relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-6 text-center">
         <div
           ref={archRef}
-          className="mx-auto mb-8 w-28 h-16 jharokha bg-gradient-gold opacity-95 shadow-lg relative"
+          className="mx-auto mb-8 w-28 h-16 jharokha bg-gradient-heritage opacity-95 shadow-lg relative"
         >
           <div className="absolute inset-[3px] jharokha bg-royal-deep" />
-          <div className="absolute inset-0 jharokha animate-glow-pulse bg-gradient-gold opacity-30" />
+          <div className="absolute inset-0 jharokha animate-glow-pulse bg-gradient-heritage opacity-30" />
         </div>
 
-        <div className="font-serif-sc text-gold tracking-[0.5em] text-xs sm:text-sm mb-6 font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
+        <div className="font-serif-sc text-heritage-orange tracking-[0.5em] text-xs sm:text-sm mb-6 font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
           ★ {cmsData.eyebrow ? cmsData.eyebrow.toUpperCase() : "HERITAGE HOTEL · JODHPUR"} ★
         </div>
 
@@ -208,8 +208,8 @@ export const Hero = ({ start }: { start: boolean }) => {
           </h1>
         </div>
 
-        <div className="divider-gold mt-6 max-w-md mx-auto opacity-90">
-          <span className="font-display text-gold text-xl drop-shadow-md">❖</span>
+        <div className="divider-heritage mt-6 max-w-md mx-auto opacity-90">
+          <span className="font-display text-heritage-orange text-xl drop-shadow-md">❖</span>
         </div>
 
         <div ref={subRef} className="mt-6 font-serif italic text-lg md:text-2xl text-ivory/95 max-w-3xl mx-auto leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] font-medium">
@@ -219,22 +219,22 @@ export const Hero = ({ start }: { start: boolean }) => {
         <div ref={ctaRef} className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-5">
           <a
             href="/booking"
-            className="group relative px-10 py-4 bg-gradient-gold text-royal-deep font-serif-sc tracking-[0.3em] text-xs sm:text-sm font-bold rounded-sm shadow-gold hover:scale-[1.02] transition-all duration-500"
+            className="group relative px-10 py-4 bg-gradient-heritage text-heritage-brown font-serif-sc tracking-[0.3em] text-xs sm:text-sm font-bold rounded-sm shadow-royal hover:scale-[1.02] transition-all duration-500"
           >
             PLAN YOUR STAY
           </a>
           <a
             href="/about"
-            className="px-10 py-4 border-2 border-gold/70 text-white font-serif-sc tracking-[0.3em] text-xs sm:text-sm font-bold rounded-sm hover:bg-gold/20 hover:border-gold transition-all duration-500 bg-royal-deep/60 backdrop-blur-md shadow-md"
+            className="px-10 py-4 border-2 border-heritage-brown/70 text-white font-serif-sc tracking-[0.3em] text-xs sm:text-sm font-bold rounded-sm hover:bg-heritage-brown/20 hover:border-heritage-brown transition-all duration-500 bg-royal-deep/60 backdrop-blur-md shadow-md"
           >
             OUR STORY
           </a>
         </div>
       </div>
 
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-gold font-serif-sc text-[10px] tracking-[0.5em] flex flex-col items-center gap-2 drop-shadow-md font-bold">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-heritage-orange font-serif-sc text-[10px] tracking-[0.5em] flex flex-col items-center gap-2 drop-shadow-md font-bold">
         SCROLL
-        <div className="h-10 w-[2px] bg-gradient-to-b from-gold to-transparent animate-pulse" />
+        <div className="h-10 w-[2px] bg-gradient-to-b from-heritage-orange to-transparent animate-pulse" />
       </div>
     </section>
   );

@@ -121,7 +121,7 @@ export default function Payment() {
   };
 
   if (loading || settingsLoading) {
-    return <div className="min-h-screen bg-royal-deep flex items-center justify-center text-gold"><Loader2 className="animate-spin" /></div>;
+    return <div className="min-h-screen bg-background flex items-center justify-center text-gold"><Loader2 className="animate-spin" /></div>;
   }
 
   if (settings && settings.manual_payment_enabled === false) {

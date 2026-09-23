@@ -149,7 +149,7 @@ export const Navbar = () => {
           <div className="hidden lg:flex items-center shrink-0 ml-4 xl:ml-6">
             <Link
               to="/booking"
-              className="font-serif-sc tracking-wider xl:tracking-[0.18em] text-[10px] lg:text-[11px] xl:text-xs px-3.5 lg:px-4 xl:px-5 py-2 border border-gold text-royal-deep bg-gradient-gold font-bold hover:shadow-gold hover:scale-[1.03] transition-all duration-300 shadow-md whitespace-nowrap shrink-0"
+              className="font-serif-sc tracking-wider xl:tracking-[0.18em] text-[10px] lg:text-[11px] xl:text-xs px-3.5 lg:px-4 xl:px-5 py-2 border border-heritage-brown text-white bg-heritage-brown font-bold hover:bg-heritage-orange hover:border-heritage-orange hover:scale-[1.03] transition-all duration-300 shadow-md whitespace-nowrap shrink-0 rounded-sm"
             >
               RESERVE
             </Link>
@@ -159,7 +159,7 @@ export const Navbar = () => {
           <div className="flex lg:hidden items-center gap-3 shrink-0">
             <Link
               to="/booking"
-              className="font-serif-sc tracking-[0.2em] text-xs px-3 py-1.5 border border-gold text-royal-deep bg-gradient-gold font-bold hover:shadow-gold transition-all duration-300 shadow-sm whitespace-nowrap"
+              className="font-serif-sc tracking-[0.2em] text-xs px-3 py-1.5 border border-heritage-brown text-white bg-heritage-brown font-bold hover:bg-heritage-orange transition-all duration-300 shadow-sm whitespace-nowrap rounded-sm"
             >
               RESERVE
             </Link>
@@ -209,7 +209,7 @@ export const Navbar = () => {
             <div className="m-link divider-gold w-32 mt-2"><span className="text-gold">❖</span></div>
             <Link
               to="/booking"
-              className="m-link mt-2 px-10 py-4 bg-gradient-gold text-royal-deep font-bold font-serif-sc tracking-[0.3em] text-sm shadow-gold hover:-translate-y-1 transition-transform duration-500"
+              className="m-link mt-2 px-10 py-4 bg-heritage-brown text-white border border-heritage-orange font-bold font-serif-sc tracking-[0.3em] text-sm shadow-md hover:bg-heritage-orange hover:-translate-y-1 transition-all duration-500 rounded-sm"
             >
               RESERVE A CHAMBER
             </Link>

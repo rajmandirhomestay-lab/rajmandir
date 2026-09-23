@@ -165,7 +165,7 @@ export const FAQ = () => {
             ))}
           </div>
 
-          <div className="mt-20 text-center border border-gold/30 p-10 bg-royal-deep/50 shadow-gold backdrop-blur-sm relative overflow-hidden">
+          <div className="mt-20 text-center border border-gold/30 p-10 bg-card/60 shadow-gold backdrop-blur-sm relative overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--gold)/0.1),transparent_70%)] pointer-events-none" />
             <h3 className="font-display text-3xl text-foreground mb-4">Still seeking answers?</h3>
             <p className="font-serif text-muted-foreground mb-8">Our concierge is at your service round the clock.</p>

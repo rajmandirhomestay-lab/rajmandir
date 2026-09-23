@@ -64,11 +64,11 @@ const AboutPage = () => {
         <DustParticles count={10} />
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div className="s1-text space-y-6">
-            <h2 className="font-display text-4xl md:text-5xl text-royal-deep">
+            <h2 className="font-display text-4xl md:text-5xl text-foreground font-bold">
               {rajMandirContent?.title || "About Raj Mandir"}
             </h2>
             {rajMandirContent?.subtitle && (
-              <h3 className="font-serif italic text-xl md:text-2xl text-gold-gradient">
+              <h3 className="font-serif italic text-xl md:text-2xl text-heritage-gradient">
                 {rajMandirContent.subtitle}
               </h3>
             )}
@@ -100,7 +100,7 @@ const AboutPage = () => {
             />
           </div>
           <div className="s2-text md:order-2 order-1 space-y-6">
-            <h2 className="font-display text-4xl md:text-5xl text-royal-deep">
+            <h2 className="font-display text-4xl md:text-5xl text-foreground font-bold">
               {experienceContent?.title || "More Than Just a Stay"}
             </h2>
             {experienceContent?.subtitle && (
@@ -121,18 +121,18 @@ const AboutPage = () => {
         <section ref={featuresRef} className="py-24 md:py-32 px-6 bg-background">
           <div className="max-w-7xl mx-auto">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="font-display text-4xl md:text-5xl text-royal-deep mb-6">Why Choose Us</h2>
+              <h2 className="font-display text-4xl md:text-5xl text-foreground font-bold mb-6">Why Choose Us</h2>
               <div className="divider-gold mx-auto"><span className="text-gold">❖</span></div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {features.map((feature: any) => {
                 const Icon = ICON_MAP[feature.icon] || CheckCircle;
                 return (
-                  <div key={feature.id} className="feature-card p-8 bg-white border border-gold/10 shadow-sm rounded flex flex-col items-center text-center hover:shadow-md hover:border-gold/30 transition-all duration-300">
+                  <div key={feature.id} className="feature-card p-8 bg-card text-card-foreground border border-gold/10 shadow-sm rounded flex flex-col items-center text-center hover:shadow-md hover:border-gold/30 transition-all duration-300">
                     <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center text-gold mb-6">
                       <Icon size={28} strokeWidth={1.5} />
                     </div>
-                    <h3 className="font-display text-2xl text-royal-deep mb-3">{feature.title}</h3>
+                    <h3 className="font-display text-2xl text-foreground font-bold mb-3">{feature.title}</h3>
                     <p className="font-serif text-muted-foreground">{feature.description}</p>
                   </div>
                 );

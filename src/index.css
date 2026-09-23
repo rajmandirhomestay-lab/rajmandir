@@ -47,9 +47,12 @@
     --royal-deep: 210 60% 10%; /* #091a28 */
     --ivory: 40 30% 97%;
     --saffron: 28 80% 55%;
+    --heritage-orange: 27 83% 42%; /* #c45b0a — burnt orange from the OUR STORY title */
+    --heritage-brown: 20 65% 28%; /* #763a19 — deep heritage brown */
 
     --gradient-royal: linear-gradient(135deg, #091a28, #144675, #0b2238);
     --gradient-gold: linear-gradient(135deg, hsl(40 75% 42%), hsl(42 85% 52%), hsl(36 75% 38%));
+    --gradient-heritage: linear-gradient(135deg, #c45b0a, #d4730e, #a84e08);
     --gradient-ivory: linear-gradient(135deg, #faf6f0, #f3efe6);
     --gradient-sky: linear-gradient(135deg, #f0f7fc, #e1effa);
 
@@ -138,6 +141,15 @@
   /* Gold gradient text */
   .text-gold-gradient {
     background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* Heritage orange-brown gradient text for section titles */
+  .text-heritage-gradient {
+    background: var(--gradient-heritage);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -261,8 +273,14 @@
   .font-display { font-family: 'Cinzel', serif; }
   .font-serif-sc { font-family: 'Cormorant SC', serif; }
 
+  .text-heritage-orange { color: hsl(var(--heritage-orange)); }
+  .text-heritage-brown { color: hsl(var(--heritage-brown)); }
+  .bg-gradient-heritage { background-image: var(--gradient-heritage); }
+
   .bg-gradient-royal { background-image: var(--gradient-royal); }
   .bg-gradient-gold { background-image: var(--gradient-gold); }
+.bg-heritage-brown { background-color: hsl(var(--heritage-brown)); }
+.border-heritage-brown { border-color: hsl(var(--heritage-brown)); }
   .bg-gradient-night { background-image: var(--gradient-night); }
 
   .shadow-royal { box-shadow: var(--shadow-royal); }

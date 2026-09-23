@@ -19,6 +19,16 @@ export interface ThemeConfig {
 
 export const PRESET_THEMES: ThemeConfig[] = [
   {
+    id: "desert-sandstone",
+    name: "Thar Desert Sandstone & Ochre",
+    background: "#f7efe2",
+    foreground: "#3b260f",
+    card: "#fffdf9",
+    cardFg: "#3b260f",
+    primary: "#b45309",
+    gold: "#d97706",
+  },
+  {
     id: "blue-cream",
     name: "Royal Blue & Sandstone Cream",
     background: "#faf6f0",
@@ -107,16 +117,6 @@ export const PRESET_THEMES: ThemeConfig[] = [
     cardFg: "#0f172a",
     primary: "#1e40af",
     gold: "#64748b",
-  },
-  {
-    id: "desert-sandstone",
-    name: "Thar Desert Sandstone & Ochre",
-    background: "#f7efe2",
-    foreground: "#3b260f",
-    card: "#fffdf9",
-    cardFg: "#3b260f",
-    primary: "#b45309",
-    gold: "#d97706",
   },
 ];
 

@@ -273,7 +273,7 @@ export default function PageHeroesCMS() {
               />
             </div>
             <div>
-              <label className="font-serif-sc text-[10px] tracking-widest text-gold block mb-2 uppercase">ACCENT WORD (Gold & Italic)</label>
+              <label className="font-serif-sc text-[10px] tracking-widest text-heritage-orange block mb-2 uppercase font-bold">ACCENT WORD (Orange & Italic)</label>
               <input 
                 type="text" 
                 value={currentHero.accent || ""} 

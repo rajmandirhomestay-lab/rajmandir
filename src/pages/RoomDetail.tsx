@@ -59,7 +59,7 @@ const RoomDetail = () => {
     return () => ctx.revert();
   }, [dbRoom, isLoading]);
 
-  if (isLoading) return <div className="min-h-screen bg-royal-deep flex items-center justify-center text-gold">Loading...</div>;
+  if (isLoading) return <div className="min-h-screen bg-background flex items-center justify-center text-gold">Loading...</div>;
   if (!dbRoom) return <Navigate to="/rooms" replace />;
 
   const room = {
@@ -122,7 +122,7 @@ const RoomDetail = () => {
           <div className="rd-eyebrow eyebrow mb-4">★ ROYAL CHAMBER · {room.sanskrit} ★</div>
           <h1 className="rd-title font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.95] text-ivory drop-shadow-[0_4px_30px_hsl(var(--royal-deep)/0.8)] max-w-4xl">
             {room.name.split(" ").map((w, wi) => (
-              <span key={wi} className={cn("inline-block overflow-hidden align-bottom mr-3", wi === 1 && "italic text-gold-gradient")}>
+              <span key={wi} className={cn("inline-block overflow-hidden align-bottom mr-3", wi === 1 && "italic text-heritage-gradient")}>
                 {w.split("").map((c, i) => (
                   <span key={i} className="inline-block">{c}</span>
                 ))}
@@ -162,7 +162,7 @@ const RoomDetail = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="eyebrow mb-3">★ THE GALLERY ★</div>
-            <h2 className="font-display text-4xl md:text-5xl">Glimpses of the <span className="italic text-gold-gradient">Chamber</span></h2>
+            <h2 className="font-display text-4xl md:text-5xl">Glimpses of the <span className="italic text-heritage-gradient">Chamber</span></h2>
             <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold">❖</span></div>
           </div>
 
@@ -197,7 +197,7 @@ const RoomDetail = () => {
         <div className="absolute inset-0 stone-texture" />
         <div className="relative max-w-5xl mx-auto text-center">
           <div className="rd-desc-line eyebrow mb-3">★ THE STORY OF THIS ROOM ★</div>
-          <h2 className="rd-desc-line font-display text-4xl md:text-5xl mb-8">A chamber, <span className="italic text-gold-gradient">a memory</span></h2>
+          <h2 className="rd-desc-line font-display text-4xl md:text-5xl mb-8">A chamber, <span className="italic text-heritage-gradient">a memory</span></h2>
           <div className="rd-desc-line divider-gold max-w-md mx-auto mb-10"><span className="text-gold">❖</span></div>
           <p className="rd-desc-line font-serif text-xl md:text-2xl leading-relaxed text-foreground/85 italic">{room.story}</p>
 
@@ -240,7 +240,7 @@ const RoomDetail = () => {
               {room.oldPrice && (
                 <span className="font-serif italic text-2xl text-muted-foreground line-through">₹ {room.oldPrice.toLocaleString("en-IN")}</span>
               )}
-              <span className="font-display text-6xl md:text-7xl text-gold-gradient">₹ {room.price.toLocaleString("en-IN")}</span>
+              <span className="font-display text-6xl md:text-7xl text-heritage-gradient">₹ {room.price.toLocaleString("en-IN")}</span>
             </div>
             <div className="font-serif-sc text-[11px] tracking-[0.4em] text-muted-foreground">PER NIGHT · TAXES INCLUSIVE</div>
 
@@ -268,7 +268,7 @@ const RoomDetail = () => {
         <div className="relative max-w-7xl mx-auto">
           <div className="text-center mb-14">
             <div className="eyebrow mb-3">★ OTHER CHAMBERS ★</div>
-            <h2 className="font-display text-4xl md:text-5xl text-ivory">Continue your <span className="italic text-gold-gradient">palace tour</span></h2>
+            <h2 className="font-display text-4xl md:text-5xl text-ivory">Continue your <span className="italic text-heritage-gradient">palace tour</span></h2>
             <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold">❖</span></div>
           </div>
 
@@ -284,7 +284,7 @@ const RoomDetail = () => {
                   <div className="font-display text-3xl text-ivory">{r.name}</div>
                   <div className="font-serif italic text-ivory/70 mt-1">{r.tagline}</div>
                   <div className="mt-4 flex items-center justify-between">
-                    <span className="font-display text-2xl text-gold-gradient">₹ {r.price.toLocaleString("en-IN")}</span>
+                    <span className="font-display text-2xl text-heritage-gradient">₹ {r.price.toLocaleString("en-IN")}</span>
                     <span className="font-serif-sc text-[10px] tracking-[0.3em] text-gold flex items-center gap-2 group-hover:gap-4 transition-all">
                       DISCOVER <ChevronRight size={14} />
                     </span>
@@ -325,7 +325,7 @@ const Stat = ({ icon, k, v }: { icon: React.ReactNode; k: string; v: string }) =
 
 const CapacityCard = ({ label, count, sub }: { label: string; count: number; sub: string }) => (
   <div className="text-center p-8 bg-card/10 backdrop-blur-sm border border-gold/30">
-    <div className="font-display text-7xl text-gold-gradient">{count}</div>
+    <div className="font-display text-7xl text-heritage-gradient">{count}</div>
     <div className="eyebrow mt-3">★ {label} ★</div>
     <div className="font-serif italic text-ivory/70 mt-2">{sub}</div>
   </div>

@@ -201,14 +201,14 @@ export default function AttractionDetail() {
             <div className="sticky top-28 space-y-8">
               
               {/* Card 1: Staying in Jodhpur? */}
-              <div className="bg-royal-deep text-white p-8 border border-gold/40 shadow-royal rounded-sm space-y-6">
+              <div className="bg-card text-card-foreground p-8 border border-gold/40 shadow-royal rounded-sm space-y-6">
                 <div className="font-serif-sc text-gold tracking-[0.4em] text-[10px] uppercase font-bold">
                   STAYING IN JODHPUR?
                 </div>
-                <h4 className="font-display text-3xl text-white font-bold leading-tight">
+                <h4 className="font-display text-3xl text-foreground font-bold leading-tight">
                   Raj Mandir Homestay
                 </h4>
-                <p className="font-serif text-sm text-ivory/80 leading-relaxed italic">
+                <p className="font-serif text-sm text-muted-foreground leading-relaxed italic">
                   A 19th-century heritage hotel in Navchokiya — the old city's oldest quarter, 4 minutes from Mehrangarh Fort.
                 </p>
                 <div className="space-y-3 pt-2">

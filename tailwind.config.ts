@@ -60,6 +60,8 @@ export default {
         },
         ivory: "hsl(var(--ivory))",
         saffron: "hsl(var(--saffron))",
+        'heritage-orange': "hsl(var(--heritage-orange))",
+        'heritage-brown': "hsl(var(--heritage-brown))",
       },
       borderRadius: {
         lg: "var(--radius)",

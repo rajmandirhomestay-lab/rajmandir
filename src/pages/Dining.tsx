@@ -112,7 +112,7 @@ const Dining = () => {
            <div className="max-w-7xl mx-auto space-y-32">
               {areas?.map((area, idx) => (
                  <div key={area.id} className={`flex flex-col ${idx % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-16 lg:gap-24`}>
-                    <div className="w-full md:w-3/5 aspect-[16/10] overflow-hidden border border-gold/20 shadow-frame relative group">
+                    <div className="w-full md:w-3/5 aspect-[16/10] overflow-hidden jharokha-frame border border-heritage-brown/30 shadow-frame relative group">
                        {sliderSettings && (
                          <UnifiedSlider 
                             images={area.dining_area_images?.length > 0 ? area.dining_area_images.map((img: any) => img.image_url) : [heroImgFallbackCurrent]} 
@@ -120,19 +120,19 @@ const Dining = () => {
                             className="w-full h-full"
                          />
                        )}
-                       <div className="absolute top-6 left-6 z-20 px-4 py-1 bg-royal-deep/80 backdrop-blur-md border border-gold/30 text-gold font-display text-sm">
+                       <div className="absolute top-6 left-6 z-20 px-4 py-1 bg-royal-deep/80 backdrop-blur-md border border-heritage-brown/40 text-heritage-orange font-display text-sm">
                           {String(idx + 1).padStart(2, '0')}
                        </div>
                     </div>
                     
                     <div className="w-full md:w-2/5 editorial-text">
-                       <div className="font-serif-sc text-gold tracking-[0.4em] text-xs mb-6 uppercase">
+                       <div className="font-serif-sc text-heritage-orange tracking-[0.4em] text-xs mb-6 uppercase">
                           {area.theme_type} · {area.tagline}
                        </div>
                        <h2 className="font-display text-5xl md:text-6xl text-foreground mb-8 leading-tight">
                           {area.title}
                        </h2>
-                       <div className="w-12 h-px bg-gold mb-8" />
+                       <div className="w-12 h-px bg-heritage-orange mb-8" />
                        <p className="font-serif text-lg text-muted-foreground leading-relaxed mb-6 italic">
                           {area.description}
                        </p>
@@ -143,49 +143,49 @@ const Dining = () => {
         </section>
 
         {/* Section 2: Special Dishes Showcase */}
-        <section className="relative py-20 md:py-32 px-4 md:px-6 bg-card/30 border-y border-gold/10 overflow-hidden">
+        <section className="relative py-20 md:py-32 px-4 md:px-6 bg-card/30 border-y border-heritage-brown/20 overflow-hidden">
           <div className="absolute inset-0 lattice-pattern opacity-5" />
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="text-center mb-16 md:mb-24 editorial-text">
-              <div className="font-serif-sc text-gold tracking-[0.4em] text-xs mb-4 uppercase">SIGNATURE CREATIONS</div>
+              <div className="font-serif-sc text-heritage-orange tracking-[0.4em] text-xs mb-4 uppercase">SIGNATURE CREATIONS</div>
               <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-foreground mb-4">
-                The Royal <span className="text-gold-gradient italic">Menu</span>
+                The Royal <span className="text-heritage-gradient italic">Menu</span>
               </h2>
-              <div className="divider-gold mt-6 max-w-xs mx-auto"><span className="text-gold text-sm">❖</span></div>
+              <div className="divider-heritage mt-6 max-w-xs mx-auto"><span className="text-heritage-orange text-sm">❖</span></div>
             </div>
 
             {dishesLoading ? (
               <div className="flex justify-center py-12">
-                <Loader2 className="animate-spin text-gold w-8 h-8" />
+                <Loader2 className="animate-spin text-heritage-orange w-8 h-8" />
               </div>
             ) : dishesError ? (
               <div className="text-center py-12 max-w-xl mx-auto space-y-4">
-                <div className="font-serif text-gold text-lg font-bold">Supabase Row Level Security (RLS) Policy Required</div>
+                <div className="font-serif text-heritage-orange text-lg font-bold">Supabase Row Level Security (RLS) Policy Required</div>
                 <p className="font-serif text-sm text-muted-foreground">
-                  The dishes exist in the admin database but public visitors need read permission. Run the script <code className="bg-royal-deep text-gold px-2 py-1 rounded border border-gold/30">src/sql/dishes_rls.sql</code> in your Supabase SQL Editor.
+                  The dishes exist in the admin database but public visitors need read permission. Run the script <code className="bg-royal-deep text-heritage-orange px-2 py-1 rounded border border-heritage-brown/30">src/sql/dishes_rls.sql</code> in your Supabase SQL Editor.
                 </p>
               </div>
             ) : dishes && dishes.length > 0 ? (
               <div className="dishes-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
                 {dishes.map((dish) => (
                   <div key={dish.id} className="dish-card group relative">
-                    <div className="aspect-square mb-6 overflow-hidden jharokha-frame border border-gold/20 shadow-gold transition-transform duration-700 group-hover:scale-[1.02] bg-royal-deep/30">
+                    <div className="aspect-square mb-6 overflow-hidden jharokha-frame border border-heritage-brown/30 shadow-md transition-transform duration-700 group-hover:scale-[1.02] bg-royal-deep/30">
                       {dish.image_url ? (
                         <img src={dish.image_url} alt={dish.name} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gold/5">
-                          <Utensils className="text-gold/40 w-12 h-12" />
+                        <div className="w-full h-full flex items-center justify-center bg-heritage-brown/5">
+                          <Utensils className="text-heritage-orange/50 w-12 h-12" />
                         </div>
                       )}
                       <div className="absolute inset-0 bg-royal-deep/40 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                     </div>
                     <div className="text-center">
-                      <div className="font-serif-sc text-gold text-[10px] tracking-widest mb-2 uppercase">{dish.category || "SIGNATURE"}</div>
+                      <div className="font-serif-sc text-heritage-orange text-[10px] tracking-widest mb-2 uppercase">{dish.category || "SIGNATURE"}</div>
                       <h3 className="font-display text-2xl text-foreground mb-3">{dish.name}</h3>
                       {dish.description && (
                         <p className="font-serif text-muted-foreground/80 text-sm leading-relaxed mb-4 italic px-4 line-clamp-2">{dish.description}</p>
                       )}
-                      <div className="font-serif text-gold tracking-widest text-lg">{dish.price}</div>
+                      <div className="font-serif text-heritage-orange tracking-widest text-lg font-semibold">{dish.price}</div>
                     </div>
                   </div>
                 ))}
@@ -200,11 +200,11 @@ const Dining = () => {
 
         {/* Section 3: Reservation CTA */}
         <section className="relative py-32 px-6 text-center overflow-hidden">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gold/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-heritage-orange/5 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10 editorial-text max-w-2xl mx-auto">
              <h2 className="font-display text-4xl md:text-5xl text-foreground mb-8">Ready for a Royal Feast?</h2>
              <p className="font-serif italic text-lg text-muted-foreground mb-10">Reserve your table to experience Jodhpur's finest heritage dining.</p>
-             <a href="/contact" className="inline-block font-serif-sc tracking-[0.3em] text-xs px-10 py-5 bg-gradient-gold text-royal-deep rounded-sm hover:shadow-gold transition-all duration-700">
+             <a href="/contact" className="inline-block font-serif-sc tracking-[0.3em] text-xs px-10 py-5 bg-heritage-brown text-white rounded-sm hover:bg-heritage-orange transition-all duration-700 shadow-md font-bold">
                 BOOK A TABLE
              </a>
           </div>

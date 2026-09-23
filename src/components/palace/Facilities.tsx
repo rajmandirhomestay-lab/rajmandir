@@ -40,7 +40,7 @@ export const Facilities = () => {
         <div className="text-center mb-16">
           <div className="eyebrow mb-4 font-serif-sc text-gold tracking-[0.5em] text-xs font-bold uppercase">★ THOUGHTFUL COMFORTS ★</div>
           <h2 className="font-display text-5xl md:text-6xl text-[#091a28] font-bold">
-            Thoughtful <span className="text-gold-gradient italic">Comforts</span>
+            Thoughtful <span className="text-heritage-gradient italic">Comforts</span>
           </h2>
           <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold text-xl">❖</span></div>
         </div>
@@ -52,26 +52,26 @@ export const Facilities = () => {
             return (
               <div
                 key={facility.id}
-                className="f-card group relative p-8 bg-gradient-to-br from-white via-white to-[#faf3e6] border border-gold/30 hover:border-gold transition-all duration-700 hover:-translate-y-2 shadow-md hover:shadow-gold rounded-sm"
+                className="f-card group relative p-8 bg-white border border-heritage-brown/20 hover:border-heritage-brown transition-all duration-700 hover:-translate-y-2 shadow-md hover:shadow-xl rounded-sm"
               >
-                {/* Carved golden corners */}
-                <span className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-gold/70" />
-                <span className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-gold/70" />
-                <span className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-gold/70" />
-                <span className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-gold/70" />
+                {/* Carved brown corners */}
+                <span className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-heritage-brown/40" />
+                <span className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-heritage-brown/40" />
+                <span className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-heritage-brown/40" />
+                <span className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-heritage-brown/40" />
 
-                {/* Golden Icon Badge matching Day at Raj Mandir box style */}
-                <div className="relative mx-auto mb-6 w-16 h-12 rounded-sm bg-gradient-gold text-royal-deep border border-gold/50 shadow-gold flex items-center justify-center group-hover:scale-110 transition-all duration-500">
+                {/* Brown Icon Badge */}
+                <div className="relative mx-auto mb-6 w-16 h-12 rounded-sm bg-heritage-brown text-white border border-heritage-brown/50 shadow-md flex items-center justify-center group-hover:scale-110 transition-all duration-500">
                   {isCustomImage ? (
-                    <img src={facility.icon} alt={facility.label} className="w-7 h-7 object-contain filter drop-shadow" />
+                    <img src={facility.icon} alt={facility.label} className="w-7 h-7 object-contain filter drop-shadow brightness-0 invert" />
                   ) : (
-                    <Icon className="text-royal-deep font-bold" size={22} />
+                    <Icon className="text-white font-bold" size={22} />
                   )}
                 </div>
-                <h3 className="font-display text-xl text-[#091a28] text-center mb-3 group-hover:text-gold transition-colors duration-500 font-bold">
+                <h3 className="font-display text-xl text-heritage-brown text-center mb-3 group-hover:text-heritage-orange transition-colors duration-500 font-bold">
                   {facility.label}
                 </h3>
-                <p className="font-serif italic text-[#2c4d6f] text-center text-sm leading-relaxed font-medium">
+                <p className="font-serif italic text-heritage-brown/80 text-center text-sm leading-relaxed font-medium">
                   {facility.description}
                 </p>
               </div>

@@ -51,7 +51,7 @@ const RoomBlock = ({ room, index }: { room: any; index: number }) => {
           <div className="eyebrow mb-3">CHAMBER · {String(index + 1).padStart(2, "0")}</div>
           <div className="font-serif-sc text-gold text-[10px] tracking-[0.4em] mb-2">{room.sanskrit}</div>
           <h2 className="font-display text-5xl md:text-6xl leading-tight">
-            {room.name.split(" ")[0]} <span className="text-gold-gradient italic">{room.name.split(" ").slice(1).join(" ")}</span>
+            {room.name.split(" ")[0]} <span className="text-heritage-gradient italic">{room.name.split(" ").slice(1).join(" ")}</span>
           </h2>
           <p className="mt-5 font-serif italic text-xl text-muted-foreground">{room.tagline}</p>
           <div className="divider-gold mt-6 max-w-xs">
@@ -69,7 +69,7 @@ const RoomBlock = ({ room, index }: { room: any; index: number }) => {
 
           <div className="mt-10 flex items-center gap-6">
             <div>
-              <div className="font-display text-3xl text-gold-gradient">{room.price}</div>
+              <div className="font-display text-3xl text-heritage-gradient">{room.price}</div>
               <div className="font-serif-sc text-[10px] tracking-[0.3em] text-muted-foreground">PER NIGHT</div>
             </div>
             <Link to={`/rooms/${room.slug}`} className="inline-block font-serif-sc tracking-[0.3em] text-xs px-7 py-4 bg-gradient-gold text-royal-deep rounded-sm hover:shadow-gold transition-all duration-700">
@@ -90,7 +90,7 @@ const RoomsPage = () => {
   const roomsSection = sections?.find(s => s.section_key === 'rooms');
   const heroImgFallbackCurrent = roomsSection?.content?.image_url || heroImgFallback;
 
-  if (isLoading) return <div className="min-h-screen bg-royal-deep flex items-center justify-center text-gold">Loading...</div>;
+  if (isLoading) return <div className="min-h-screen bg-background flex items-center justify-center text-gold">Loading...</div>;
 
   const activeChambers = dbRooms && dbRooms.length > 0 
     ? dbRooms.map((dbRoom, i) => {
