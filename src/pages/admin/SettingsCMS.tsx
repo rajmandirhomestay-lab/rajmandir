@@ -544,6 +544,11 @@ export default function SettingsCMS() {
                 value={settings.hero_tagline || ""}
                 onChange={(v) => handleUpdate("hero_tagline", v)}
               />
+              <SettingField
+                label="ESTABLISHED YEAR (e.g. 1998)"
+                value={settings.established_year || "1998"}
+                onChange={(v) => handleUpdate("established_year", v)}
+              />
             </div>
           </div>
         )}

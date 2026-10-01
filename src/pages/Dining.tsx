@@ -129,7 +129,7 @@ const Dining = () => {
                        <div className="font-serif-sc text-heritage-orange tracking-[0.4em] text-xs mb-6 uppercase">
                           {area.theme_type} · {area.tagline}
                        </div>
-                       <h2 className="font-display text-5xl md:text-6xl text-foreground mb-8 leading-tight">
+                       <h2 className="font-display text-5xl md:text-6xl text-foreground mb-8 leading-tight font-bold">
                           {area.title}
                        </h2>
                        <div className="w-12 h-px bg-heritage-orange mb-8" />
@@ -143,12 +143,12 @@ const Dining = () => {
         </section>
 
         {/* Section 2: Special Dishes Showcase */}
-        <section className="relative py-20 md:py-32 px-4 md:px-6 bg-card/30 border-y border-heritage-brown/20 overflow-hidden">
+        <section className="relative py-20 md:py-32 px-4 md:px-6 bg-background border-y border-gold/20 overflow-hidden">
           <div className="absolute inset-0 lattice-pattern opacity-5" />
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="text-center mb-16 md:mb-24 editorial-text">
-              <div className="font-serif-sc text-heritage-orange tracking-[0.4em] text-xs mb-4 uppercase">SIGNATURE CREATIONS</div>
-              <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-foreground mb-4">
+              <div className="font-serif-sc text-heritage-orange tracking-[0.4em] text-xs mb-4 uppercase font-bold">SIGNATURE CREATIONS</div>
+              <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-foreground mb-4 font-bold">
                 The Royal <span className="text-heritage-gradient italic">Menu</span>
               </h2>
               <div className="divider-heritage mt-6 max-w-xs mx-auto"><span className="text-heritage-orange text-sm">❖</span></div>
@@ -180,8 +180,8 @@ const Dining = () => {
                       <div className="absolute inset-0 bg-royal-deep/40 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                     </div>
                     <div className="text-center">
-                      <div className="font-serif-sc text-heritage-orange text-[10px] tracking-widest mb-2 uppercase">{dish.category || "SIGNATURE"}</div>
-                      <h3 className="font-display text-2xl text-foreground mb-3">{dish.name}</h3>
+                      <div className="font-serif-sc text-heritage-orange text-[10px] tracking-widest mb-2 uppercase font-bold">{dish.category || "SIGNATURE"}</div>
+                      <h3 className="font-display text-2xl text-foreground mb-3 font-bold">{dish.name}</h3>
                       {dish.description && (
                         <p className="font-serif text-muted-foreground/80 text-sm leading-relaxed mb-4 italic px-4 line-clamp-2">{dish.description}</p>
                       )}
@@ -199,12 +199,12 @@ const Dining = () => {
         </section>
 
         {/* Section 3: Reservation CTA */}
-        <section className="relative py-32 px-6 text-center overflow-hidden">
+        <section className="relative py-32 px-6 text-center overflow-hidden bg-background border-t border-gold/20">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-heritage-orange/5 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10 editorial-text max-w-2xl mx-auto">
-             <h2 className="font-display text-4xl md:text-5xl text-foreground mb-8">Ready for a Royal Feast?</h2>
+             <h2 className="font-display text-4xl md:text-5xl text-foreground mb-8 font-bold">Ready for a Royal Feast?</h2>
              <p className="font-serif italic text-lg text-muted-foreground mb-10">Reserve your table to experience Jodhpur's finest heritage dining.</p>
-             <a href="/contact" className="inline-block font-serif-sc tracking-[0.3em] text-xs px-10 py-5 bg-heritage-brown text-white rounded-sm hover:bg-heritage-orange transition-all duration-700 shadow-md font-bold">
+             <a href="/contact" className="inline-block font-serif-sc tracking-[0.3em] text-xs px-10 py-5 bg-heritage-brown text-white rounded-sm hover:bg-heritage-orange transition-all duration-700 shadow-md font-bold uppercase">
                 BOOK A TABLE
              </a>
           </div>

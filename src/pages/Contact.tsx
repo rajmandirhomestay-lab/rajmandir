@@ -84,7 +84,7 @@ const Contact = () => {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gold/10 rounded-full blur-3xl" />
                 <div className="absolute inset-2 border border-gold/10 pointer-events-none" />
                 
-                <h2 className="font-display text-4xl text-foreground mb-8 uppercase tracking-tight">Palace Details</h2>
+                <h2 className="font-display text-4xl text-foreground mb-8 uppercase tracking-tight font-bold">Palace Details</h2>
                 
                 <div className="space-y-8">
                   <div className="flex items-start gap-4 group">
@@ -151,7 +151,7 @@ const Contact = () => {
               <div className="reveal-up">
                 <div className="mb-10">
                   <div className="font-serif-sc text-gold tracking-widest text-xs mb-4">INQUIRIES</div>
-                  <h2 className="font-display text-4xl text-foreground mb-4 uppercase tracking-tight">Compose a Missive</h2>
+                  <h2 className="font-display text-4xl text-foreground mb-4 uppercase tracking-tight font-bold">Compose a Missive</h2>
                   <p className="font-serif text-muted-foreground italic">Whether it is a booking request or a query regarding our experiences, our concierge will respond promptly.</p>
                 </div>
 

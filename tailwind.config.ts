@@ -12,9 +12,11 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Cinzel', 'serif'],
-        serif: ['Cormorant Garamond', 'serif'],
-        'serif-sc': ['Cormorant SC', 'serif'],
+        display: ['var(--font-heading)', 'Cinzel', 'serif'],
+        heading: ['var(--font-heading)', 'Cinzel', 'serif'],
+        serif: ['var(--font-body)', 'Cormorant Garamond', 'serif'],
+        body: ['var(--font-body)', 'Cormorant Garamond', 'serif'],
+        'serif-sc': ['var(--font-eyebrow)', 'Cormorant SC', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",

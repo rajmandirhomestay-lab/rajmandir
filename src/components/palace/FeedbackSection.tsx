@@ -63,14 +63,14 @@ export const FeedbackSection = () => {
   }, []);
 
   return (
-    <section ref={ref} className="relative py-32 px-6 overflow-hidden bg-[#f6f0e6] text-[#091a28] border-b border-[#e5dac9]">
+    <section ref={ref} className="relative py-32 px-6 overflow-hidden bg-background text-foreground border-b border-gold/20">
       {/* Ambient Radial Soft Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.08),transparent_65%)] pointer-events-none" />
       <div className="absolute inset-0 marble-texture opacity-20 pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto z-10">
         <div className="text-center mb-20">
-          <div className="eyebrow mb-4 font-serif-sc text-[#b45309] tracking-[0.5em] text-xs font-bold uppercase">★ THE GUESTBOOK ★</div>
+          <div className="eyebrow mb-4 font-serif-sc text-gold tracking-[0.5em] text-xs font-bold uppercase">★ THE GUESTBOOK ★</div>
           <h2 className="font-display text-5xl md:text-6xl text-foreground font-bold">
             Whispers from <span className="text-heritage-gradient italic">our guests</span>
           </h2>

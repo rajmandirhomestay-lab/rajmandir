@@ -8,6 +8,7 @@ interface PageHeroProps {
   subtitle?: string;
   image?: string;
   alt?: string;
+  useGoldTheme?: boolean;
 }
 
 export const PageHero = ({
@@ -16,7 +17,8 @@ export const PageHero = ({
   accent = "",
   subtitle = "",
   image = "",
-  alt = "Raj Mandir"
+  alt = "Raj Mandir",
+  useGoldTheme = false
 }: PageHeroProps) => {
   const ref = useRef<HTMLElement>(null);
   const imgRef = useRef<HTMLDivElement>(null);
@@ -51,6 +53,16 @@ export const PageHero = ({
   const titleWords = (displayTitle || safeTitle).split(" ").filter(Boolean);
   const accentWords = safeAccent ? safeAccent.split(" ").filter(Boolean) : [];
 
+  const isGoldTheme = useGoldTheme ||
+    safeEyebrow.toLowerCase().includes("amenities") || safeEyebrow.toLowerCase().includes("comfort") ||
+    safeTitle.toLowerCase().includes("amenities") || safeTitle.toLowerCase().includes("comfort") ||
+    safeAccent.toLowerCase().includes("amenities") || safeAccent.toLowerCase().includes("comfort");
+
+  const badgeBg = isGoldTheme ? "bg-gradient-gold" : "bg-gradient-heritage";
+  const textColor = isGoldTheme ? "text-gold" : "text-heritage-orange";
+  const dividerClass = isGoldTheme ? "divider-gold" : "divider-heritage";
+  const exploreGrad = isGoldTheme ? "from-gold" : "from-heritage-orange";
+
   return (
     <section ref={ref} className="relative min-h-[70vh] lg:min-h-[80vh] w-full overflow-hidden flex items-center justify-center pt-32 pb-20">
       {/* Background Image Container */}
@@ -64,10 +76,10 @@ export const PageHero = ({
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-        <div className="ph-arch mx-auto mb-8 w-24 h-14 jharokha bg-gradient-heritage opacity-90 shadow-gold relative">
+        <div className={`ph-arch mx-auto mb-8 w-24 h-14 jharokha ${badgeBg} opacity-90 shadow-gold relative`}>
           <div className="absolute inset-[3px] jharokha bg-royal-deep" />
         </div>
-        <div className="ph-eyebrow font-serif-sc text-heritage-orange tracking-[0.5em] text-xs sm:text-sm mb-6 font-bold drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+        <div className={`ph-eyebrow font-serif-sc ${textColor} tracking-[0.5em] text-xs sm:text-sm mb-6 font-bold drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]`}>
           ★ {safeEyebrow} ★
         </div>
         <h1 className="ph-title font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.95] text-white font-bold drop-shadow-[0_8px_25px_rgba(0,0,0,0.9)]">
@@ -84,7 +96,7 @@ export const PageHero = ({
           {accentWords.length > 0 && (
             <>
               <br />
-              <span className="inline-block overflow-hidden align-bottom italic text-heritage-orange drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+              <span className={`inline-block overflow-hidden align-bottom italic ${textColor} drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]`}>
                 {accentWords.map((word, wordIndex) => (
                   <span key={`aw${wordIndex}`} className="inline-block whitespace-nowrap">
                     {word.split("").map((c, i) => (
@@ -99,8 +111,8 @@ export const PageHero = ({
         </h1>
         {safeSubtitle && (
           <>
-            <div className="divider-heritage mt-8 max-w-md mx-auto">
-              <span className="font-display text-heritage-orange text-xl drop-shadow">❖</span>
+            <div className={`${dividerClass} mt-8 max-w-md mx-auto`}>
+              <span className={`font-display ${textColor} text-xl drop-shadow`}>❖</span>
             </div>
             <p className="ph-sub mt-6 font-serif italic text-xl md:text-3xl text-ivory max-w-3xl mx-auto leading-relaxed drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] font-semibold">
               {safeSubtitle}
@@ -109,9 +121,9 @@ export const PageHero = ({
         )}
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-heritage-orange font-serif-sc text-[10px] tracking-[0.5em] flex flex-col items-center gap-3 drop-shadow-md font-bold">
+      <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 z-10 ${textColor} font-serif-sc text-[10px] tracking-[0.5em] flex flex-col items-center gap-3 drop-shadow-md font-bold`}>
         EXPLORE
-        <div className="h-12 w-px bg-gradient-to-b from-heritage-orange to-transparent animate-pulse" />
+        <div className={`h-12 w-px bg-gradient-to-b ${exploreGrad} to-transparent animate-pulse`} />
       </div>
     </section>
   );

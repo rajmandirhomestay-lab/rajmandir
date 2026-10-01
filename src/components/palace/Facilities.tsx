@@ -30,7 +30,7 @@ export const Facilities = () => {
   }, [facilitiesData, isLoading]);
 
   return (
-    <section ref={ref} id="facilities" className="relative py-32 px-6 overflow-hidden bg-[#f6f0e6] text-[#091a28] border-b border-[#e5dac9]">
+    <section ref={ref} id="facilities" className="relative py-32 px-6 overflow-hidden bg-background text-foreground border-b border-gold/20">
       <div className="absolute inset-0 sandstone-texture opacity-15 pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.08),transparent_65%)] pointer-events-none" />
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
@@ -39,7 +39,7 @@ export const Facilities = () => {
       <div className="relative max-w-7xl mx-auto z-10">
         <div className="text-center mb-16">
           <div className="eyebrow mb-4 font-serif-sc text-gold tracking-[0.5em] text-xs font-bold uppercase">★ THOUGHTFUL COMFORTS ★</div>
-          <h2 className="font-display text-5xl md:text-6xl text-[#091a28] font-bold">
+          <h2 className="font-display text-5xl md:text-6xl text-foreground font-bold">
             Thoughtful <span className="text-heritage-gradient italic">Comforts</span>
           </h2>
           <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold text-xl">❖</span></div>

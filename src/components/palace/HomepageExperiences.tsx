@@ -54,7 +54,7 @@ export const Offers = () => {
   if (displayExperiences.length === 0) return null;
 
   return (
-    <section ref={ref} id="experiences" className="relative py-32 px-6 overflow-hidden bg-[#faf6f0] text-[#091a28] border-b border-[#e5dac9]">
+    <section ref={ref} id="experiences" className="relative py-32 px-6 overflow-hidden bg-background text-foreground border-b border-gold/20">
       <div className="absolute inset-0 sandstone-texture opacity-15 pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.06),transparent_60%)] pointer-events-none" />
 

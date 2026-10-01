@@ -87,7 +87,7 @@ export const Attractions = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <div className="eyebrow mb-4">★ BEYOND THE PALACE ★</div>
-          <h2 className="font-display text-4xl md:text-5xl text-foreground mb-6">
+          <h2 className="font-display text-4xl md:text-5xl text-foreground mb-6 font-bold">
             Nearby <span className="text-gold-gradient italic">Attractions</span>
           </h2>
           <div className="divider-gold mt-6 max-w-xs mx-auto"><span className="text-gold text-sm">❖</span></div>
@@ -112,7 +112,7 @@ export const Attractions = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent opacity-90" />
                 
                 <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
-                  <h3 className="font-display text-2xl text-foreground group-hover:text-gold transition-colors duration-500">{item.name}</h3>
+                  <h3 className="font-display text-2xl text-foreground group-hover:text-gold transition-colors duration-500 font-bold">{item.name}</h3>
                 </div>
               </div>
               

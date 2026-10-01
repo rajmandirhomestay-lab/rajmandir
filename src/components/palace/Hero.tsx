@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import heroImg from "@/assets/palace-hero.jpg";
 import { DustParticles } from "./DustParticles";
-import { useHomepageSections, usePageHero } from "@/lib/api";
+import { useHomepageSections, usePageHero, useSettings } from "@/lib/api";
 
 export const Hero = ({ start }: { start: boolean }) => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -12,6 +12,9 @@ export const Hero = ({ start }: { start: boolean }) => {
   const archRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLDivElement>(null);
   const [fontSize, setFontSize] = useState<number>(64);
+
+  const { data: globalSettings } = useSettings();
+  const establishedYear = globalSettings?.established_year;
 
   const [cmsData, setCmsData] = useState({
     eyebrow: "HERITAGE HOTEL · JODHPUR",
@@ -207,6 +210,12 @@ export const Hero = ({ start }: { start: boolean }) => {
             ))}
           </h1>
         </div>
+
+        {establishedYear && (
+          <div className="mt-2 font-serif italic text-sm sm:text-base md:text-lg text-heritage-orange/95 font-medium tracking-widest drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+            Since {establishedYear}
+          </div>
+        )}
 
         <div className="divider-heritage mt-6 max-w-md mx-auto opacity-90">
           <span className="font-display text-heritage-orange text-xl drop-shadow-md">❖</span>

@@ -197,21 +197,49 @@ export const applyThemeToDOM = (theme: ThemeConfig) => {
   window.dispatchEvent(new CustomEvent("themeChanged", { detail: theme }));
 };
 
+export const updateFavicon = (logoUrl?: string) => {
+  let favicon = document.getElementById("dynamic-favicon") as HTMLLinkElement;
+  if (!favicon) {
+    favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+  }
+  if (!favicon) {
+    favicon = document.createElement("link");
+    favicon.id = "dynamic-favicon";
+    favicon.rel = "icon";
+    document.head.appendChild(favicon);
+  }
+  if (logoUrl && typeof logoUrl === "string" && logoUrl.trim().length > 0) {
+    favicon.href = logoUrl.trim();
+  } else {
+    favicon.href = "/favicon.ico";
+  }
+};
+
 export const useTheme = () => {
   const [activeTheme, setActiveTheme] = useState<ThemeConfig>(PRESET_THEMES[0]);
 
   useEffect(() => {
-    const loadTheme = async () => {
+    const loadThemeAndSettings = async () => {
       try {
         const { data } = await supabase
           .from("settings")
-          .select("value")
-          .eq("key", "theme_config")
-          .single();
+          .select("key, value")
+          .in("key", ["theme_config", "site_logo"]);
 
-        if (data && data.value) {
-          setActiveTheme(data.value);
-          applyThemeToDOM(data.value);
+        if (data && data.length > 0) {
+          const themeObj = data.find((s) => s.key === "theme_config")?.value;
+          const logoObj = data.find((s) => s.key === "site_logo")?.value;
+
+          if (themeObj) {
+            setActiveTheme(themeObj);
+            applyThemeToDOM(themeObj);
+          } else {
+            applyThemeToDOM(PRESET_THEMES[0]);
+          }
+
+          if (logoObj) {
+            updateFavicon(logoObj);
+          }
         } else {
           applyThemeToDOM(PRESET_THEMES[0]);
         }
@@ -220,7 +248,7 @@ export const useTheme = () => {
       }
     };
 
-    loadTheme();
+    loadThemeAndSettings();
 
     const handleThemeChange = (e: CustomEvent<ThemeConfig>) => {
       if (e.detail) {

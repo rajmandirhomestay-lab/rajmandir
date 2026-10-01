@@ -117,7 +117,7 @@ export const FAQ = () => {
 
         <div className="max-w-4xl mx-auto relative z-10">
           <div className="text-center mb-16">
-            <h2 className="font-display text-4xl text-foreground">Common Curiosities</h2>
+            <h2 className="font-display text-4xl text-foreground font-bold">Common Curiosities</h2>
             <div className="divider-gold mt-6 max-w-xs mx-auto"><span className="text-gold text-sm">❖</span></div>
           </div>
 
@@ -167,7 +167,7 @@ export const FAQ = () => {
 
           <div className="mt-20 text-center border border-gold/30 p-10 bg-card/60 shadow-gold backdrop-blur-sm relative overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--gold)/0.1),transparent_70%)] pointer-events-none" />
-            <h3 className="font-display text-3xl text-foreground mb-4">Still seeking answers?</h3>
+            <h3 className="font-display text-3xl text-foreground font-bold mb-4">Still seeking answers?</h3>
             <p className="font-serif text-muted-foreground mb-8">Our concierge is at your service round the clock.</p>
             <a href="/contact" className="inline-flex font-serif-sc tracking-widest text-xs px-8 py-4 border border-gold text-gold hover:bg-gold hover:text-royal-deep transition-all duration-500">
               CONTACT CONCIERGE

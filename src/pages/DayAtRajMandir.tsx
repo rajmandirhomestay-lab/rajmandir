@@ -550,7 +550,7 @@ export const DayAtRajMandir = () => {
               <div className="font-serif-sc text-gold tracking-[0.5em] text-xs font-bold flex items-center justify-center gap-2">
                 <HeartHandshake size={16} /> PLANNING A CELEBRATION?
               </div>
-              <h3 className="font-display text-4xl md:text-5xl text-ivory">Host Your Event at Raj Mandir</h3>
+              <h3 className="font-display text-4xl md:text-5xl text-ivory font-bold">Host Your Event at Raj Mandir</h3>
               <div className="divider-gold max-w-md mx-auto"><span className="text-gold">❖</span></div>
               <p className="font-serif italic text-xl text-ivory/80 max-w-2xl mx-auto leading-relaxed">
                 From grand heritage weddings to intimate family feasts — our courtyards, terraces, and royal hospitality team await your special occasions.

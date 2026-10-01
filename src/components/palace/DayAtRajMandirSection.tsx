@@ -23,13 +23,9 @@ export const DayAtRajMandirSection = () => {
   const textColor = daySection?.content?.text_color;
   const bgMode = daySection?.content?.bg_mode;
 
-  const bgClass = bgMode === 'cream' 
-    ? 'bg-[#faf6f0] text-[#091a28]' 
-    : bgMode === 'white' 
-    ? 'bg-white text-[#091a28]' 
-    : bgMode === 'royal' 
+  const bgClass = bgMode === 'royal' 
     ? 'bg-royal-deep text-white' 
-    : 'bg-card text-card-foreground';
+    : 'bg-background text-foreground';
 
   useEffect(() => {
     if (!isVisible) return;

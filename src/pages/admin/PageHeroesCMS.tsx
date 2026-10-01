@@ -18,6 +18,7 @@ type PageHero = {
 const PAGES = [
   { slug: "home", label: "Home Page" },
   { slug: "about", label: "About Us" },
+  { slug: "amenities", label: "Amenities & Comforts" },
   { slug: "attractions", label: "Attractions & Wonders" },
   { slug: "booking", label: "Booking & Reservations" },
   { slug: "contact", label: "Contact Us" },

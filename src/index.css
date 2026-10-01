@@ -1,16 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600;700;800&family=Cormorant+SC:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Cormorant+SC:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Raj Mandir — Royal Rajasthani Palace Design System
-   Light = Royal Ivory + Gold
-   Dark  = Deep Palace Night Blue + Glowing Gold
+   Master Design Reference: "THE LEGACY OF WARM WELCOME" Section
+   Heading Font: 'Cinzel', serif
+   Body Font: 'Cormorant Garamond', serif
+   Eyebrow / Small Caps Font: 'Cormorant SC', serif
+   Light Background: hsl(40 30% 97%) / #faf6f0
 */
 
 @layer base {
   :root {
+    /* Global Typography System Tokens (Sourced from Legacy Section) */
+    --font-heading: 'Cinzel', serif;
+    --font-body: 'Cormorant Garamond', serif;
+    --font-eyebrow: 'Cormorant SC', serif;
+
     /* Royal Rajasthani Palace Light Cream & Royal Blue Palette */
     --background: 40 30% 97%; /* #faf6f0 - Soft Royal Palace Cream */
     --foreground: 210 60% 10%; /* #091a28 - Deep Royal Blue Text */
@@ -96,18 +104,23 @@
     scroll-behavior: smooth;
   }
 
+  body, button, input, select, textarea, p, span, a, label {
+    font-family: var(--font-body), 'Cormorant Garamond', serif;
+  }
+
   body {
     @apply bg-background text-foreground;
-    font-family: 'Cormorant Garamond', serif;
+    font-family: var(--font-body), 'Cormorant Garamond', serif;
     font-weight: 400;
     background-image:
       radial-gradient(ellipse at top, hsl(var(--gold) / 0.08), transparent 60%),
       radial-gradient(ellipse at bottom, hsl(var(--royal) / 0.06), transparent 60%);
   }
 
-  h1, h2, h3, h4 {
-    font-family: 'Cinzel', serif;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading), 'Cinzel', serif;
     letter-spacing: 0.02em;
+    font-weight: 700;
   }
 }
 
@@ -270,8 +283,9 @@
 }
 
 @layer utilities {
-  .font-display { font-family: 'Cinzel', serif; }
-  .font-serif-sc { font-family: 'Cormorant SC', serif; }
+  .font-display, .font-heading { font-family: var(--font-heading), 'Cinzel', serif; }
+  .font-serif, .font-body { font-family: var(--font-body), 'Cormorant Garamond', serif; }
+  .font-serif-sc { font-family: var(--font-eyebrow), 'Cormorant SC', serif; }
 
   .text-heritage-orange { color: hsl(var(--heritage-orange)); }
   .text-heritage-brown { color: hsl(var(--heritage-brown)); }

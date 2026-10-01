@@ -115,7 +115,7 @@ const Feedback = () => {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-20">
             <div className="eyebrow mb-4">★ FEATURED TALES ★</div>
-            <h2 className="font-display text-4xl md:text-5xl text-foreground">
+            <h2 className="font-display text-4xl md:text-5xl text-foreground font-bold">
               Stories from <span className="text-gold-gradient italic">the courtyard</span>
             </h2>
             <div className="divider-gold mt-6 max-w-xs mx-auto"><span className="text-gold">❖</span></div>

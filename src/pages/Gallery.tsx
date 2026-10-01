@@ -137,7 +137,7 @@ const GalleryPage = () => {
         alt="Palace corridor"
       />
 
-      <section className="py-20 px-6 marble-texture min-h-screen relative overflow-hidden">
+      <section className="py-20 px-6 marble-texture min-h-screen relative overflow-hidden bg-background text-foreground">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--gold)/0.03),transparent_70%)] pointer-events-none" />
         
         <div className="relative max-w-7xl mx-auto">

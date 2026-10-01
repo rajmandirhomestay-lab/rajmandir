@@ -89,7 +89,7 @@ const AboutPage = () => {
       </section>
 
       {/* SECTION 2: THE EXPERIENCE */}
-      <section ref={section2Ref} className="relative py-24 md:py-32 px-6 bg-gold/5 overflow-hidden">
+      <section ref={section2Ref} className="relative py-24 md:py-32 px-6 bg-background border-t border-gold/20 overflow-hidden">
         <div className="absolute inset-0 marble-texture opacity-30 pointer-events-none" />
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div className="s2-img md:order-1 order-2 relative aspect-[4/3] rounded shadow-lg overflow-hidden border border-gold/10">

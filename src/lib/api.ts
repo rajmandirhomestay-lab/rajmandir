@@ -181,12 +181,22 @@ export const useExperiences = () => useQuery({
 
 // 5. Travel Stories
 export const fetchStories = async () => {
-  const { data, error } = await supabase
-    .from("travel_stories")
-    .select("*, travel_story_images(*)")
-    .order("sort_order", { ascending: true });
-  if (error) throw error;
-  return data;
+  try {
+    const { data, error } = await supabase
+      .from("travel_stories")
+      .select("*, travel_story_images(*)")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.warn("fetchStories error:", error);
+      const fallbackRes = await supabase.from("travel_stories").select("*");
+      return fallbackRes.data || [];
+    }
+    return data || [];
+  } catch (err) {
+    console.warn("fetchStories catch error:", err);
+    return [];
+  }
 };
 
 export const useStories = () => useQuery({
