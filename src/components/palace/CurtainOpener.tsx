@@ -61,13 +61,13 @@ export const CurtainOpener = ({ onComplete }: { onComplete?: () => void }) => {
         ref={titleRef}
         className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6"
       >
-        <div className="font-serif-sc text-gold tracking-[0.5em] text-xs md:text-sm mb-6 opacity-80">
-          PADHARO MHARE DESH
+        <div className="font-serif-sc text-heritage-orange tracking-[0.55em] text-xs md:text-sm mb-6 font-bold drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
+          ★ PADHARO MHARE DESH ★
         </div>
-        <div className="text-gold-gradient font-display text-5xl md:text-7xl lg:text-8xl drop-shadow-[0_0_30px_hsl(var(--gold)/0.4)]">
+        <div className="font-display text-5xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-r from-[#ffe4b5] via-[#d4af37] to-[#e67e22] bg-clip-text text-transparent drop-shadow-[0_10px_35px_rgba(0,0,0,0.9)]">
           Raj Mandir
         </div>
-        <div className="font-serif italic text-ivory/80 mt-4 text-lg md:text-xl tracking-widest">
+        <div className="font-serif italic text-[#faf6f0]/95 mt-4 text-lg md:text-xl tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] font-medium">
           — a palace awakens —
         </div>
       </div>

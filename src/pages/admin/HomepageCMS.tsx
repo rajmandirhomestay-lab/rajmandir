@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Loader2, Save, Type, Image as ImageIcon, Eye, EyeOff, LayoutTemplate, BedDouble, Utensils, Compass, Quote, MessageSquare, Clock, BookOpen } from "lucide-react";
+import { Loader2, Save, Type, Image as ImageIcon, Eye, EyeOff, LayoutTemplate, BedDouble, Utensils, Compass, Quote, MessageSquare, Clock, BookOpen, Video as VideoIcon } from "lucide-react";
 import { SingleImageUploader } from "@/components/admin/SingleImageUploader";
+import { compressVideo, isVideoUrl } from "@/lib/videoCompression";
 
 type HomepageSection = {
   section_key: string;
@@ -75,6 +76,53 @@ export default function HomepageCMS() {
       ...prev,
       [key]: { ...prev[key], content: { ...prev[key].content, ...value } },
     }));
+  };
+
+  const handleVideoUpload = async (file: File) => {
+    try {
+      setSaving(true);
+      const origMb = (file.size / (1024 * 1024)).toFixed(1);
+      const toastId = toast.loading(`Compressing video (${origMb}MB)... saving bandwidth.`);
+
+      const compressed = await compressVideo(file, {
+        maxWidth: 1280,
+        maxHeight: 720,
+        targetBitrate: 1800000,
+        onProgress: (p) => {
+          toast.loading(`Compressing video: ${p}%`, { id: toastId });
+        }
+      });
+
+      const compMb = (compressed.size / (1024 * 1024)).toFixed(1);
+      toast.loading(`Uploading compressed video (${compMb}MB)...`, { id: toastId });
+
+      const fileExt = compressed.name.split('.').pop() || "webm";
+      const fileName = `homepage-${activeSection}-${Date.now()}.${fileExt}`;
+      const filePath = `homepage-${activeSection}/${fileName}`;
+
+      const bucket = activeNavItem?.bucket || "brand-assets";
+      const { error: uploadError } = await supabase.storage
+        .from(bucket)
+        .upload(filePath, compressed, { upsert: true, contentType: compressed.type || 'video/webm' });
+
+      let finalUrl = "";
+      if (uploadError) {
+        const { error: fallbackErr } = await supabase.storage
+          .from("content")
+          .upload(filePath, compressed, { upsert: true, contentType: compressed.type || 'video/webm' });
+        if (fallbackErr) throw fallbackErr;
+        finalUrl = supabase.storage.from("content").getPublicUrl(filePath).data.publicUrl;
+      } else {
+        finalUrl = supabase.storage.from(bucket).getPublicUrl(filePath).data.publicUrl;
+      }
+
+      handleUpdateContent(activeSection, { image_url: finalUrl, video_url: finalUrl });
+      toast.success(`Video compressed (${origMb}MB → ${compMb}MB) and attached! Click Save Section to publish.`, { id: toastId });
+    } catch (err: any) {
+      toast.error("Video upload failed: " + err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const saveSection = async (key: string) => {
@@ -256,18 +304,74 @@ export default function HomepageCMS() {
             </div>
 
             <div>
-              <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground block mb-4 uppercase">
-                {activeSection} FEATURED IMAGE / BACKGROUND
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="font-serif-sc text-[10px] tracking-widest text-muted-foreground uppercase">
+                  {activeSection} MEDIA VISUAL (IMAGE / VIDEO)
+                </label>
+                {isVideoUrl(currentSection.content?.image_url || currentSection.content?.video_url) && (
+                  <span className="text-[10px] font-serif-sc text-heritage-orange border border-heritage-orange/40 px-2 py-0.5 rounded-sm bg-heritage-orange/10 font-bold">
+                    ★ VIDEO ACTIVE
+                  </span>
+                )}
+              </div>
               
-              <div className="aspect-video w-full">
-                <SingleImageUploader 
-                  bucket={activeNavItem?.bucket || "brand-assets"}
-                  folder={`homepage-${activeSection}`}
-                  value={currentSection.content?.image_url || null}
-                  onChange={(url) => handleUpdateContent(activeSection, { image_url: url })}
-                  label={`UPLOAD ${activeSection.toUpperCase()} VISUAL`}
+              <div className="aspect-video w-full mb-3 relative rounded-sm overflow-hidden border border-gold/20 bg-black/10">
+                {isVideoUrl(currentSection.content?.image_url || currentSection.content?.video_url) ? (
+                  <div className="relative w-full h-full group">
+                    <video 
+                      src={currentSection.content?.video_url || currentSection.content?.image_url} 
+                      autoPlay 
+                      muted 
+                      loop 
+                      playsInline 
+                      className="w-full h-full object-cover" 
+                    />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button
+                        type="button"
+                        onClick={() => handleUpdateContent(activeSection, { image_url: null, video_url: null })}
+                        className="px-4 py-2 bg-red-600 text-white font-serif-sc text-xs tracking-widest rounded shadow"
+                      >
+                        REMOVE VIDEO
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <SingleImageUploader 
+                    bucket={activeNavItem?.bucket || "brand-assets"}
+                    folder={`homepage-${activeSection}`}
+                    value={currentSection.content?.image_url || null}
+                    onChange={(url) => handleUpdateContent(activeSection, { image_url: url })}
+                    label={`UPLOAD ${activeSection.toUpperCase()} VISUAL`}
+                  />
+                )}
+              </div>
+
+              {/* Compressed Video Upload Option for Story / Hero */}
+              <div className="space-y-2">
+                <label className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-heritage-orange/10 text-heritage-orange border border-heritage-orange/30 hover:bg-heritage-orange hover:text-white rounded-sm font-serif-sc text-[10px] tracking-widest cursor-pointer transition-colors font-bold">
+                  <VideoIcon size={14} />
+                  UPLOAD COMPRESSED VIDEO ({activeSection.toUpperCase()})
+                  <input 
+                    type="file" 
+                    accept="video/mp4,video/webm,video/*" 
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) handleVideoUpload(e.target.files[0]);
+                    }} 
+                  />
+                </label>
+
+                <input 
+                  type="text" 
+                  value={currentSection.content?.video_url || currentSection.content?.image_url || ""} 
+                  onChange={(e) => handleUpdateContent(activeSection, { video_url: e.target.value, image_url: e.target.value })}
+                  placeholder="Or paste video / media URL directly..."
+                  className="w-full bg-background border border-gold/20 px-3 py-2 text-xs font-serif text-foreground outline-none focus:border-gold"
                 />
+                <p className="text-[10px] font-serif italic text-muted-foreground">
+                  ⚡ Automatic client-side compression caps bitrate and optimizes resolutions so playback consumes minimal bandwidth.
+                </p>
               </div>
             </div>
           </div>

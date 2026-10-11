@@ -5,7 +5,8 @@ import { Link } from "react-router-dom";
 import { PageShell } from "@/components/palace/PageShell";
 import { PageHero } from "@/components/palace/PageHero";
 import { DustParticles } from "@/components/palace/DustParticles";
-import { useRoomCategories, useHomepageSections, usePageHero } from "@/lib/api";
+import { useRoomCategories, useHomepageSections, usePageHero, useSettings } from "@/lib/api";
+import { parseChamberHeading } from "@/lib/chamberUtils";
 import heroImgFallback from "@/assets/page-rooms-hero.jpg";
 // Static chambers removed. Using dynamic data only.
 
@@ -14,6 +15,7 @@ gsap.registerPlugin(ScrollTrigger);
 const RoomBlock = ({ room, index }: { room: any; index: number }) => {
   const ref = useRef<HTMLElement>(null);
   const reverse = index % 2 === 1;
+  const { darkWords, lightWords } = parseChamberHeading(room.name, room.headingStyle);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -51,7 +53,10 @@ const RoomBlock = ({ room, index }: { room: any; index: number }) => {
           <div className="eyebrow mb-3">CHAMBER · {String(index + 1).padStart(2, "0")}</div>
           <div className="font-serif-sc text-gold text-[10px] tracking-[0.4em] mb-2">{room.sanskrit}</div>
           <h2 className="font-display text-5xl md:text-6xl leading-tight">
-            {room.name.split(" ")[0]} <span className="text-heritage-gradient italic">{room.name.split(" ").slice(1).join(" ")}</span>
+            {darkWords}{" "}
+            {lightWords ? (
+              <span className="text-heritage-gradient italic">{lightWords}</span>
+            ) : null}
           </h2>
           <p className="mt-5 font-serif italic text-xl text-muted-foreground">{room.tagline}</p>
           <div className="divider-gold mt-6 max-w-xs">
@@ -60,7 +65,7 @@ const RoomBlock = ({ room, index }: { room: any; index: number }) => {
           <p className="mt-6 font-serif text-lg leading-relaxed text-foreground/85">{room.story}</p>
 
           <ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {room.details.map((d) => (
+            {room.details.map((d: string) => (
               <li key={d} className="flex items-start gap-3 font-serif-sc text-[11px] tracking-[0.2em] text-foreground/70">
                 <span className="text-gold mt-[2px]">✦</span> {d}
               </li>
@@ -86,6 +91,9 @@ const RoomsPage = () => {
   const { data: dbRooms, isLoading } = useRoomCategories();
   const { data: sections } = useHomepageSections();
   const { data: pageHero } = usePageHero('rooms');
+  const { data: settings } = useSettings();
+
+  const chamberStyles = (settings?.chamber_heading_styles as Record<string, { darkWords?: string; lightWords?: string }>) || {};
 
   const roomsSection = sections?.find(s => s.section_key === 'rooms');
   const heroImgFallbackCurrent = roomsSection?.content?.image_url || heroImgFallback;
@@ -95,7 +103,9 @@ const RoomsPage = () => {
   const activeChambers = dbRooms && dbRooms.length > 0 
     ? dbRooms.map((dbRoom, i) => {
         return {
+          id: dbRoom.id,
           name: dbRoom.name,
+          headingStyle: chamberStyles[dbRoom.id],
           sanskrit: "कक्षा",
           img: dbRoom.image_url || "",
           foreground: dbRoom.hover_image_url || "",

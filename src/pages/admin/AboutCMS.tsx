@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Plus, Trash2, GripVertical, Image as ImageIcon, Save, CheckCircle2 } from "lucide-react";
+import { Plus, Trash2, GripVertical, Image as ImageIcon, Save, CheckCircle2, Video as VideoIcon } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAboutContent, useAboutFeatures, useAboutGallery } from "@/lib/api";
 import { compressImage } from "@/lib/imageCompression";
+import { compressVideo, isVideoUrl } from "@/lib/videoCompression";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
@@ -46,6 +47,51 @@ export default function AboutCMS() {
       }
     } catch (err: any) {
       toast.error("Upload failed: " + err.message);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleVideoUpload = async (file: File) => {
+    try {
+      setIsProcessing(true);
+      const origMb = (file.size / (1024 * 1024)).toFixed(1);
+      const toastId = toast.loading(`Compressing video (${origMb}MB)... saving bandwidth.`);
+
+      const compressed = await compressVideo(file, {
+        maxWidth: 1280,
+        maxHeight: 720,
+        targetBitrate: 1800000,
+        onProgress: (p) => {
+          toast.loading(`Compressing video: ${p}%`, { id: toastId });
+        }
+      });
+
+      const compMb = (compressed.size / (1024 * 1024)).toFixed(1);
+      toast.loading(`Uploading compressed video (${compMb}MB)...`, { id: toastId });
+
+      const fileExt = compressed.name.split('.').pop() || "webm";
+      const fileName = `video-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("gallery-images")
+        .upload(fileName, compressed, { contentType: compressed.type || 'video/webm' });
+
+      let finalUrl = "";
+      if (uploadError) {
+        const { error: fallbackErr } = await supabase.storage
+          .from("content")
+          .upload(fileName, compressed, { contentType: compressed.type || 'video/webm' });
+        if (fallbackErr) throw fallbackErr;
+        finalUrl = supabase.storage.from("content").getPublicUrl(fileName).data.publicUrl;
+      } else {
+        finalUrl = supabase.storage.from("gallery-images").getPublicUrl(fileName).data.publicUrl;
+      }
+
+      setEditingContent({ ...editingContent, image_url: finalUrl });
+      toast.success(`Video compressed (${origMb}MB → ${compMb}MB) and ready! Save changes to apply.`, { id: toastId });
+    } catch (err: any) {
+      toast.error("Video upload failed: " + err.message);
     } finally {
       setIsProcessing(false);
     }
@@ -166,8 +212,12 @@ export default function AboutCMS() {
               <div className="text-xs font-serif-sc tracking-widest text-gold mb-2">{section.section_key.replace('_', ' ').toUpperCase()}</div>
               <h3 className="font-display text-2xl text-royal-deep">{section.title}</h3>
               {section.subtitle && <div className="italic font-serif text-muted-foreground mt-1">{section.subtitle}</div>}
-              <div className="mt-4 aspect-video rounded overflow-hidden border border-gold/10 relative">
-                <img src={section.image_url} alt="Section" className="w-full h-full object-cover" />
+              <div className="mt-4 aspect-video rounded overflow-hidden border border-gold/10 relative bg-black/10">
+                {isVideoUrl(section.image_url) ? (
+                  <video src={section.image_url} autoPlay muted loop playsInline className="w-full h-full object-cover" />
+                ) : (
+                  <img src={section.image_url} alt="Section" className="w-full h-full object-cover" />
+                )}
               </div>
               <p className="mt-4 font-serif text-sm text-foreground/80 line-clamp-3">{section.description}</p>
             </div>
@@ -250,16 +300,46 @@ export default function AboutCMS() {
                 <input type="text" value={editingContent.subtitle || ""} onChange={e => setEditingContent({...editingContent, subtitle: e.target.value})} className="w-full p-2 bg-background border border-gold/30" />
               </div>
               <div>
-                <label className="text-xs font-serif-sc tracking-widest text-muted-foreground mb-1 block">IMAGE (Upload or enter URL)</label>
+                <label className="text-xs font-serif-sc tracking-widest text-muted-foreground mb-1 block">
+                  MEDIA ASSET (Image or Video)
+                </label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  <label className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/10 text-gold border border-gold/30 hover:bg-gold hover:text-white rounded text-xs font-serif-sc tracking-wider cursor-pointer transition-colors">
+                    <ImageIcon size={14} /> UPLOAD IMAGE
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) handleImageUpload(e.target.files[0], false);
+                      }} 
+                    />
+                  </label>
+
+                  <label className="flex items-center gap-1.5 px-3 py-1.5 bg-heritage-orange/10 text-heritage-orange border border-heritage-orange/30 hover:bg-heritage-orange hover:text-white rounded text-xs font-serif-sc tracking-wider cursor-pointer transition-colors">
+                    <VideoIcon size={14} /> UPLOAD VIDEO (COMPRESSED)
+                    <input 
+                      type="file" 
+                      accept="video/mp4,video/webm,video/*" 
+                      className="hidden"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) handleVideoUpload(e.target.files[0]);
+                      }} 
+                    />
+                  </label>
+                </div>
+
                 <input 
-                  type="file" 
-                  accept="image/*" 
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) handleImageUpload(e.target.files[0], false);
-                  }} 
-                  className="w-full p-2 bg-background border border-gold/30 mb-2 text-xs" 
+                  required 
+                  type="text" 
+                  value={editingContent.image_url} 
+                  onChange={e => setEditingContent({...editingContent, image_url: e.target.value})} 
+                  placeholder="Or paste media URL (.webp, .jpg, .mp4, .webm, YouTube)..."
+                  className="w-full p-2 bg-background border border-gold/30 text-xs text-foreground" 
                 />
-                <input required type="url" value={editingContent.image_url} onChange={e => setEditingContent({...editingContent, image_url: e.target.value})} className="w-full p-2 bg-background border border-gold/30 text-xs text-muted-foreground" />
+                <p className="text-[10px] font-serif italic text-muted-foreground mt-1">
+                  ⚡ Client-side video compression optimizes bitrate to 1.8 Mbps to minimize bandwidth usage.
+                </p>
               </div>
               <div>
                 <label className="text-xs font-serif-sc tracking-widest text-muted-foreground mb-1 block">DESCRIPTION</label>

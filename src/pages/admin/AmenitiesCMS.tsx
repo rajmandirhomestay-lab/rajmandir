@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useHomepageAmenities } from "@/lib/api";
 import { compressImage } from "@/lib/imageCompression";
 import * as LucideIcons from "lucide-react";
+import { TripadvisorIcon } from "@/components/palace/TripadvisorIcon";
 
 export default function AmenitiesCMS() {
   const queryClient = useQueryClient();
@@ -18,6 +19,8 @@ export default function AmenitiesCMS() {
 
   // Expanded popular icons for hotel amenities, village & camel safaris, heritage tours & palace services
   const popularIcons = [
+    // Recommended & Social Ratings
+    "Tripadvisor",
     // Safaris & Outdoor Tours
     "Trees", "Compass", "Sun", "Flame", "Tent", "Footprints", "Binoculars", "Camera", "Mountain", "Palmtree", "Navigation", "MapPin", "Map",
     // Heritage & Royalty
@@ -207,7 +210,9 @@ export default function AmenitiesCMS() {
               <div className="flex items-center gap-3 p-3 bg-background border border-gold/20 rounded-sm">
                 <span className="font-serif-sc text-xs text-gold">ICON PREVIEW:</span>
                 <div className="w-10 h-10 bg-gradient-gold text-royal-deep rounded-sm flex items-center justify-center shadow-gold font-bold">
-                  {formData.icon?.startsWith("http://") || formData.icon?.startsWith("https://") || formData.icon?.startsWith("/") ? (
+                  {formData.icon?.toLowerCase().includes("tripadvisor") ? (
+                    <TripadvisorIcon size={22} />
+                  ) : formData.icon?.startsWith("http://") || formData.icon?.startsWith("https://") || formData.icon?.startsWith("/") ? (
                     <img src={formData.icon} alt="Preview" className="w-6 h-6 object-contain" />
                   ) : (
                     (() => {
@@ -216,18 +221,22 @@ export default function AmenitiesCMS() {
                     })()
                   )}
                 </div>
+                {formData.icon?.toLowerCase().includes("tripadvisor") && (
+                  <span className="text-xs font-serif text-heritage-orange font-bold">TripAdvisor Official Badge</span>
+                )}
               </div>
 
               <div>
-                <label className="block font-serif-sc text-xs text-muted-foreground mb-2">QUICK SELECT BUILT-IN ICON (SAFARI, TOURS, PALACE)</label>
+                <label className="block font-serif-sc text-xs text-muted-foreground mb-2">QUICK SELECT BUILT-IN ICON (SAFARI, TOURS, PALACE, TRIPADVISOR)</label>
                 <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto no-scrollbar p-2 bg-background/50 border border-gold/10 rounded-sm">
                   {popularIcons.map((iconName) => {
+                    const isTripAdvisor = iconName === "Tripadvisor";
                     const IconComponent = (LucideIcons as any)[iconName];
                     return (
                       <button
                         key={iconName}
                         onClick={() => setFormData({ ...formData, icon: iconName })}
-                        className={`p-2.5 border transition-colors ${
+                        className={`p-2.5 border transition-colors flex items-center justify-center ${
                           formData.icon === iconName 
                             ? "bg-gold/20 border-gold text-gold" 
                             : "bg-background border-gold/20 text-muted-foreground hover:border-gold/50"
@@ -235,7 +244,7 @@ export default function AmenitiesCMS() {
                         title={iconName}
                         type="button"
                       >
-                        {IconComponent && <IconComponent size={18} />}
+                        {isTripAdvisor ? <TripadvisorIcon size={18} /> : (IconComponent && <IconComponent size={18} />)}
                       </button>
                     );
                   })}
@@ -281,7 +290,9 @@ export default function AmenitiesCMS() {
                 </div>
                 
                 <div className="w-12 h-12 bg-gradient-gold text-royal-deep border border-gold/50 flex items-center justify-center rounded-sm shadow-gold">
-                  {isCustomImage ? (
+                  {amenity.icon?.toLowerCase().includes("tripadvisor") ? (
+                    <TripadvisorIcon size={24} />
+                  ) : isCustomImage ? (
                     <img src={amenity.icon} alt={amenity.label} className="w-6 h-6 object-contain" />
                   ) : (
                     IconComponent && <IconComponent size={24} />

@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import * as LucideIcons from "lucide-react";
 import { useHomepageAmenities } from "@/lib/api";
+import { TripadvisorIcon } from "./TripadvisorIcon";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -48,6 +49,7 @@ export const Facilities = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {facilitiesData?.map((facility: any) => {
             const isCustomImage = facility.icon?.startsWith("http://") || facility.icon?.startsWith("https://") || facility.icon?.startsWith("/");
+            const isTripAdvisor = facility.icon?.toLowerCase().includes("tripadvisor") || facility.label?.toLowerCase().includes("tripadvisor");
             const Icon = (LucideIcons as any)[facility.icon] || LucideIcons.Sparkles;
             return (
               <div
@@ -62,7 +64,9 @@ export const Facilities = () => {
 
                 {/* Brown Icon Badge */}
                 <div className="relative mx-auto mb-6 w-16 h-12 rounded-sm bg-heritage-brown text-white border border-heritage-brown/50 shadow-md flex items-center justify-center group-hover:scale-110 transition-all duration-500">
-                  {isCustomImage ? (
+                  {isTripAdvisor ? (
+                    <TripadvisorIcon className="text-white font-bold" size={26} />
+                  ) : isCustomImage ? (
                     <img src={facility.icon} alt={facility.label} className="w-7 h-7 object-contain filter drop-shadow brightness-0 invert" />
                   ) : (
                     <Icon className="text-white font-bold" size={22} />

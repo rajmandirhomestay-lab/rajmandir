@@ -6,6 +6,7 @@ import { PageHero } from "@/components/palace/PageHero";
 import heroImgFallback from "@/assets/page-contact-hero.jpg";
 import { MapPin, Phone, Mail, MessageCircle, Instagram, Facebook, Twitter, Globe } from "lucide-react";
 import { useHomepageSections, useSettings, usePageHero } from "@/lib/api";
+import { TripadvisorIcon } from "@/components/palace/TripadvisorIcon";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -133,8 +134,8 @@ const Contact = () => {
                     <a href={contactInfo.facebook} target="_blank" rel="noreferrer" className="w-10 h-10 border border-gold/40 flex items-center justify-center text-foreground hover:bg-gold hover:text-royal-deep transition-all duration-300">
                       <Facebook size={18} />
                     </a>
-                    <a href={contactInfo.tripadvisor} target="_blank" rel="noreferrer" className="w-10 h-10 border border-gold/40 flex items-center justify-center text-foreground hover:bg-gold hover:text-royal-deep transition-all duration-300">
-                      <Globe size={18} />
+                    <a href={contactInfo.tripadvisor} target="_blank" rel="noreferrer" className="w-10 h-10 border border-gold/40 flex items-center justify-center text-foreground hover:bg-gold hover:text-royal-deep transition-all duration-300" title="TripAdvisor">
+                      <TripadvisorIcon size={20} />
                     </a>
                     
                     <a href={`https://wa.me/${contactInfo.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="ml-auto flex items-center gap-2 bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 px-4 py-2 hover:bg-[#25D366] hover:text-white transition-colors duration-300">

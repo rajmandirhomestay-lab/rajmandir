@@ -66,9 +66,18 @@ export const DayAtRajMandirSection = () => {
           </div>
 
           <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
-            {title.includes("Raj Mandir") ? (
-              <>A Day at <span className="text-heritage-gradient italic">Raj Mandir</span></>
-            ) : title}
+            {title.toLowerCase().includes("raj mandir") ? (
+              <>
+                <span className="text-heritage-gradient">
+                  {title.toLowerCase().includes("a day at")
+                    ? (title.includes("A DAY AT") ? "A DAY AT " : "A Day at ")
+                    : title.split(/raj mandir/i)[0]}
+                </span>
+                <span className="text-foreground italic">Raj Mandir</span>
+              </>
+            ) : (
+              title
+            )}
           </h2>
 
           <div className="divider-heritage max-w-xs">

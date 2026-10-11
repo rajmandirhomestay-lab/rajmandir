@@ -3,6 +3,7 @@ import gsap from "gsap";
 import heroImg from "@/assets/palace-hero.jpg";
 import { DustParticles } from "./DustParticles";
 import { useHomepageSections, usePageHero, useSettings } from "@/lib/api";
+import { isVideoUrl } from "@/lib/videoCompression";
 
 export const Hero = ({ start }: { start: boolean }) => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -21,6 +22,7 @@ export const Hero = ({ start }: { start: boolean }) => {
     title: "Where Heritage Meets Hospitality",
     subtitle: "Experience warm hospitality and heritage architecture in the heart of Jodhpur's vibrant culture.",
     image_url: null as string | null,
+    video_url: null as string | null,
     isVisible: true
   });
 
@@ -65,16 +67,20 @@ export const Hero = ({ start }: { start: boolean }) => {
         title: combinedTitle,
         subtitle: pageHero.subtitle || "Experience warm hospitality and heritage architecture in the heart of Jodhpur's vibrant culture.",
         image_url: pageHero.image_url || null,
+        video_url: (pageHero as any).video_url || (isVideoUrl(pageHero.image_url) ? pageHero.image_url : null),
         isVisible: true
       });
     } else if (sections) {
       const heroSection = sections.find(s => s.section_key === "hero");
       if (heroSection) {
+        const rawMedia = heroSection.content?.image_url;
+        const rawVideo = heroSection.content?.video_url || (isVideoUrl(rawMedia) ? rawMedia : null);
         setCmsData({
           eyebrow: "HERITAGE HOTEL · JODHPUR",
           title: heroSection.content?.title || "Where Heritage Meets Hospitality",
           subtitle: heroSection.content?.subtitle || "Experience warm hospitality and heritage architecture in the heart of Jodhpur's vibrant culture.",
-          image_url: heroSection.content?.image_url || null,
+          image_url: rawMedia || null,
+          video_url: rawVideo || null,
           isVisible: heroSection.is_visible !== false
         });
       }
@@ -158,16 +164,30 @@ export const Hero = ({ start }: { start: boolean }) => {
 
   if (!cmsData.isVisible) return null;
 
-  const currentHeroImage = cmsData.image_url || heroImg;
+  const currentHeroMedia = cmsData.video_url || (isVideoUrl(cmsData.image_url) ? cmsData.image_url : null);
+  const currentHeroImage = (!isVideoUrl(cmsData.image_url) && cmsData.image_url) || heroImg;
+  const hasVideo = !!currentHeroMedia;
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center pt-28 pb-20 bg-royal-deep">
-      {/* Hero background image container - single original hero image, NEVER disappears */}
+      {/* Hero background image / video container */}
       <div
         ref={imgRef}
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 overflow-hidden"
         style={{ backgroundImage: `url(${currentHeroImage})` }}
       >
+        {hasVideo && (
+          <video
+            src={currentHeroMedia}
+            poster={currentHeroImage}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            className="w-full h-full object-cover"
+          />
+        )}
         {/* Clean dark overlay for text visibility without bottom background fade */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/25 to-black/40 pointer-events-none" />
       </div>

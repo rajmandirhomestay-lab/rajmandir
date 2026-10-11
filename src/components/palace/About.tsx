@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import aboutFallback from "@/assets/about-palace.jpg";
 import { Link } from "react-router-dom";
 import { useHomepageSections } from "@/lib/api";
+import { isVideoUrl } from "@/lib/videoCompression";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,6 +17,8 @@ export const About = () => {
   const sectionSubtitle = storySection?.content?.subtitle || "Built in 1894 at the foot of Mehrangarh Fort, Raj Mandir was once the summer residence of a Marwari noble. Sandstone carved by hand, jharokha balconies that catch the desert wind, and frescoes touched by both Mughal and Rajput hands.";
   const sectionDesc = storySection?.content?.description || "Today, our family opens these doors as guardians — not owners — inviting travelers to walk softly through history.";
   const sectionImage = storySection?.content?.image_url || storySection?.content?.image || aboutFallback;
+  const sectionVideo = storySection?.content?.video_url || (isVideoUrl(sectionImage) ? sectionImage : null);
+  const isVideo = isVideoUrl(sectionVideo);
   const isVisible = storySection?.is_visible !== false;
 
   const textColor = storySection?.content?.text_color;
@@ -53,15 +56,28 @@ export const About = () => {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.08),transparent_60%)] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center z-10">
-        <div className="about-img jharokha-frame aspect-[4/5] relative shadow-2xl border border-gold/30 shadow-[0_15px_40px_rgba(9,26,40,0.12)]">
-          <img
-            src={sectionImage}
-            alt="Raj Mandir Hotel"
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover"
-            width={1536}
-            height={1280}
-          />
+        <div className="about-img jharokha-frame aspect-[4/5] relative shadow-2xl border border-gold/30 shadow-[0_15px_40px_rgba(9,26,40,0.12)] overflow-hidden">
+          {isVideo ? (
+            <video
+              src={sectionVideo}
+              poster={aboutFallback}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <img
+              src={sectionImage}
+              alt="Raj Mandir Hotel"
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover"
+              width={1536}
+              height={1280}
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-[#091a28]/60 via-transparent to-transparent pointer-events-none" />
         </div>
 

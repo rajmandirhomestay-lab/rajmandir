@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { usePageHeroes } from "@/lib/api";
 import { toast } from "sonner";
-import { Loader2, Save, Image as ImageIcon, LayoutTemplate } from "lucide-react";
+import { Loader2, Save, Image as ImageIcon, LayoutTemplate, Video as VideoIcon } from "lucide-react";
 import { compressImage } from "@/lib/imageCompression";
+import { compressVideo, isVideoUrl } from "@/lib/videoCompression";
 
 type PageHero = {
   id?: string;
@@ -118,6 +119,54 @@ export default function PageHeroesCMS() {
     }
   };
 
+  const handleVideoUpload = async (slug: string, file: File) => {
+    try {
+      setSaving(slug);
+      const originalMb = (file.size / (1024 * 1024)).toFixed(1);
+      const toastId = toast.loading(`Compressing video (${originalMb}MB)... bandwidth optimization in progress.`);
+
+      const compressedFile = await compressVideo(file, {
+        maxWidth: 1280,
+        maxHeight: 720,
+        targetBitrate: 1800000,
+        onProgress: (p) => {
+          toast.loading(`Compressing video: ${p}%`, { id: toastId });
+        }
+      });
+
+      const compressedMb = (compressedFile.size / (1024 * 1024)).toFixed(1);
+      toast.loading(`Uploading compressed video (${compressedMb}MB)...`, { id: toastId });
+
+      const fileExt = compressedFile.name.split('.').pop() || "webm";
+      const fileName = `${Date.now()}-${slug}.${fileExt}`;
+      const filePath = `hero/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('hero-assets')
+        .upload(filePath, compressedFile, { upsert: true, contentType: compressedFile.type || 'video/webm' });
+
+      let finalUrl = "";
+      if (uploadError) {
+        const { error: fallbackError } = await supabase.storage
+          .from('content')
+          .upload(filePath, compressedFile, { upsert: true, contentType: compressedFile.type || 'video/webm' });
+
+        if (fallbackError) throw fallbackError;
+
+        finalUrl = supabase.storage.from('content').getPublicUrl(filePath).data.publicUrl;
+      } else {
+        finalUrl = supabase.storage.from('hero-assets').getPublicUrl(filePath).data.publicUrl;
+      }
+
+      handleChange(slug, "image_url", finalUrl);
+      toast.success(`Video compressed (${originalMb}MB → ${compressedMb}MB) and ready! Save hero to apply.`, { id: toastId });
+    } catch (error: any) {
+      toast.error("Error uploading video: " + error.message);
+    } finally {
+      setSaving(null);
+    }
+  };
+
   const handleSave = async (slug: string) => {
     setSaving(slug);
     try {
@@ -213,21 +262,44 @@ export default function PageHeroesCMS() {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-10">
-          {/* Image Column */}
+          {/* Media Column */}
           <div className="space-y-4">
-            <label className="font-serif-sc text-[10px] tracking-widest text-gold block uppercase">HERO BACKGROUND IMAGE</label>
+            <div className="flex items-center justify-between">
+              <label className="font-serif-sc text-[10px] tracking-widest text-gold block uppercase">
+                HERO BACKGROUND MEDIA (IMAGE / VIDEO)
+              </label>
+              {isVideoUrl(currentHero.image_url) && (
+                <span className="text-[10px] font-serif-sc text-heritage-orange border border-heritage-orange/40 px-2 py-0.5 rounded-sm bg-heritage-orange/10 font-bold">
+                  ★ VIDEO ACTIVE
+                </span>
+              )}
+            </div>
+            
             <div className="aspect-[16/9] bg-background border border-gold/20 relative overflow-hidden flex items-center justify-center group/img rounded-sm shadow-md">
               {currentHero.image_url ? (
-                <img src={currentHero.image_url} alt="Hero" className="w-full h-full object-cover" />
+                isVideoUrl(currentHero.image_url) ? (
+                  <video 
+                    src={currentHero.image_url} 
+                    autoPlay 
+                    muted 
+                    loop 
+                    playsInline 
+                    className="w-full h-full object-cover" 
+                  />
+                ) : (
+                  <img src={currentHero.image_url} alt="Hero" className="w-full h-full object-cover" />
+                )
               ) : (
                 <div className="text-center p-6">
                   <ImageIcon className="mx-auto text-gold/50 mb-2" size={36} />
-                  <p className="font-serif italic text-sm text-muted-foreground">No hero image uploaded yet.</p>
+                  <p className="font-serif italic text-sm text-muted-foreground">No hero media uploaded yet.</p>
                 </div>
               )}
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                <label className="cursor-pointer bg-gradient-gold text-royal-deep px-6 py-2.5 font-serif-sc text-xs tracking-widest shadow-gold hover:scale-[1.03] transition-all">
-                  {saving === activePageObj.slug ? "UPLOADING..." : "UPLOAD NEW IMAGE"}
+              
+              <div className="absolute inset-0 bg-black/70 opacity-0 group-hover/img:opacity-100 transition-opacity flex flex-col sm:flex-row items-center justify-center gap-3 backdrop-blur-sm p-4">
+                <label className="cursor-pointer bg-gradient-gold text-royal-deep px-5 py-2.5 font-serif-sc text-xs tracking-widest shadow-gold hover:scale-[1.03] transition-all font-bold flex items-center gap-2">
+                  <ImageIcon size={14} />
+                  {saving === activePageObj.slug ? "UPLOADING..." : "UPLOAD IMAGE"}
                   <input 
                     type="file" 
                     accept="image/*" 
@@ -240,15 +312,35 @@ export default function PageHeroesCMS() {
                     disabled={saving === activePageObj.slug}
                   />
                 </label>
+
+                <label className="cursor-pointer bg-heritage-orange text-white px-5 py-2.5 font-serif-sc text-xs tracking-widest shadow-md hover:scale-[1.03] transition-all font-bold flex items-center gap-2 border border-white/20">
+                  <VideoIcon size={14} />
+                  {saving === activePageObj.slug ? "COMPRESSING..." : "UPLOAD VIDEO"}
+                  <input 
+                    type="file" 
+                    accept="video/mp4,video/webm,video/quicktime,video/*" 
+                    className="hidden" 
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        handleVideoUpload(activePageObj.slug, e.target.files[0]);
+                      }
+                    }}
+                    disabled={saving === activePageObj.slug}
+                  />
+                </label>
               </div>
             </div>
+            
             <input 
               type="text" 
               value={currentHero.image_url || ""} 
               onChange={e => handleChange(activePageObj.slug, "image_url", e.target.value)}
-              placeholder="Or paste an image URL directly..."
+              placeholder="Or paste an image / video URL (.mp4, .webm, YouTube, Vimeo)..."
               className="w-full bg-background border border-gold/20 focus:border-gold px-4 py-3 font-serif outline-none text-sm text-foreground"
             />
+            <p className="text-[11px] font-serif italic text-muted-foreground">
+              ⚡ Videos are automatically compressed on-device before upload to conserve bandwidth and guarantee instant load times.
+            </p>
           </div>
 
           {/* Text Column */}

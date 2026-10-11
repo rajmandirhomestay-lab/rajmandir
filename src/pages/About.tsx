@@ -6,6 +6,7 @@ import { PageHero } from "@/components/palace/PageHero";
 import { DustParticles } from "@/components/palace/DustParticles";
 import { usePageHero, useAboutContent, useAboutFeatures, useAboutGallery } from "@/lib/api";
 import { MapPin, Heart, Utensils, BedDouble, Coffee, Wifi, Star, Camera, Wind, Sun, Moon, Compass, Palmtree, CheckCircle } from "lucide-react";
+import { isVideoUrl } from "@/lib/videoCompression";
 
 const ICON_MAP: Record<string, any> = {
   MapPin, Heart, Utensils, BedDouble, Coffee, Wifi, Star, Camera, Wind, Sun, Moon, Compass, Palmtree, CheckCircle
@@ -27,6 +28,12 @@ const AboutPage = () => {
 
   const rajMandirContent = aboutContent?.find((c: any) => c.section_key === 'about_raj_mandir');
   const experienceContent = aboutContent?.find((c: any) => c.section_key === 'the_experience');
+
+  const s1Media = rajMandirContent?.video_url || rajMandirContent?.image_url;
+  const isS1Video = isVideoUrl(s1Media);
+
+  const s2Media = experienceContent?.video_url || experienceContent?.image_url;
+  const isS2Video = isVideoUrl(s2Media);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -78,11 +85,24 @@ const AboutPage = () => {
             </div>
           </div>
           <div className="s1-img relative aspect-[4/5] rounded-t-full overflow-hidden border border-gold/20 shadow-xl">
-            <img 
-              src={rajMandirContent?.image_url || heroImgFallback} 
-              alt="About Raj Mandir" 
-              className="absolute inset-0 w-full h-full object-cover"
-            />
+            {isS1Video ? (
+              <video
+                src={s1Media}
+                poster={heroImgFallback}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            ) : (
+              <img 
+                src={rajMandirContent?.image_url || heroImgFallback} 
+                alt="About Raj Mandir" 
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/40 to-transparent pointer-events-none" />
           </div>
         </div>
@@ -93,11 +113,24 @@ const AboutPage = () => {
         <div className="absolute inset-0 marble-texture opacity-30 pointer-events-none" />
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div className="s2-img md:order-1 order-2 relative aspect-[4/3] rounded shadow-lg overflow-hidden border border-gold/10">
-            <img 
-              src={experienceContent?.image_url || heroImgFallback} 
-              alt="The Experience" 
-              className="absolute inset-0 w-full h-full object-cover"
-            />
+            {isS2Video ? (
+              <video
+                src={s2Media}
+                poster={heroImgFallback}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            ) : (
+              <img 
+                src={experienceContent?.image_url || heroImgFallback} 
+                alt="The Experience" 
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            )}
           </div>
           <div className="s2-text md:order-2 order-1 space-y-6">
             <h2 className="font-display text-4xl md:text-5xl text-foreground font-bold">

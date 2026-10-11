@@ -6,7 +6,8 @@ import { ChevronLeft, ChevronRight, Users, BedDouble, Maximize, Eye, Sparkles, X
 import { PageShell } from "@/components/palace/PageShell";
 import { DustParticles } from "@/components/palace/DustParticles";
 import { cn } from "@/lib/utils";
-import { useRoomCategory, useRoomCategories } from "@/lib/api";
+import { useRoomCategory, useRoomCategories, useSettings } from "@/lib/api";
+import { parseChamberHeading } from "@/lib/chamberUtils";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,6 +15,7 @@ const RoomDetail = () => {
   const { id = "" } = useParams();
   const { data: dbRoom, isLoading } = useRoomCategory(id);
   const { data: allRooms } = useRoomCategories();
+  const { data: settings } = useSettings();
   
   const heroRef = useRef<HTMLElement>(null);
   const heroImgRef = useRef<HTMLDivElement>(null);
