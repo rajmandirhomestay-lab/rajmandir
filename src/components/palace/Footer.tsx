@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Globe } from "lucide-react";
+import { useTheme } from "@/lib/theme";
 
 const defaultLinks = [
   { to: "/rooms", label: "CHAMBERS" },
@@ -25,10 +26,14 @@ const languages = [
 ];
 
 export const Footer = () => {
+  const { activeTheme } = useTheme();
   const [footerLinks, setFooterLinks] = useState(defaultLinks);
   const [address, setAddress] = useState("Old City, near Mehrangarh Fort · Jodhpur, Rajasthan · 342001");
   const [phone, setPhone] = useState("+91 291 000 0000");
   const [currentLang, setCurrentLang] = useState("EN");
+
+  const footerTextColor = activeTheme?.footerFg || "var(--custom-footer-fg, #ffffff)";
+  const footerBgColor = activeTheme?.footerBg || "var(--custom-footer-bg, #091a28)";
 
   useEffect(() => {
     const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
@@ -82,55 +87,79 @@ export const Footer = () => {
 
   return (
     <footer
-      className="relative pt-20 pb-10 px-6 overflow-hidden border-t border-gold/20"
+      id="palace-footer"
+      className="palace-footer-container relative pt-20 pb-10 px-6 overflow-hidden border-t border-gold/20"
       style={{
-        backgroundColor: 'var(--custom-footer-bg, #091a28)',
-        color: 'var(--custom-footer-fg, #ffffff)'
+        backgroundColor: footerBgColor,
+        color: footerTextColor
       }}
     >
+      <style>{`
+        #palace-footer, #palace-footer * {
+          --custom-footer-current: ${activeTheme?.footerFg || 'var(--custom-footer-fg, #ffffff)'};
+        }
+        #palace-footer a,
+        #palace-footer p,
+        #palace-footer div:not(.logo-crest),
+        #palace-footer span:not(.logo-letter),
+        #palace-footer button {
+          color: var(--custom-footer-current) !important;
+        }
+      `}</style>
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
 
       <div className="relative max-w-6xl mx-auto text-center">
         <Link to="/" className="inline-flex flex-col items-center">
-          <div className="mx-auto h-14 w-14 rounded-full bg-gradient-gold flex items-center justify-center shadow-gold mb-6">
-            <span className="font-display text-royal-deep text-2xl font-bold">R</span>
+          <div className="logo-crest mx-auto h-14 w-14 rounded-full bg-gradient-gold flex items-center justify-center shadow-gold mb-6">
+            <span className="logo-letter font-display text-royal-deep text-2xl font-bold">R</span>
           </div>
-          <div className="font-display text-3xl md:text-4xl text-white font-bold">The Raj Mandir</div>
-          <div className="font-serif-sc text-gold text-[11px] tracking-[0.5em] mt-2 font-bold">JODHPUR · EST. 1894</div>
+          <div className="font-display text-3xl md:text-4xl font-bold" style={{ color: footerTextColor }}>
+            The Raj Mandir
+          </div>
+          <div className="font-serif-sc text-[11px] tracking-[0.5em] mt-2 font-bold opacity-85" style={{ color: footerTextColor }}>
+            JODHPUR · EST. 1894
+          </div>
         </Link>
 
         <div className="divider-gold max-w-md mx-auto mt-8">
-          <span className="text-gold text-sm">❖</span>
+          <span className="text-sm opacity-85" style={{ color: footerTextColor }}>❖</span>
         </div>
 
-        <p className="mt-8 font-serif italic text-muted-foreground max-w-xl mx-auto leading-relaxed">
+        <p className="mt-8 font-serif italic max-w-xl mx-auto leading-relaxed opacity-90" style={{ color: footerTextColor }}>
           {address}
           <br />
           Reservations whispered through brass telephones at {phone}
         </p>
 
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-3 font-serif-sc text-[11px] tracking-[0.3em] text-muted-foreground">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-3 font-serif-sc text-[11px] tracking-[0.3em]" style={{ color: footerTextColor }}>
           {footerLinks.map((l, i) => (
             <span key={l.to} className="flex items-center gap-3">
-              <Link to={l.to} className="hover:text-gold transition-colors duration-500">{l.label}</Link>
-              {i < footerLinks.length - 1 && <span className="text-gold/40">·</span>}
+              <Link to={l.to} className="transition-opacity duration-300 hover:opacity-75" style={{ color: footerTextColor }}>
+                {l.label}
+              </Link>
+              {i < footerLinks.length - 1 && <span className="opacity-40" style={{ color: footerTextColor }}>·</span>}
             </span>
           ))}
         </div>
 
         {/* Footer Language Selector */}
         <div className="mt-12 pt-6 border-t border-gold/15 flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto">
-          <div className="flex items-center gap-1.5 font-serif-sc text-[10px] tracking-[0.3em] text-gold font-bold mr-2">
-            <Globe size={13} className="text-gold" /> LANGUAGE:
+          <div className="flex items-center gap-1.5 font-serif-sc text-[10px] tracking-[0.3em] font-bold mr-2" style={{ color: footerTextColor }}>
+            <Globe size={13} style={{ color: footerTextColor }} /> LANGUAGE:
           </div>
           {languages.map(lang => (
             <button
               key={lang.code}
               onClick={() => handleLanguageChange(lang.code, lang.gtCode)}
+              style={{
+                color: footerTextColor,
+                borderColor: currentLang === lang.code ? footerTextColor : `${footerTextColor}40`,
+                backgroundColor: currentLang === lang.code ? `${footerTextColor}15` : 'transparent'
+              }}
               className={`font-serif-sc text-[10px] tracking-[0.2em] px-3 py-1 border transition-all duration-300 rounded-sm ${
                 currentLang === lang.code
-                  ? "border-gold text-gold font-bold bg-gold/15 shadow-sm"
-                  : "border-gold/25 text-white/80 hover:text-gold hover:border-gold/60 hover:bg-gold/5"
+                  ? "font-bold shadow-sm"
+                  : "opacity-80 hover:opacity-100 hover:bg-white/5"
               }`}
             >
               {lang.name}
@@ -138,7 +167,10 @@ export const Footer = () => {
           ))}
         </div>
 
-        <div className="mt-12 pt-6 border-t border-gold/20 font-serif-sc text-[10px] tracking-[0.4em] text-muted-foreground/60">
+        <div
+          className="mt-12 pt-6 border-t font-serif-sc text-[10px] tracking-[0.4em] opacity-75"
+          style={{ color: footerTextColor, borderColor: `${footerTextColor}30` }}
+        >
           © {new Date().getFullYear()} RAJ MANDIR HOTEL · ALL RIGHTS RESERVED
         </div>
       </div>

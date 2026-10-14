@@ -63,6 +63,7 @@
     --gradient-heritage: linear-gradient(135deg, #c45b0a, #d4730e, #a84e08);
     --gradient-ivory: linear-gradient(135deg, #faf6f0, #f3efe6);
     --gradient-sky: linear-gradient(135deg, #f0f7fc, #e1effa);
+    --gradient-night: linear-gradient(135deg, #091a28, #0d2338, #0b1d2e);
 
     --shadow-royal: 0 20px 60px -15px rgba(9, 26, 40, 0.25);
     --shadow-gold: 0 0 30px hsl(42 75% 45% / 0.25), 0 10px 25px -10px hsl(42 75% 35% / 0.2);
@@ -305,9 +306,11 @@
 
   .bg-gradient-royal { background-image: var(--gradient-royal); }
   .bg-gradient-gold { background-image: var(--gradient-gold); }
-.bg-heritage-brown { background-color: hsl(var(--heritage-brown)); }
-.border-heritage-brown { border-color: hsl(var(--heritage-brown)); }
+  .bg-heritage-brown { background-color: hsl(var(--heritage-brown)); }
+  .border-heritage-brown { border-color: hsl(var(--heritage-brown)); }
   .bg-gradient-night { background-image: var(--gradient-night); }
+  .bg-royal-deep { background-color: hsl(var(--royal-deep)); }
+  .text-ivory { color: hsl(var(--ivory)); }
 
   .shadow-royal { box-shadow: var(--shadow-royal); }
   .shadow-gold { box-shadow: var(--shadow-gold); }

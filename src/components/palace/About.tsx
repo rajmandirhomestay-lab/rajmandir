@@ -5,6 +5,7 @@ import aboutFallback from "@/assets/about-palace.jpg";
 import { Link } from "react-router-dom";
 import { useHomepageSections } from "@/lib/api";
 import { isVideoUrl } from "@/lib/videoCompression";
+import { PalaceHeading } from "@/components/palace/PalaceHeading";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -84,9 +85,12 @@ export const About = () => {
         <div className="about-text">
           <div className="font-serif-sc text-gold tracking-[0.5em] text-xs mb-4 font-bold uppercase">★ OUR STORY ★</div>
           <h2 className="font-display text-5xl md:text-6xl leading-tight font-bold">
-            {sectionTitle.includes("Warm") ? (
-              <>A Legacy of <span className="text-heritage-gradient italic">Warm Welcome</span>.</>
-            ) : sectionTitle}
+            <PalaceHeading
+              title={sectionTitle}
+              content={storySection?.content}
+              defaultLightPhrase="Warm Welcome"
+              isDarkBg={bgMode === 'royal'}
+            />
           </h2>
           <div className="divider-gold mt-6 max-w-xs">
             <span className="font-display text-gold text-xl">❖</span>

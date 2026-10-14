@@ -475,6 +475,48 @@ export default function SettingsCMS() {
                   </div>
                 </div>
               </div>
+
+              {/* Live Preview for Navbar & Footer */}
+              <div className="mt-6 pt-6 border-t border-gold/15 space-y-3">
+                <span className="block font-serif-sc text-xs tracking-widest text-gold font-bold">
+                  LIVE PREVIEW: NAVBAR & FOOTER COLORS
+                </span>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Navbar Preview */}
+                  <div 
+                    className="p-4 rounded-sm border border-gold/20 flex items-center justify-between shadow-sm"
+                    style={{ backgroundColor: selectedTheme.navbarBg || "#091a28", color: selectedTheme.navbarFg || "#ffffff" }}
+                  >
+                    <div className="font-display font-bold text-sm" style={{ color: selectedTheme.navbarFg || "#ffffff" }}>
+                      RAJ MANDIR
+                    </div>
+                    <div className="flex gap-3 font-serif-sc text-[10px] tracking-wider" style={{ color: selectedTheme.navbarFg || "#ffffff" }}>
+                      <span className="opacity-90">CHAMBERS</span>
+                      <span className="opacity-90">DINING</span>
+                      <span className="opacity-90">CONTACT</span>
+                    </div>
+                  </div>
+
+                  {/* Footer Preview */}
+                  <div 
+                    className="p-4 rounded-sm border border-gold/20 text-center space-y-1.5 shadow-sm"
+                    style={{ backgroundColor: selectedTheme.footerBg || "#091a28", color: selectedTheme.footerFg || "#ffffff" }}
+                  >
+                    <div className="font-display font-bold text-base" style={{ color: selectedTheme.footerFg || "#ffffff" }}>
+                      The Raj Mandir
+                    </div>
+                    <div className="font-serif-sc text-[9px] tracking-widest" style={{ color: selectedTheme.footerFg || "#ffffff", opacity: 0.85 }}>
+                      JODHPUR · EST. 1894
+                    </div>
+                    <div className="flex justify-center gap-2 font-serif-sc text-[9px] tracking-wider" style={{ color: selectedTheme.footerFg || "#ffffff" }}>
+                      <span>CHAMBERS</span>·<span>DINING</span>·<span>CONTACT</span>·<span>RESERVE</span>
+                    </div>
+                    <div className="text-[9px] font-serif italic" style={{ color: selectedTheme.footerFg || "#ffffff", opacity: 0.8 }}>
+                      Old City, near Mehrangarh Fort · Reservations at +91 291 000 0000
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}

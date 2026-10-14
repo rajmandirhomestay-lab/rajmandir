@@ -305,7 +305,7 @@ const Booking = () => {
         alt="Royal chamber interior"
       />
 
-      <section ref={ref} className="relative py-24 px-6 marble-texture">
+      <section ref={ref} className="relative py-24 px-6 marble-texture" style={{background: 'hsl(40 30% 97%)'}}>
         <div className="relative max-w-7xl mx-auto">
           {/* Progress */}
           <div className="flex items-center justify-between mb-14 max-w-3xl mx-auto">
@@ -422,7 +422,7 @@ const Booking = () => {
 
                   {/* Room type swap */}
                   <div className="step-anim">
-                    <label className="font-serif-sc text-[11px] tracking-[0.4em] text-gold block mb-3">CHAMBER TYPE</label>
+                    <label className="font-serif-sc text-[11px] tracking-[0.4em] text-heritage-brown font-bold block mb-3">CHAMBER TYPE</label>
                     <div className="relative">
                       <select
                         value={roomId || ""}
@@ -464,14 +464,14 @@ const Booking = () => {
                       <BField label="Phone" value={guest.phone} onChange={(v) => setGuest({ ...guest, phone: v })} maxLength={30} required touched={touched} validate={(v) => v.trim().length >= 7} err="Please enter a phone number" />
                     </div>
                     <div className="step-anim">
-                      <label className="font-serif-sc text-[11px] tracking-[0.4em] text-gold block mb-3">SPECIAL WISHES</label>
+                      <label className="font-serif-sc text-[11px] tracking-[0.4em] text-heritage-brown font-bold block mb-3">SPECIAL WISHES</label>
                       <textarea
                         rows={3}
                         maxLength={500}
                         value={guest.notes}
                         onChange={(e) => setGuest({ ...guest, notes: e.target.value })}
                         placeholder="Saffron tea on arrival, jharokha-facing chamber…"
-                        className="w-full bg-transparent border-b border-gold/40 focus:border-gold outline-none px-1 py-3 font-serif italic text-lg text-foreground focus:shadow-[0_4px_30px_-15px_hsl(var(--gold))] transition-all duration-700 resize-none"
+                        className="w-full bg-transparent border-b border-gold/60 focus:border-gold outline-none px-1 py-3 font-serif italic text-lg text-foreground placeholder:text-foreground/40 focus:shadow-[0_4px_30px_-15px_hsl(var(--gold))] transition-all duration-700 resize-none"
                       />
                     </div>
                   </div>
@@ -500,7 +500,7 @@ const Booking = () => {
             </div>
 
             {/* SUMMARY */}
-            <aside className="relative p-8 bg-gradient-night text-ivory border border-gold/30 shadow-frame self-start sticky top-28 overflow-hidden">
+            <aside className="relative p-8 bg-royal-deep text-ivory border border-gold/30 shadow-frame self-start sticky top-28 overflow-hidden">
               <div className="absolute inset-0 lattice-pattern opacity-10 pointer-events-none" />
               <div className="relative">
                 <div className="font-serif-sc text-gold tracking-[0.4em] text-[10px] mb-4">★ ROYAL LEDGER ★</div>
@@ -609,11 +609,11 @@ const DateField = ({
   label, date, onSelect, disabled,
 }: { label: string; date?: Date; onSelect: (d: Date) => void; disabled?: (d: Date) => boolean }) => (
   <div>
-    <label className="font-serif-sc text-[11px] tracking-[0.4em] text-gold block mb-3">{label}</label>
+    <label className="font-serif-sc text-[11px] tracking-[0.4em] text-heritage-brown font-bold block mb-3">{label}</label>
     <Popover>
       <PopoverTrigger asChild>
-        <button className="w-full flex items-center justify-between border-b border-gold/40 hover:border-gold transition-colors px-1 py-3 font-serif italic text-lg text-foreground">
-          <span className={cn(!date && "text-muted-foreground/60")}>
+        <button className="w-full flex items-center justify-between border-b border-gold/60 hover:border-gold transition-colors px-1 py-3 font-serif italic text-lg text-foreground">
+          <span className={cn(!date && "text-foreground/40")}>
             {date ? format(date, "PPP") : "Pick a date"}
           </span>
           <CalendarIcon className="text-gold" size={16} />
@@ -630,25 +630,25 @@ const Counter = ({
   label, sub, value, setValue, min, max, icon,
 }: { label: string; sub?: string; value: number; setValue: (n: number) => void; min: number; max: number; icon?: React.ReactNode }) => (
   <div>
-    <label className="font-serif-sc text-[11px] tracking-[0.4em] text-gold mb-3 flex items-center gap-2">{icon}{label}</label>
+    <label className="font-serif-sc text-[11px] tracking-[0.4em] text-heritage-brown font-bold mb-3 flex items-center gap-2">{icon}{label}</label>
     <div className="flex items-center gap-3">
       <button
         type="button"
         onClick={() => setValue(Math.max(min, value - 1))}
         disabled={value <= min}
-        className="w-10 h-10 border border-gold/40 hover:border-gold hover:bg-gold/10 disabled:opacity-30 transition-all flex items-center justify-center text-gold"
+        className="w-10 h-10 border border-gold/60 hover:border-gold hover:bg-gold/10 disabled:opacity-30 transition-all flex items-center justify-center text-foreground"
       >
         <Minus size={14} />
       </button>
       <div className="flex-1 text-center">
-        <div className="font-display text-3xl text-gold-gradient">{value}</div>
-        {sub && <div className="font-serif italic text-[11px] text-muted-foreground">{sub}</div>}
+        <div className="font-display text-3xl text-foreground font-bold">{value}</div>
+        {sub && <div className="font-serif italic text-[11px] text-foreground/60">{sub}</div>}
       </div>
       <button
         type="button"
         onClick={() => setValue(Math.min(max, value + 1))}
         disabled={value >= max}
-        className="w-10 h-10 border border-gold/40 hover:border-gold hover:bg-gold/10 disabled:opacity-30 transition-all flex items-center justify-center text-gold"
+        className="w-10 h-10 border border-gold/60 hover:border-gold hover:bg-gold/10 disabled:opacity-30 transition-all flex items-center justify-center text-foreground"
       >
         <Plus size={14} />
       </button>
@@ -662,15 +662,15 @@ const BField = ({
   const invalid = touched && required && validate && !validate(value);
   return (
     <div>
-      <label className="font-serif-sc text-[11px] tracking-[0.4em] text-gold block mb-3">{label.toUpperCase()}</label>
+      <label className="font-serif-sc text-[11px] tracking-[0.4em] text-heritage-brown font-bold block mb-3">{label.toUpperCase()}</label>
       <input
         type={type}
         maxLength={maxLength}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className={cn(
-          "w-full bg-transparent border-b outline-none px-1 py-3 font-serif text-lg text-foreground transition-all duration-700",
-          invalid ? "border-saffron focus:shadow-[0_4px_30px_-15px_hsl(var(--saffron))]" : "border-gold/40 focus:border-gold focus:shadow-[0_4px_30px_-15px_hsl(var(--gold))]"
+          "w-full bg-transparent border-b outline-none px-1 py-3 font-serif text-lg text-foreground transition-all duration-700 placeholder:text-foreground/40",
+          invalid ? "border-saffron focus:shadow-[0_4px_30px_-15px_hsl(var(--saffron))]" : "border-gold/60 focus:border-gold focus:shadow-[0_4px_30px_-15px_hsl(var(--gold))]"
         )}
       />
       {invalid && (
@@ -690,8 +690,8 @@ const ValidationLine = ({ msg }: { msg: string }) => (
 
 const Row = ({ k, v }: { k: string; v: string }) => (
   <div className="flex items-center justify-between py-3 border-b border-gold/20">
-    <span className="font-serif-sc text-[10px] tracking-[0.3em] text-gold">{k.toUpperCase()}</span>
-    <span className="font-serif italic">{v || "—"}</span>
+    <span className="font-serif-sc text-[10px] tracking-[0.3em] text-heritage-brown font-bold">{k.toUpperCase()}</span>
+    <span className="font-serif italic text-foreground">{v || "—"}</span>
   </div>
 );
 

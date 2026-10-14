@@ -6,6 +6,7 @@ import { Clock, ArrowRight, Sun, Coffee, Sparkles } from "lucide-react";
 import { DustParticles } from "./DustParticles";
 import previewImgFallback from "@/assets/gallery-4.jpg";
 import { useHomepageSections } from "@/lib/api";
+import { PalaceHeading } from "@/components/palace/PalaceHeading";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -66,18 +67,12 @@ export const DayAtRajMandirSection = () => {
           </div>
 
           <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
-            {title.toLowerCase().includes("raj mandir") ? (
-              <>
-                <span className="text-heritage-gradient">
-                  {title.toLowerCase().includes("a day at")
-                    ? (title.includes("A DAY AT") ? "A DAY AT " : "A Day at ")
-                    : title.split(/raj mandir/i)[0]}
-                </span>
-                <span className="text-foreground italic">Raj Mandir</span>
-              </>
-            ) : (
-              title
-            )}
+            <PalaceHeading
+              title={title}
+              content={daySection?.content}
+              defaultLightWords={["Day", "at", "Raj", "Mandir"]}
+              isDarkBg={bgMode === 'royal'}
+            />
           </h2>
 
           <div className="divider-heritage max-w-xs">

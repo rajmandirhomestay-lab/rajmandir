@@ -5,7 +5,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import maharaja from "@/assets/room-maharaja.jpg";
 import rajwada from "@/assets/room-rajwada.jpg";
 import haveli from "@/assets/room-haveli.jpg";
-import { useRoomCategories } from "@/lib/api";
+import { useRoomCategories, useHomepageSections } from "@/lib/api";
+import { PalaceHeading } from "@/components/palace/PalaceHeading";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -36,7 +37,12 @@ const rooms = [
 export const Rooms = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const { data: dbRooms } = useRoomCategories();
+  const { data: sections } = useHomepageSections();
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const roomsSection = sections?.find(s => s.section_key === 'rooms');
+  const title = roomsSection?.content?.title || "Royal Quarters";
+  const subtitle = roomsSection?.content?.subtitle || "Sanctuaries of silence — each a different verse from the same royal poem.";
 
   const activeRooms = dbRooms && dbRooms.length > 0
     ? dbRooms.map((r, i) => ({
@@ -88,14 +94,18 @@ export const Rooms = () => {
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 relative z-10">
         <div className="text-center mb-16 md:mb-24 rooms-eyebrow">
           <div className="font-serif-sc text-gold tracking-[0.5em] text-xs md:text-sm mb-4 uppercase font-bold">★ The Chambers ★</div>
-          <h2 className="font-display text-5xl md:text-7xl text-foreground font-bold">
-            Royal <span className="text-heritage-gradient italic">Quarters</span>
+          <h2 className="font-display text-5xl md:text-7xl font-bold">
+            <PalaceHeading
+              title={title}
+              content={roomsSection?.content}
+              defaultLightPhrase="Quarters"
+            />
           </h2>
           <div className="divider-gold max-w-md mx-auto mt-6">
             <span className="font-display text-gold text-xl">❖</span>
           </div>
           <p className="mt-6 font-serif italic text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-medium">
-            Sanctuaries of silence — each a different verse from the same royal poem.
+            {subtitle}
           </p>
         </div>
 

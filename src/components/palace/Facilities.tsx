@@ -2,14 +2,19 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import * as LucideIcons from "lucide-react";
-import { useHomepageAmenities } from "@/lib/api";
+import { useHomepageAmenities, useHomepageSections } from "@/lib/api";
 import { TripadvisorIcon } from "./TripadvisorIcon";
+import { PalaceHeading } from "@/components/palace/PalaceHeading";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export const Facilities = () => {
   const ref = useRef<HTMLElement>(null);
   const { data: facilitiesData, isLoading } = useHomepageAmenities();
+  const { data: sections } = useHomepageSections();
+
+  const facSection = sections?.find(s => s.section_key === 'facilities');
+  const title = facSection?.content?.title || "Thoughtful Comforts";
 
   useEffect(() => {
     if (isLoading || !facilitiesData) return;
@@ -30,6 +35,8 @@ export const Facilities = () => {
     return () => ctx.revert();
   }, [facilitiesData, isLoading]);
 
+  if (facSection && facSection.is_visible === false) return null;
+
   return (
     <section ref={ref} id="facilities" className="relative py-32 px-6 overflow-hidden bg-background text-foreground border-b border-gold/20">
       <div className="absolute inset-0 sandstone-texture opacity-15 pointer-events-none" />
@@ -40,8 +47,12 @@ export const Facilities = () => {
       <div className="relative max-w-7xl mx-auto z-10">
         <div className="text-center mb-16">
           <div className="eyebrow mb-4 font-serif-sc text-gold tracking-[0.5em] text-xs font-bold uppercase">★ THOUGHTFUL COMFORTS ★</div>
-          <h2 className="font-display text-5xl md:text-6xl text-foreground font-bold">
-            Thoughtful <span className="text-heritage-gradient italic">Comforts</span>
+          <h2 className="font-display text-5xl md:text-6xl font-bold">
+            <PalaceHeading
+              title={title}
+              content={facSection?.content}
+              defaultLightPhrase="Comforts"
+            />
           </h2>
           <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold text-xl">❖</span></div>
         </div>

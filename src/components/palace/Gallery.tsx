@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { X } from "lucide-react";
-import { useGallery } from "@/lib/api";
+import { useGallery, useHomepageSections } from "@/lib/api";
+import { PalaceHeading } from "@/components/palace/PalaceHeading";
 
 import g1 from "@/assets/gallery-1.jpg";
 import g2 from "@/assets/gallery-2.jpg";
@@ -55,6 +56,11 @@ export const Gallery = () => {
   const navigate = useNavigate();
   const [active, setActive] = useState<number | null>(null);
   const { data: dbGallery } = useGallery();
+  const { data: sections } = useHomepageSections();
+
+  const gallerySection = sections?.find(s => s.section_key === 'gallery');
+  const title = gallerySection?.content?.title || "A Glimpse of Raj Mandir";
+  const subtitle = gallerySection?.content?.subtitle || "Frames suspended in stone — moments from a palace that has watched a century pass.";
 
   const activePhotos = useMemo(() => {
     let photosList = fallbackPhotos;
@@ -115,12 +121,16 @@ export const Gallery = () => {
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <div className="eyebrow mb-4 font-serif-sc text-gold tracking-[0.5em] text-xs font-bold uppercase">★ CAPTURED MEMORIES ★</div>
-          <h2 className="font-display text-5xl md:text-6xl text-foreground font-bold">
-            A Glimpse of <span className="text-heritage-gradient italic">Raj Mandir</span>
+          <h2 className="font-display text-5xl md:text-6xl font-bold">
+            <PalaceHeading
+              title={title}
+              content={gallerySection?.content}
+              defaultLightPhrase="Raj Mandir"
+            />
           </h2>
           <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold text-xl">❖</span></div>
           <p className="font-serif italic mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
-            Frames suspended in stone — moments from a palace that has watched a century pass.
+            {subtitle}
           </p>
         </div>
 

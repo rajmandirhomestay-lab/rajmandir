@@ -160,10 +160,10 @@ export default function Payment() {
             )}
             
             <div className="space-y-2">
-              <div className="font-serif-sc text-xs tracking-widest text-gold">ACCOUNT NAME</div>
+              <div className="font-serif-sc text-xs tracking-widest text-heritage-brown font-bold">ACCOUNT NAME</div>
               <div className="font-display text-2xl text-foreground">{settings.account_name}</div>
               
-              <div className="font-serif-sc text-xs tracking-widest text-gold mt-6">UPI ID</div>
+              <div className="font-serif-sc text-xs tracking-widest text-heritage-brown font-bold mt-6">UPI ID</div>
               <div className="flex items-center justify-center gap-3">
                 <div className="font-serif text-lg text-foreground bg-muted px-4 py-2 rounded-sm border border-gold/20">{settings.upi_id}</div>
                 <button 
@@ -177,9 +177,9 @@ export default function Payment() {
           </div>
 
           {settings.payment_instructions && (
-            <div className="bg-gradient-night p-8 border border-gold/20 shadow-sm text-ivory">
+            <div className="bg-royal-deep p-8 border border-gold/30 shadow-sm text-ivory">
               <h3 className="font-serif-sc text-xs tracking-widest text-gold mb-4">PAYMENT INSTRUCTIONS</h3>
-              <div className="prose prose-invert prose-gold font-serif prose-sm whitespace-pre-wrap">
+              <div className="font-serif text-sm whitespace-pre-wrap text-ivory/90 leading-relaxed">
                 {settings.payment_instructions}
               </div>
             </div>
@@ -190,11 +190,11 @@ export default function Payment() {
         <div className="space-y-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
           
           <div className="bg-card border border-gold/30 p-8 shadow-frame">
-            <h3 className="font-serif-sc text-xs tracking-widest text-gold border-b border-gold/20 pb-4 mb-6">RESERVATION LEDGER</h3>
+            <h3 className="font-serif-sc text-xs tracking-widest text-heritage-brown font-bold border-b border-gold/20 pb-4 mb-6">RESERVATION LEDGER</h3>
             <div className="space-y-4 font-serif text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Booking ID</span> <span className="text-foreground">{booking.booking_number}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Chamber</span> <span className="text-foreground">{booking.rooms?.name}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Guest Name</span> <span className="text-foreground">{booking.guest_name}</span></div>
+              <div className="flex justify-between"><span className="text-foreground/60">Booking ID</span> <span className="text-foreground font-semibold">{booking.booking_number}</span></div>
+              <div className="flex justify-between"><span className="text-foreground/60">Chamber</span> <span className="text-foreground font-semibold">{booking.rooms?.name}</span></div>
+              <div className="flex justify-between"><span className="text-foreground/60">Guest Name</span> <span className="text-foreground font-semibold">{booking.guest_name}</span></div>
               
               <div className="my-6 border-t border-gold/20 pt-6 space-y-2">
                 <div className="flex justify-between"><span className="text-muted-foreground">Total Tariff</span> <span className="text-foreground">₹ {Number(booking.total_price).toLocaleString()}</span></div>
@@ -207,13 +207,13 @@ export default function Payment() {
           </div>
 
           <div className="bg-card border border-gold/30 p-8 shadow-frame">
-            <h3 className="font-serif-sc text-xs tracking-widest text-gold border-b border-gold/20 pb-4 mb-6">SUBMIT PAYMENT PROOF</h3>
+            <h3 className="font-serif-sc text-xs tracking-widest text-heritage-brown font-bold border-b border-gold/20 pb-4 mb-6">SUBMIT PAYMENT PROOF</h3>
             
             <div className="space-y-6">
               
               {/* File Upload */}
               <div>
-                <label className="font-serif-sc text-[10px] tracking-widest text-gold block mb-3">PAYMENT SCREENSHOT *</label>
+                <label className="font-serif-sc text-[10px] tracking-widest text-heritage-brown font-bold block mb-3">PAYMENT SCREENSHOT *</label>
                 {!preview ? (
                   <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gold/30 bg-muted/30 hover:bg-gold/5 transition-colors cursor-pointer group">
                     <Upload className="text-gold/50 group-hover:text-gold mb-2 transition-colors" size={24} />
@@ -235,27 +235,27 @@ export default function Payment() {
 
               {/* TXN ID */}
               <div>
-                <label className="font-serif-sc text-[10px] tracking-widest text-gold block mb-3">TRANSACTION ID (UTR / REF NO) *</label>
+                <label className="font-serif-sc text-[10px] tracking-widest text-heritage-brown font-bold block mb-3">TRANSACTION ID (UTR / REF NO) *</label>
                 <input 
                   type="text" 
                   value={txnId}
                   maxLength={50}
                   onChange={(e) => setTxnId(e.target.value.replace(/[^a-zA-Z0-9-]/g, ''))}
                   placeholder="e.g. TXN9384729384"
-                  className="w-full bg-transparent border-b border-gold/40 focus:border-gold outline-none px-1 py-3 font-serif text-lg text-foreground transition-colors"
+                  className="w-full bg-transparent border-b border-gold/60 focus:border-gold outline-none px-1 py-3 font-serif text-lg text-foreground placeholder:text-foreground/40 transition-colors"
                 />
               </div>
 
               {/* Notes */}
               <div>
-                <label className="font-serif-sc text-[10px] tracking-widest text-gold block mb-3">OPTIONAL NOTES</label>
+                <label className="font-serif-sc text-[10px] tracking-widest text-heritage-brown font-bold block mb-3">OPTIONAL NOTES</label>
                 <input 
                   type="text" 
                   value={notes}
                   maxLength={200}
                   onChange={(e) => setNotes(e.target.value.replace(/[<>]/g, ''))}
                   placeholder="e.g. Paid via Google Pay from John's account"
-                  className="w-full bg-transparent border-b border-gold/40 focus:border-gold outline-none px-1 py-3 font-serif text-lg text-foreground transition-colors"
+                  className="w-full bg-transparent border-b border-gold/60 focus:border-gold outline-none px-1 py-3 font-serif text-lg text-foreground placeholder:text-foreground/40 transition-colors"
                 />
               </div>
 

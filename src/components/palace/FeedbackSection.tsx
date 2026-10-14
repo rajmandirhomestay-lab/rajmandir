@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useReviews } from "@/lib/api";
+import { useReviews, useHomepageSections } from "@/lib/api";
+import { PalaceHeading } from "@/components/palace/PalaceHeading";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,9 +13,9 @@ const cards = [
     place: "Florence",
   },
   {
-    quote: "We were not guests. We were small characters in a story the palace was still writing.",
     name: "Arjun & Kavya",
     place: "Bengaluru",
+    quote: "We were not guests. We were small characters in a story the palace was still writing.",
   },
   {
     quote: "Every meal felt like a ceremony. Every sunset, an inheritance.",
@@ -26,6 +27,10 @@ const cards = [
 export const FeedbackSection = () => {
   const ref = useRef<HTMLElement>(null);
   const { data: dbReviews } = useReviews();
+  const { data: sections } = useHomepageSections();
+
+  const feedbackSection = sections?.find(s => s.section_key === 'testimonials' || s.section_key === 'feedback');
+  const title = feedbackSection?.content?.title || "Whispers from our guests";
 
   const displayCards = dbReviews && dbReviews.filter(r => r.is_featured).length > 0
     ? dbReviews.filter(r => r.is_featured).slice(0, 3).map((r, i) => ({
@@ -71,8 +76,12 @@ export const FeedbackSection = () => {
       <div className="relative max-w-7xl mx-auto z-10">
         <div className="text-center mb-20">
           <div className="eyebrow mb-4 font-serif-sc text-gold tracking-[0.5em] text-xs font-bold uppercase">★ THE GUESTBOOK ★</div>
-          <h2 className="font-display text-5xl md:text-6xl text-foreground font-bold">
-            Whispers from <span className="text-heritage-gradient italic">our guests</span>
+          <h2 className="font-display text-5xl md:text-6xl font-bold">
+            <PalaceHeading
+              title={title}
+              content={feedbackSection?.content}
+              defaultLightPhrase="our guests"
+            />
           </h2>
           <div className="divider-gold mt-6 max-w-md mx-auto"><span className="text-gold text-xl">❖</span></div>
         </div>
