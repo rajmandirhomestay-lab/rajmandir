@@ -108,7 +108,7 @@ export default function Corner() {
               CURATED CORNERS & FRAMES
             </div>
             <h2 className="font-display text-4xl md:text-5xl text-foreground font-bold">
-              Moments Carved in <span className="text-gold italic">Heritage Stone</span>
+              Moments Carved in <span className="text-gold ">HERITAGE STONE</span>
             </h2>
             <div className="divider-gold mt-4 max-w-md mx-auto"><span className="text-gold text-xl">❖</span></div>
             <p className="font-serif italic mt-4 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">

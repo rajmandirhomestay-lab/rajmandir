@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Loader2, Save, Globe, Phone, MapPin, Mail, Share2, Palette, Check, Sparkles, Plus, RefreshCw, UploadCloud, Image as ImageIcon } from "lucide-react";
+import { Loader2, Save, Globe, Phone, MapPin, Mail, Share2, Palette, Check, Sparkles, Plus, RefreshCw, UploadCloud, Image as ImageIcon, Play, RotateCcw, Type } from "lucide-react";
 import { PRESET_THEMES, ThemeConfig, applyThemeToDOM } from "@/lib/theme";
 import { compressImage } from "@/lib/imageCompression";
 
@@ -17,6 +17,7 @@ export default function SettingsCMS() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("theme");
+  const [curtainPreviewOpen, setCurtainPreviewOpen] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState<ThemeConfig>(PRESET_THEMES[0]);
   const [customTheme, setCustomTheme] = useState<ThemeConfig>({
     id: "custom",
@@ -146,6 +147,7 @@ export default function SettingsCMS() {
 
   const tabs = [
     { id: "theme", label: "THEME & COLORS", icon: Palette },
+    { id: "curtain", label: "CURTAIN OPENER", icon: Sparkles },
     { id: "general", label: "GENERAL", icon: Globe },
     { id: "contact", label: "CONTACT", icon: Phone },
     { id: "social", label: "SOCIAL", icon: Share2 },
@@ -514,6 +516,444 @@ export default function SettingsCMS() {
                     <div className="text-[9px] font-serif italic" style={{ color: selectedTheme.footerFg || "#ffffff", opacity: 0.8 }}>
                       Old City, near Mehrangarh Fort · Reservations at +91 291 000 0000
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Link Banner to Curtain Customization */}
+            <div className="border-t border-gold/20 pt-8 mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-background/40 border border-gold/15 p-6 rounded-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center text-gold shrink-0">
+                  <Sparkles size={18} />
+                </div>
+                <div>
+                  <h4 className="font-display text-lg text-foreground">Royal Entrance Curtain Opener</h4>
+                  <p className="font-serif text-xs text-muted-foreground">Customize curtain opening animation, fabric color, edge trim, typography and ceremony texts.</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab("curtain")}
+                className="px-5 py-2.5 bg-gold/10 hover:bg-gold/20 border border-gold/40 text-gold font-serif-sc text-xs tracking-widest font-bold transition-all shrink-0"
+              >
+                CUSTOMIZE CURTAIN →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Curtain Opener Customization Tab */}
+        {activeTab === "curtain" && (
+          <div className="space-y-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gold/20">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center text-gold">
+                  <Sparkles size={18} />
+                </div>
+                <div>
+                  <h3 className="font-display text-2xl text-foreground">Royal Entrance Curtain Opener</h3>
+                  <p className="font-serif text-xs text-muted-foreground">
+                    Customize the grand opening curtain animation, fabric colors, edge trims, and ceremony texts.
+                  </p>
+                </div>
+              </div>
+
+              {/* Curtain Animation Enabled Toggle */}
+              <label className="flex items-center gap-3 cursor-pointer p-3 bg-background/60 border border-gold/20 rounded-sm">
+                <input
+                  type="checkbox"
+                  checked={settings.curtain_enabled !== false}
+                  onChange={(e) => handleUpdate("curtain_enabled", e.target.checked)}
+                  className="w-4 h-4 accent-gold cursor-pointer"
+                />
+                <span className="font-serif-sc text-xs tracking-wider text-foreground font-bold">
+                  {settings.curtain_enabled !== false ? "CURTAIN ANIMATION ENABLED" : "CURTAIN DISABLED"}
+                </span>
+              </label>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Left Column: Form Controls */}
+              <div className="space-y-6">
+                {/* 1. Curtain Colors */}
+                <div className="p-6 bg-background/50 border border-gold/20 rounded-sm space-y-5">
+                  <h4 className="font-serif-sc text-xs tracking-widest text-gold font-bold flex items-center gap-2">
+                    <Palette size={14} /> CURTAIN FABRIC & EDGE ACCENT COLORS
+                  </h4>
+
+                  {/* Curtain Fabric Color */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="font-serif-sc text-[10px] tracking-widest text-foreground font-bold">
+                        FABRIC BACKGROUND COLOR
+                      </label>
+                      <span className="font-mono text-[10px] text-muted-foreground">
+                        {settings.curtain_bg_color || "#3d1a0c"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={settings.curtain_bg_color || "#3d1a0c"}
+                        onChange={(e) => handleUpdate("curtain_bg_color", e.target.value)}
+                        className="w-10 h-10 rounded border border-gold/30 cursor-pointer bg-transparent"
+                      />
+                      <input
+                        type="text"
+                        value={settings.curtain_bg_color || "#3d1a0c"}
+                        onChange={(e) => handleUpdate("curtain_bg_color", e.target.value)}
+                        placeholder="#3d1a0c"
+                        className="flex-1 bg-background border border-gold/20 px-3 py-2 text-xs font-mono text-foreground"
+                      />
+                    </div>
+                    {/* Quick Swatches */}
+                    <div className="flex items-center gap-2 flex-wrap pt-1">
+                      <span className="text-[10px] font-serif text-muted-foreground mr-1">Palace Presets:</span>
+                      {[
+                        { name: "Royal Ochre", color: "#3d1a0c" },
+                        { name: "Maroon Crimson", color: "#4a0e17" },
+                        { name: "Midnight Navy", color: "#091a28" },
+                        { name: "Emerald Forest", color: "#0d2e1f" },
+                        { name: "Velvet Obsidian", color: "#141416" },
+                      ].map((swatch) => (
+                        <button
+                          key={swatch.color}
+                          type="button"
+                          onClick={() => handleUpdate("curtain_bg_color", swatch.color)}
+                          className="px-2 py-1 text-[10px] font-serif rounded-sm border border-gold/30 hover:border-gold transition-all flex items-center gap-1.5 bg-background"
+                          title={swatch.name}
+                        >
+                          <span className="w-2.5 h-2.5 rounded-full inline-block border border-black/40" style={{ backgroundColor: swatch.color }} />
+                          {swatch.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Curtain Edge Color */}
+                  <div className="space-y-3 pt-3 border-t border-gold/10">
+                    <div className="flex items-center justify-between">
+                      <label className="font-serif-sc text-[10px] tracking-widest text-foreground font-bold">
+                        EDGE TRIM ACCENT COLOR
+                      </label>
+                      <span className="font-mono text-[10px] text-muted-foreground">
+                        {settings.curtain_edge_color || "#d4af37"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={settings.curtain_edge_color || "#d4af37"}
+                        onChange={(e) => handleUpdate("curtain_edge_color", e.target.value)}
+                        className="w-10 h-10 rounded border border-gold/30 cursor-pointer bg-transparent"
+                      />
+                      <input
+                        type="text"
+                        value={settings.curtain_edge_color || "#d4af37"}
+                        onChange={(e) => handleUpdate("curtain_edge_color", e.target.value)}
+                        placeholder="#d4af37"
+                        className="flex-1 bg-background border border-gold/20 px-3 py-2 text-xs font-mono text-foreground"
+                      />
+                    </div>
+                    {/* Quick Swatches for Edge */}
+                    <div className="flex items-center gap-2 flex-wrap pt-1">
+                      <span className="text-[10px] font-serif text-muted-foreground mr-1">Trim Presets:</span>
+                      {[
+                        { name: "Royal Gold", color: "#d4af37" },
+                        { name: "Sunset Amber", color: "#c45b0a" },
+                        { name: "Champagne", color: "#e6be8a" },
+                        { name: "Palace Silver", color: "#e2e8f0" },
+                      ].map((swatch) => (
+                        <button
+                          key={swatch.color}
+                          type="button"
+                          onClick={() => handleUpdate("curtain_edge_color", swatch.color)}
+                          className="px-2 py-1 text-[10px] font-serif rounded-sm border border-gold/30 hover:border-gold transition-all flex items-center gap-1.5 bg-background"
+                          title={swatch.name}
+                        >
+                          <span className="w-2.5 h-2.5 rounded-full inline-block border border-black/40" style={{ backgroundColor: swatch.color }} />
+                          {swatch.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Curtain Typography & Content */}
+                <div className="p-6 bg-background/50 border border-gold/20 rounded-sm space-y-5">
+                  <h4 className="font-serif-sc text-xs tracking-widest text-gold font-bold flex items-center gap-2">
+                    <Type size={14} /> CURTAIN TYPOGRAPHY & TEXT CUSTOMIZATION
+                  </h4>
+
+                  {/* Main Title */}
+                  <div className="space-y-3">
+                    <label className="font-serif-sc text-[10px] tracking-widest text-foreground font-bold">
+                      MAIN TITLE TEXT
+                    </label>
+                    <input
+                      type="text"
+                      value={settings.curtain_title_text ?? "Raj Mandir"}
+                      onChange={(e) => handleUpdate("curtain_title_text", e.target.value)}
+                      placeholder="Raj Mandir"
+                      className="w-full bg-background border border-gold/20 px-4 py-2.5 text-sm font-serif text-foreground outline-none focus:border-gold transition-all"
+                    />
+
+                    {/* Main Title Color */}
+                    <div className="pt-2 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="font-serif-sc text-[10px] tracking-widest text-foreground font-bold">
+                          MAIN TITLE COLOR
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleUpdate("curtain_title_color", "");
+                            handleUpdate("curtain_text_color", "");
+                          }}
+                          className={`text-[10px] font-serif-sc tracking-wider px-2 py-0.5 rounded border transition-all ${
+                            !settings.curtain_title_color && !settings.curtain_text_color
+                              ? "bg-gold/20 border-gold text-gold font-bold"
+                              : "border-gold/20 text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          USE ROYAL GOLD GRADIENT (DEFAULT)
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="color"
+                          value={settings.curtain_title_color || settings.curtain_text_color || "#d4af37"}
+                          onChange={(e) => {
+                            handleUpdate("curtain_title_color", e.target.value);
+                            handleUpdate("curtain_text_color", e.target.value);
+                          }}
+                          className="w-10 h-10 rounded border border-gold/30 cursor-pointer bg-transparent"
+                        />
+                        <input
+                          type="text"
+                          value={settings.curtain_title_color || settings.curtain_text_color || ""}
+                          onChange={(e) => {
+                            handleUpdate("curtain_title_color", e.target.value);
+                            handleUpdate("curtain_text_color", e.target.value);
+                          }}
+                          placeholder="Leave empty for Royal Gold gradient, or enter #hex"
+                          className="flex-1 bg-background border border-gold/20 px-3 py-2 text-xs font-mono text-foreground"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Eyebrow Text & Color */}
+                  <div className="space-y-3 pt-3 border-t border-gold/10">
+                    <label className="font-serif-sc text-[10px] tracking-widest text-foreground font-bold">
+                      EYEBROW BADGE TEXT
+                    </label>
+                    <input
+                      type="text"
+                      value={settings.curtain_eyebrow_text ?? "★ PADHARO MHARE DESH ★"}
+                      onChange={(e) => handleUpdate("curtain_eyebrow_text", e.target.value)}
+                      placeholder="★ PADHARO MHARE DESH ★"
+                      className="w-full bg-background border border-gold/20 px-4 py-2.5 text-xs font-mono text-foreground outline-none focus:border-gold transition-all"
+                    />
+
+                    <div className="flex items-center justify-between pt-1">
+                      <label className="font-serif-sc text-[10px] tracking-widest text-foreground font-bold">
+                        EYEBROW TEXT COLOR
+                      </label>
+                      <span className="font-mono text-[10px] text-muted-foreground">
+                        {settings.curtain_eyebrow_color || "#e67e22"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={settings.curtain_eyebrow_color || "#e67e22"}
+                        onChange={(e) => handleUpdate("curtain_eyebrow_color", e.target.value)}
+                        className="w-10 h-10 rounded border border-gold/30 cursor-pointer bg-transparent"
+                      />
+                      <input
+                        type="text"
+                        value={settings.curtain_eyebrow_color || "#e67e22"}
+                        onChange={(e) => handleUpdate("curtain_eyebrow_color", e.target.value)}
+                        placeholder="#e67e22"
+                        className="flex-1 bg-background border border-gold/20 px-3 py-2 text-xs font-mono text-foreground"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Subtitle Text & Color */}
+                  <div className="space-y-3 pt-3 border-t border-gold/10">
+                    <label className="font-serif-sc text-[10px] tracking-widest text-foreground font-bold">
+                      SUBTITLE TEXT
+                    </label>
+                    <input
+                      type="text"
+                      value={settings.curtain_subtitle_text ?? "— a palace awakens —"}
+                      onChange={(e) => handleUpdate("curtain_subtitle_text", e.target.value)}
+                      placeholder="— a palace awakens —"
+                      className="w-full bg-background border border-gold/20 px-4 py-2.5 text-xs font-serif italic text-foreground outline-none focus:border-gold transition-all"
+                    />
+
+                    <div className="flex items-center justify-between pt-1">
+                      <label className="font-serif-sc text-[10px] tracking-widest text-foreground font-bold">
+                        SUBTITLE TEXT COLOR
+                      </label>
+                      <span className="font-mono text-[10px] text-muted-foreground">
+                        {settings.curtain_subtitle_color || "#faf6f0"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={settings.curtain_subtitle_color || "#faf6f0"}
+                        onChange={(e) => handleUpdate("curtain_subtitle_color", e.target.value)}
+                        className="w-10 h-10 rounded border border-gold/30 cursor-pointer bg-transparent"
+                      />
+                      <input
+                        type="text"
+                        value={settings.curtain_subtitle_color || "#faf6f0"}
+                        onChange={(e) => handleUpdate("curtain_subtitle_color", e.target.value)}
+                        placeholder="#faf6f0"
+                        className="flex-1 bg-background border border-gold/20 px-3 py-2 text-xs font-mono text-foreground"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Live Interactive Mockup & Test */}
+              <div className="space-y-6">
+                <div className="p-6 bg-background/50 border border-gold/20 rounded-sm space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-serif-sc text-xs tracking-widest text-gold font-bold flex items-center gap-2">
+                      <Sparkles size={14} /> LIVE CURTAIN OPENER PREVIEW
+                    </h4>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setCurtainPreviewOpen(!curtainPreviewOpen)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/15 hover:bg-gold/25 border border-gold/40 text-gold font-serif-sc text-[10px] tracking-wider rounded-sm transition-all font-bold"
+                      >
+                        <Play size={12} className={curtainPreviewOpen ? "rotate-90" : ""} />
+                        {curtainPreviewOpen ? "CLOSE CURTAIN" : "TEST OPENING ANIMATION"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Stage Container */}
+                  <div className="relative h-80 rounded-sm overflow-hidden border border-gold/30 shadow-2xl bg-royal-deep flex items-center justify-center select-none">
+                    {/* Background Palace Reveal when curtain opens */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-radial-vignette">
+                      <div className="w-14 h-14 rounded-full border border-gold/40 flex items-center justify-center mb-3 bg-gold/10 text-gold">
+                        <Sparkles size={24} />
+                      </div>
+                      <h5 className="font-display text-2xl text-ivory mb-1">Palace Homepage Revealed</h5>
+                      <p className="font-serif text-xs text-ivory/80 max-w-xs">
+                        Mehrangarh views, royal suites & bespoke Rajasthani hospitality.
+                      </p>
+                    </div>
+
+                    {/* Centered Typography (fades when opened) */}
+                    <div
+                      className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 transition-all duration-700 ease-out pointer-events-none"
+                      style={{
+                        opacity: curtainPreviewOpen ? 0 : 1,
+                        transform: curtainPreviewOpen ? "scale(0.9) translateY(10px)" : "scale(1) translateY(0)",
+                      }}
+                    >
+                      <div
+                        className="font-serif-sc tracking-[0.35em] text-[10px] md:text-xs mb-3 font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+                        style={{ color: settings.curtain_eyebrow_color || "#e67e22" }}
+                      >
+                        {settings.curtain_eyebrow_text || "★ PADHARO MHARE DESH ★"}
+                      </div>
+                      <div
+                        className={`font-display text-3xl md:text-5xl font-bold drop-shadow-[0_8px_25px_rgba(0,0,0,0.95)] ${
+                          settings.curtain_title_color || settings.curtain_text_color
+                            ? ""
+                            : "bg-gradient-to-r from-[#ffe4b5] via-[#d4af37] to-[#e67e22] bg-clip-text text-transparent"
+                        }`}
+                        style={
+                          settings.curtain_title_color || settings.curtain_text_color
+                            ? { color: settings.curtain_title_color || settings.curtain_text_color }
+                            : undefined
+                        }
+                      >
+                        {settings.curtain_title_text || "Raj Mandir"}
+                      </div>
+                      <div
+                        className="font-serif italic mt-2 text-xs md:text-sm tracking-widest drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] font-medium"
+                        style={{ color: settings.curtain_subtitle_color || "#faf6f0" }}
+                      >
+                        {settings.curtain_subtitle_text || "— a palace awakens —"}
+                      </div>
+                    </div>
+
+                    {/* Left Curtain Panel */}
+                    <div
+                      className="absolute top-0 left-0 h-full w-[51%] z-10 transition-transform duration-1000 ease-in-out"
+                      style={{
+                        transform: curtainPreviewOpen ? "translateX(-102%)" : "translateX(0)",
+                        backgroundColor: settings.curtain_bg_color || "#3d1a0c",
+                        backgroundImage: `repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.65) 0px, rgba(255, 255, 255, 0.12) 14px, rgba(212, 175, 55, 0.22) 22px, rgba(255, 255, 255, 0.08) 26px, rgba(0, 0, 0, 0.4) 32px, rgba(0, 0, 0, 0.65) 44px), linear-gradient(135deg, ${settings.curtain_bg_color || "#3d1a0c"}, rgba(0,0,0,0.85))`,
+                        boxShadow: "inset 0 0 100px rgba(0, 0, 0, 0.85), 0 0 60px rgba(0, 0, 0, 0.7)",
+                      }}
+                    >
+                      <div
+                        className="absolute top-0 right-0 h-full w-[3px]"
+                        style={{
+                          background: `linear-gradient(180deg, ${settings.curtain_edge_color || "#d4af37"} 0%, #ffffff 50%, ${settings.curtain_edge_color || "#d4af37"} 100%)`,
+                          boxShadow: `0 0 12px ${settings.curtain_edge_color || "#d4af37"}`,
+                        }}
+                      />
+                    </div>
+
+                    {/* Right Curtain Panel */}
+                    <div
+                      className="absolute top-0 right-0 h-full w-[51%] z-10 transition-transform duration-1000 ease-in-out"
+                      style={{
+                        transform: curtainPreviewOpen ? "translateX(102%)" : "translateX(0)",
+                        backgroundColor: settings.curtain_bg_color || "#3d1a0c",
+                        backgroundImage: `repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.65) 0px, rgba(255, 255, 255, 0.12) 14px, rgba(212, 175, 55, 0.22) 22px, rgba(255, 255, 255, 0.08) 26px, rgba(0, 0, 0, 0.4) 32px, rgba(0, 0, 0, 0.65) 44px), linear-gradient(135deg, ${settings.curtain_bg_color || "#3d1a0c"}, rgba(0,0,0,0.85))`,
+                        boxShadow: "inset 0 0 100px rgba(0, 0, 0, 0.85), 0 0 60px rgba(0, 0, 0, 0.7)",
+                      }}
+                    >
+                      <div
+                        className="absolute top-0 left-0 h-full w-[3px]"
+                        style={{
+                          background: `linear-gradient(180deg, ${settings.curtain_edge_color || "#d4af37"} 0%, #ffffff 50%, ${settings.curtain_edge_color || "#d4af37"} 100%)`,
+                          boxShadow: `0 0 12px ${settings.curtain_edge_color || "#d4af37"}`,
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Reset Defaults button */}
+                  <div className="flex items-center justify-between pt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleUpdate("curtain_bg_color", "#3d1a0c");
+                        handleUpdate("curtain_edge_color", "#d4af37");
+                        handleUpdate("curtain_title_text", "Raj Mandir");
+                        handleUpdate("curtain_title_color", "");
+                        handleUpdate("curtain_text_color", "");
+                        handleUpdate("curtain_eyebrow_text", "★ PADHARO MHARE DESH ★");
+                        handleUpdate("curtain_eyebrow_color", "#e67e22");
+                        handleUpdate("curtain_subtitle_text", "— a palace awakens —");
+                        handleUpdate("curtain_subtitle_color", "#faf6f0");
+                        handleUpdate("curtain_enabled", true);
+                        toast.success("Curtain settings reset to palace defaults. Click 'SAVE ALL CHANGES' to save.");
+                      }}
+                      className="flex items-center gap-1.5 text-xs font-serif text-muted-foreground hover:text-gold transition-colors"
+                    >
+                      <RotateCcw size={12} /> Reset to Palace Defaults
+                    </button>
+
+                    <span className="font-serif text-[11px] text-muted-foreground italic">
+                      Click "SAVE ALL CHANGES" at the top right to apply.
+                    </span>
                   </div>
                 </div>
               </div>

@@ -281,22 +281,22 @@ const Dining = () => {
         </section>
 
         {/* Section 3: Celebrations & Special Events */}
-        <section className="relative py-28 md:py-36 px-6 bg-gradient-night text-ivory overflow-hidden border-t border-gold/20">
-          <div className="absolute inset-0 lattice-pattern opacity-10 pointer-events-none" />
-          <div className="absolute inset-0 stone-texture opacity-30 pointer-events-none" />
+        <section className="relative py-28 md:py-36 px-6 bg-background text-foreground overflow-hidden border-t border-heritage-brown/20">
+          <div className="absolute inset-0 marble-texture pointer-events-none opacity-40" />
+          <div className="absolute inset-0 lattice-pattern opacity-5 pointer-events-none" />
           <DustParticles count={15} />
 
           <div className="relative max-w-7xl mx-auto z-10">
             {/* Header */}
             <div className="text-center max-w-3xl mx-auto mb-20 space-y-4">
-              <div className="eyebrow flex items-center justify-center gap-3 text-gold">
+              <div className="eyebrow flex items-center justify-center gap-3 text-heritage-orange font-bold font-serif-sc tracking-[0.4em] text-xs">
                 <span>★ ROYAL BANQUETS & CELEBRATIONS ★</span>
               </div>
-              <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-ivory leading-tight font-bold">
-                Special Events & <span className="italic text-gold-gradient">Royal Feasts</span>
+              <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-foreground leading-tight font-bold">
+                Special Events & <span className="italic text-heritage-gradient">Royal Feasts</span>
               </h2>
-              <div className="divider-gold max-w-md mx-auto"><span className="text-gold">❖</span></div>
-              <p className="font-serif italic text-xl text-ivory/80 leading-relaxed">
+              <div className="divider-heritage max-w-md mx-auto"><span className="text-heritage-orange">❖</span></div>
+              <p className="font-serif italic text-xl text-muted-foreground leading-relaxed">
                 From private candlelit rooftop dining overlooking Mehrangarh Fort to royal family gatherings and wedding banquets beneath historic sandstone arches.
               </p>
             </div>
@@ -310,10 +310,10 @@ const Dining = () => {
                 return (
                   <div
                     key={evt.id || idx}
-                    className="event-card bg-card/60 backdrop-blur-md border border-gold/30 shadow-frame hover:border-gold/60 transition-all duration-500 rounded-sm flex flex-col overflow-hidden group"
+                    className="event-card bg-card/90 backdrop-blur-md border border-heritage-brown/30 shadow-frame hover:border-heritage-orange/60 transition-all duration-500 rounded-sm flex flex-col overflow-hidden group"
                   >
                     {/* Media Container */}
-                    <div className="relative aspect-[16/10] bg-royal-deep overflow-hidden border-b border-gold/20">
+                    <div className="relative aspect-[16/10] bg-royal-deep/30 overflow-hidden border-b border-heritage-brown/20">
                       {hasMultipleImages ? (
                         <UnifiedSlider
                           settings={sliderSettings || {
@@ -334,7 +334,7 @@ const Dining = () => {
                                 alt={img.alt_text || evt.title}
                                 className="w-full h-full object-cover"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/80 via-transparent to-transparent pointer-events-none" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/60 via-transparent to-transparent pointer-events-none" />
                             </div>
                           ))}
                         />
@@ -345,74 +345,74 @@ const Dining = () => {
                             alt={images[0].alt_text || evt.title}
                             className="w-full h-full object-cover transition-transform duration-[1.8s] group-hover:scale-105"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/80 via-transparent to-transparent pointer-events-none" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/60 via-transparent to-transparent pointer-events-none" />
                         </div>
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gold/40 font-serif italic text-sm">
+                        <div className="w-full h-full flex items-center justify-center text-heritage-orange/50 font-serif italic text-sm">
                           Event Dining
                         </div>
                       )}
 
                       {/* Category Pill */}
                       <div className="absolute top-3 left-3 z-10">
-                        <span className="font-serif-sc text-[9px] tracking-widest text-gold bg-royal-deep/90 px-3 py-1 border border-gold/40 shadow-md uppercase">
+                        <span className="font-serif-sc text-[9px] tracking-widest text-heritage-orange bg-royal-deep/90 px-3 py-1 border border-heritage-orange/40 shadow-md uppercase font-bold">
                           {evt.category || "CELEBRATION"}
                         </span>
                       </div>
 
                       {/* Corner Accents */}
-                      <div className="absolute top-2 right-2 w-3 h-3 border-t border-r border-gold/60 pointer-events-none" />
-                      <div className="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-gold/60 pointer-events-none" />
+                      <div className="absolute top-2 right-2 w-3 h-3 border-t border-r border-heritage-orange/60 pointer-events-none" />
+                      <div className="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-heritage-orange/60 pointer-events-none" />
                     </div>
 
                     {/* Card Body */}
                     <div className="p-6 md:p-8 flex-1 flex flex-col justify-between space-y-6">
                       <div className="space-y-3">
-                        <h3 className="font-display text-2xl text-ivory font-bold leading-snug group-hover:text-gold transition-colors">
+                        <h3 className="font-display text-2xl text-foreground font-bold leading-snug group-hover:text-heritage-orange transition-colors">
                           {evt.title}
                         </h3>
 
-                        <p className="font-serif italic text-base text-gold-gradient leading-relaxed">
+                        <p className="font-serif italic text-base text-heritage-gradient leading-relaxed font-medium">
                           {evt.short_description}
                         </p>
 
                         {evt.full_description && (
-                          <p className="font-serif text-sm text-ivory/70 line-clamp-3 leading-relaxed pt-1">
+                          <p className="font-serif text-sm text-muted-foreground line-clamp-3 leading-relaxed pt-1">
                             {evt.full_description}
                           </p>
                         )}
                       </div>
 
                       {/* Details Grid */}
-                      <div className="space-y-4 pt-4 border-t border-gold/15">
-                        <div className="grid grid-cols-2 gap-3 text-xs font-serif text-ivory/80">
+                      <div className="space-y-4 pt-4 border-t border-heritage-brown/15">
+                        <div className="grid grid-cols-2 gap-3 text-xs font-serif text-foreground/80">
                           {evt.venue && (
                             <div className="flex items-center gap-2 col-span-2">
-                              <MapPin size={14} className="text-gold shrink-0" />
+                              <MapPin size={14} className="text-heritage-orange shrink-0" />
                               <span className="truncate">{evt.venue}</span>
                             </div>
                           )}
                           {evt.capacity && (
                             <div className="flex items-center gap-2">
-                              <Users size={14} className="text-gold shrink-0" />
+                              <Users size={14} className="text-heritage-orange shrink-0" />
                               <span>{evt.capacity}</span>
                             </div>
                           )}
                           {evt.starting_price && (
                             <div className="flex items-center gap-2">
-                              <IndianRupee size={14} className="text-gold shrink-0" />
+                              <IndianRupee size={14} className="text-heritage-orange shrink-0" />
                               <span>{evt.starting_price}</span>
                             </div>
                           )}
                           {evt.event_time && (
                             <div className="flex items-center gap-2">
-                              <Clock size={14} className="text-gold shrink-0" />
+                              <Clock size={14} className="text-heritage-orange shrink-0" />
                               <span>{evt.event_time}</span>
                             </div>
                           )}
                           {evt.event_date && (
                             <div className="flex items-center gap-2">
-                              <Calendar size={14} className="text-gold shrink-0" />
+                              <Calendar size={14} className="text-heritage-orange shrink-0" />
                               <span>{evt.event_date}</span>
                             </div>
                           )}
@@ -422,7 +422,7 @@ const Dining = () => {
                         <div className="pt-2">
                           <Link
                             to={evt.cta_link || "/contact"}
-                            className="w-full inline-flex items-center justify-center gap-2 font-serif-sc tracking-[0.25em] text-xs px-6 py-3.5 bg-gradient-gold text-royal-deep font-bold rounded-sm shadow-gold hover:scale-[1.02] transition-all duration-500 uppercase"
+                            className="w-full inline-flex items-center justify-center gap-2 font-serif-sc tracking-[0.25em] text-xs px-6 py-3.5 bg-heritage-brown text-white hover:bg-heritage-orange font-bold rounded-sm shadow-md hover:scale-[1.02] transition-all duration-500 uppercase"
                           >
                             {evt.cta_text || "ENQUIRE FOR EVENT"} <ChevronRight size={14} />
                           </Link>
@@ -435,21 +435,21 @@ const Dining = () => {
             </div>
 
             {/* Banquet Celebration Box */}
-            <div className="relative max-w-4xl mx-auto mt-24 p-10 md:p-14 bg-card/80 border border-gold/40 shadow-gold text-center text-ivory overflow-hidden rounded-sm">
-              <div className="absolute inset-0 lattice-pattern opacity-10 pointer-events-none" />
+            <div className="relative max-w-4xl mx-auto mt-24 p-10 md:p-14 bg-card/90 border border-heritage-brown/40 shadow-md text-center text-foreground overflow-hidden rounded-sm">
+              <div className="absolute inset-0 lattice-pattern opacity-5 pointer-events-none" />
               <div className="relative z-10 space-y-6">
-                <div className="font-serif-sc text-gold tracking-[0.5em] text-xs font-bold flex items-center justify-center gap-2">
+                <div className="font-serif-sc text-heritage-orange tracking-[0.5em] text-xs font-bold flex items-center justify-center gap-2">
                   <HeartHandshake size={16} /> PLANNING A PRIVATE FEAST OR CELEBRATION?
                 </div>
-                <h3 className="font-display text-3xl md:text-5xl text-ivory font-bold">Host Your Banquet at Raj Mandir</h3>
-                <div className="divider-gold max-w-md mx-auto"><span className="text-gold">❖</span></div>
-                <p className="font-serif italic text-lg md:text-xl text-ivory/80 max-w-2xl mx-auto leading-relaxed">
+                <h3 className="font-display text-3xl md:text-5xl text-foreground font-bold">Host Your Banquet at Raj Mandir</h3>
+                <div className="divider-heritage max-w-md mx-auto"><span className="text-heritage-orange">❖</span></div>
+                <p className="font-serif italic text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                   From curated Marwari royal thali feasts on candlelit terraces to festive ceremonies with live folk musicians — let our palace culinary team craft your unforgettable banquet.
                 </p>
                 <div className="pt-4">
                   <Link
                     to="/contact"
-                    className="inline-flex items-center gap-3 font-serif-sc tracking-[0.3em] text-xs px-10 py-4 bg-gradient-gold text-royal-deep font-bold rounded-sm shadow-gold hover:scale-[1.03] transition-all duration-500 uppercase"
+                    className="inline-flex items-center gap-3 font-serif-sc tracking-[0.3em] text-xs px-10 py-4 bg-heritage-brown text-white hover:bg-heritage-orange font-bold rounded-sm shadow-md hover:scale-[1.03] transition-all duration-500 uppercase"
                   >
                     RESERVE FOR BANQUET <ChevronRight size={16} />
                   </Link>
@@ -460,7 +460,7 @@ const Dining = () => {
         </section>
 
         {/* Section 4: Reservation CTA */}
-        <section className="relative py-32 px-6 text-center overflow-hidden bg-background border-t border-gold/20">
+        <section className="relative py-32 px-6 text-center overflow-hidden bg-background border-t border-heritage-brown/20">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-heritage-orange/5 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10 editorial-text max-w-2xl mx-auto">
              <h2 className="font-display text-4xl md:text-5xl text-foreground mb-8 font-bold">Ready for a Royal Feast?</h2>

@@ -97,24 +97,57 @@ export default function AboutCMS() {
     }
   };
 
-  const handleUpdateContent = async (e: React.FormEvent) => {
+  const handleSaveSection = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
     try {
-      const { error } = await supabase
-        .from("about_page_content")
-        .update({
-          title: editingContent.title,
-          subtitle: editingContent.subtitle,
-          description: editingContent.description,
-          image_url: editingContent.image_url,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", editingContent.id);
+      if (editingContent.id) {
+        const { error } = await supabase
+          .from("about_page_content")
+          .update({
+            title: editingContent.title,
+            subtitle: editingContent.subtitle || "",
+            description: editingContent.description || "",
+            image_url: editingContent.image_url || "",
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", editingContent.id);
 
-      if (error) throw error;
-      toast.success("Section updated successfully");
+        if (error) throw error;
+        toast.success("Section updated successfully");
+      } else {
+        const sectionKey = editingContent.section_key || `section_${Date.now()}`;
+        const { error } = await supabase
+          .from("about_page_content")
+          .insert([{
+            section_key: sectionKey,
+            title: editingContent.title,
+            subtitle: editingContent.subtitle || "",
+            description: editingContent.description || "",
+            image_url: editingContent.image_url || "",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }]);
+
+        if (error) throw error;
+        toast.success("New section created successfully");
+      }
       setEditingContent(null);
+      refetchContent();
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDeleteSection = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+    try {
+      setIsProcessing(true);
+      const { error } = await supabase.from("about_page_content").delete().eq("id", id);
+      if (error) throw error;
+      toast.success("Section deleted successfully");
       refetchContent();
     } catch (err: any) {
       toast.error(err.message);
@@ -197,17 +230,37 @@ export default function AboutCMS() {
 
       {/* CONTENT SECTIONS */}
       <div className="space-y-6">
-        <h2 className="font-display text-2xl text-royal-deep border-b border-gold/20 pb-2">Page Sections</h2>
+        <div className="flex justify-between items-end border-b border-gold/20 pb-2">
+          <div>
+            <h2 className="font-display text-2xl text-royal-deep">Page Sections</h2>
+            <p className="font-serif text-xs text-muted-foreground mt-1">Add or edit storytelling sections with compressed images or videos.</p>
+          </div>
+          <button 
+            onClick={() => setEditingContent({ title: "", subtitle: "", description: "", image_url: "", section_key: `section_${Date.now()}` })}
+            className="flex items-center gap-2 px-4 py-2 bg-gold text-white font-serif-sc text-xs tracking-widest rounded hover:bg-gold/90 transition-colors uppercase font-bold shadow-sm"
+          >
+            <Plus size={16} /> ADD SECTION
+          </button>
+        </div>
         <div className="grid md:grid-cols-2 gap-6">
           {aboutContent?.map((section: any) => (
             <div key={section.id} className="bg-white border border-gold/20 p-6 rounded shadow-sm relative group">
-              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                 <button 
                   onClick={() => setEditingContent(section)}
-                  className="px-3 py-1 bg-gold/10 text-gold text-xs font-serif-sc tracking-widest rounded hover:bg-gold hover:text-white transition-colors"
+                  className="px-3 py-1 bg-gold/10 text-gold text-xs font-serif-sc tracking-widest rounded hover:bg-gold hover:text-white transition-colors uppercase font-bold"
                 >
                   EDIT
                 </button>
+                {section.section_key !== 'about_raj_mandir' && section.section_key !== 'the_experience' && (
+                  <button 
+                    onClick={() => handleDeleteSection(section.id)}
+                    className="p-1.5 bg-red-50 text-red-600 rounded hover:bg-red-600 hover:text-white transition-colors"
+                    title="Delete section"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
               </div>
               <div className="text-xs font-serif-sc tracking-widest text-gold mb-2">{section.section_key.replace('_', ' ').toUpperCase()}</div>
               <h3 className="font-display text-2xl text-royal-deep">{section.title}</h3>
@@ -287,13 +340,15 @@ export default function AboutCMS() {
       <Dialog open={!!editingContent} onOpenChange={(o) => !o && setEditingContent(null)}>
         <DialogContent className="max-w-2xl bg-card border-gold/30">
           <DialogHeader>
-            <DialogTitle className="font-display text-2xl text-gold">Edit Section Content</DialogTitle>
+            <DialogTitle className="font-display text-2xl text-gold">
+              {editingContent?.id ? "Edit Section Content" : "Add New Page Section"}
+            </DialogTitle>
           </DialogHeader>
           {editingContent && (
-            <form onSubmit={handleUpdateContent} className="space-y-4 font-serif">
+            <form onSubmit={handleSaveSection} className="space-y-4 font-serif">
               <div>
                 <label className="text-xs font-serif-sc tracking-widest text-muted-foreground mb-1 block">TITLE</label>
-                <input required type="text" value={editingContent.title} onChange={e => setEditingContent({...editingContent, title: e.target.value})} className="w-full p-2 bg-background border border-gold/30" />
+                <input required type="text" value={editingContent.title || ""} onChange={e => setEditingContent({...editingContent, title: e.target.value})} className="w-full p-2 bg-background border border-gold/30" />
               </div>
               <div>
                 <label className="text-xs font-serif-sc tracking-widest text-muted-foreground mb-1 block">SUBTITLE</label>
@@ -304,8 +359,8 @@ export default function AboutCMS() {
                   MEDIA ASSET (Image or Video)
                 </label>
                 <div className="flex flex-wrap gap-2 mb-2">
-                  <label className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/10 text-gold border border-gold/30 hover:bg-gold hover:text-white rounded text-xs font-serif-sc tracking-wider cursor-pointer transition-colors">
-                    <ImageIcon size={14} /> UPLOAD IMAGE
+                  <label className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/10 text-gold border border-gold/30 hover:bg-gold hover:text-white rounded text-xs font-serif-sc tracking-wider cursor-pointer transition-colors uppercase font-bold">
+                    <ImageIcon size={14} /> UPLOAD IMAGE (COMPRESSED)
                     <input 
                       type="file" 
                       accept="image/*" 
@@ -316,7 +371,7 @@ export default function AboutCMS() {
                     />
                   </label>
 
-                  <label className="flex items-center gap-1.5 px-3 py-1.5 bg-heritage-orange/10 text-heritage-orange border border-heritage-orange/30 hover:bg-heritage-orange hover:text-white rounded text-xs font-serif-sc tracking-wider cursor-pointer transition-colors">
+                  <label className="flex items-center gap-1.5 px-3 py-1.5 bg-heritage-orange/10 text-heritage-orange border border-heritage-orange/30 hover:bg-heritage-orange hover:text-white rounded text-xs font-serif-sc tracking-wider cursor-pointer transition-colors uppercase font-bold">
                     <VideoIcon size={14} /> UPLOAD VIDEO (COMPRESSED)
                     <input 
                       type="file" 
@@ -330,24 +385,33 @@ export default function AboutCMS() {
                 </div>
 
                 <input 
-                  required 
                   type="text" 
-                  value={editingContent.image_url} 
+                  value={editingContent.image_url || ""} 
                   onChange={e => setEditingContent({...editingContent, image_url: e.target.value})} 
                   placeholder="Or paste media URL (.webp, .jpg, .mp4, .webm, YouTube)..."
                   className="w-full p-2 bg-background border border-gold/30 text-xs text-foreground" 
                 />
                 <p className="text-[10px] font-serif italic text-muted-foreground mt-1">
-                  ⚡ Client-side video compression optimizes bitrate to 1.8 Mbps to minimize bandwidth usage.
+                  ⚡ Client-side video and image compression saves bandwidth and ensures instant playback.
                 </p>
+
+                {editingContent.image_url && (
+                  <div className="mt-3 aspect-video rounded overflow-hidden border border-gold/30 relative max-h-48 bg-black/20">
+                    {isVideoUrl(editingContent.image_url) ? (
+                      <video src={editingContent.image_url} autoPlay muted loop playsInline className="w-full h-full object-cover" />
+                    ) : (
+                      <img src={editingContent.image_url} alt="Media Preview" className="w-full h-full object-cover" />
+                    )}
+                  </div>
+                )}
               </div>
               <div>
                 <label className="text-xs font-serif-sc tracking-widest text-muted-foreground mb-1 block">DESCRIPTION</label>
-                <textarea required rows={5} value={editingContent.description} onChange={e => setEditingContent({...editingContent, description: e.target.value})} className="w-full p-2 bg-background border border-gold/30" />
+                <textarea required rows={5} value={editingContent.description || ""} onChange={e => setEditingContent({...editingContent, description: e.target.value})} className="w-full p-2 bg-background border border-gold/30" />
               </div>
               <DialogFooter>
-                <button type="submit" disabled={isProcessing} className="px-6 py-2 bg-gold text-white font-serif-sc tracking-widest flex items-center gap-2">
-                  <Save size={16} /> SAVE CHANGES
+                <button type="submit" disabled={isProcessing} className="px-6 py-2 bg-gold text-white font-serif-sc tracking-widest flex items-center gap-2 uppercase font-bold">
+                  <Save size={16} /> {editingContent?.id ? "SAVE CHANGES" : "ADD SECTION"}
                 </button>
               </DialogFooter>
             </form>

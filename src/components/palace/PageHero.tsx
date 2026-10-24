@@ -61,7 +61,6 @@ export const PageHero = ({
   const badgeBg = isGoldTheme ? "bg-gradient-gold" : "bg-gradient-heritage";
   const textColor = isGoldTheme ? "text-gold" : "text-heritage-orange";
   const dividerClass = isGoldTheme ? "divider-gold" : "divider-heritage";
-  const exploreGrad = isGoldTheme ? "from-gold" : "from-heritage-orange";
 
   return (
     <section ref={ref} className="relative min-h-[70vh] lg:min-h-[80vh] w-full overflow-hidden flex items-center justify-center pt-32 pb-20">
@@ -119,11 +118,6 @@ export const PageHero = ({
             </p>
           </>
         )}
-      </div>
-
-      <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 z-10 ${textColor} font-serif-sc text-[10px] tracking-[0.5em] flex flex-col items-center gap-3 drop-shadow-md font-bold`}>
-        EXPLORE
-        <div className={`h-12 w-px bg-gradient-to-b ${exploreGrad} to-transparent animate-pulse`} />
       </div>
     </section>
   );

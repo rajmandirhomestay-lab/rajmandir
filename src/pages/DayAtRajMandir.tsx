@@ -1,13 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PageShell } from "@/components/palace/PageShell";
 import { PageHero } from "@/components/palace/PageHero";
 import { DustParticles } from "@/components/palace/DustParticles";
-import { useDayAtRajMandir, useEvents, usePageHero } from "@/lib/api";
+import { useDayAtRajMandir, usePageHero } from "@/lib/api";
 import { UnifiedSlider, SliderSettings } from "@/components/palace/UnifiedSlider";
-import { Coffee, Utensils, Compass, Moon, Sun, Sparkles, Clock, ChevronRight, Calendar, MapPin, Users, IndianRupee, HeartHandshake } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Coffee, Utensils, Compass, Moon, Sun, Sparkles, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import heroFallbackImg from "@/assets/palace-hero.jpg";
@@ -19,11 +18,6 @@ import relaxImg from "@/assets/room-haveli.jpg";
 import sunsetImg from "@/assets/story-bluecity.jpg";
 import rooftopImg from "@/assets/gallery-4.jpg";
 import dinnerImg from "@/assets/about-palace.jpg";
-
-import eventWeddingImg from "@/assets/exp-cultural.jpg";
-import eventBirthdayImg from "@/assets/gallery-1.jpg";
-import eventDinnerImg from "@/assets/dining-rooftop.jpg";
-import eventFolkImg from "@/assets/gallery-4.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -130,71 +124,14 @@ const initialFallbackActivities = [
   }
 ];
 
-const initialFallbackEvents = [
-  {
-    id: "e1",
-    title: "Weddings & Intimate Celebrations",
-    category: "Weddings & Celebrations",
-    short_description: "Exchange vows beneath carved arches with royal Marwari grandeur and fort views.",
-    full_description: "Host your dream intimate wedding or pre-wedding ceremony surrounded by historic sandstone architecture, flower arrangements, royal folk musicians, and traditional Rajasthani banquets.",
-    venue: "Courtyard & Rooftop Terrace",
-    capacity: "Up to 150 Guests",
-    starting_price: "On Request",
-    cta_text: "Plan This Event",
-    cta_link: "/contact",
-    event_images: [
-      { id: "eimg1", image_url: eventWeddingImg, alt_text: "Heritage Wedding at Raj Mandir" },
-      { id: "eimg2", image_url: rooftopImg, alt_text: "Rooftop Celebration" }
-    ]
-  },
-  {
-    id: "e2",
-    title: "Private Candlelit Rooftop Dinners",
-    category: "Private Dinners",
-    short_description: "A private dining experience framed by moonlight and Mehrangarh Fort.",
-    full_description: "Immerse in an unforgettable candlelit evening tailor-made for anniversaries, proposals, and royal family gatherings, featuring personal butler service and custom Marwari menus.",
-    venue: "Private Jharokha Balcony",
-    capacity: "2 to 12 Guests",
-    starting_price: "₹15,000",
-    cta_text: "Reserve Private Table",
-    cta_link: "/contact",
-    event_images: [
-      { id: "eimg3", image_url: eventDinnerImg, alt_text: "Candlelit Dinner Deck" },
-      { id: "eimg4", image_url: dinnerImg, alt_text: "Palace Dining Setup" }
-    ]
-  },
-  {
-    id: "e3",
-    title: "Cultural Evenings & Folk Music",
-    category: "Cultural Evenings",
-    short_description: "Immerse in soul-stirring Langa & Manganiyar folk performances.",
-    full_description: "Gather around open fire pits as renowned Rajasthani musicians and dancers bring ancient desert tales and festive songs to life under starry Jodhpur skies.",
-    venue: "Main Haveli Courtyard",
-    capacity: "Up to 80 Guests",
-    starting_price: "Complimentary for Guests",
-    cta_text: "Enquire Now",
-    cta_link: "/contact",
-    event_images: [
-      { id: "eimg5", image_url: eventFolkImg, alt_text: "Folk Music Night" },
-      { id: "eimg6", image_url: eventBirthdayImg, alt_text: "Lantern Ambient Evening" }
-    ]
-  }
-];
-
 export const DayAtRajMandir = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const eventsRef = useRef<HTMLDivElement>(null);
   const { data: pageHero } = usePageHero("day-at-raj-mandir");
   const { data: dbActivities } = useDayAtRajMandir();
-  const { data: dbEvents } = useEvents();
 
   const activities = (dbActivities && dbActivities.length > 0) 
     ? dbActivities.filter(a => a.active !== false) 
     : initialFallbackActivities;
-
-  const eventsList = (dbEvents && dbEvents.length > 0)
-    ? dbEvents.filter(e => e.active !== false)
-    : initialFallbackEvents;
 
   const sliderSettings: SliderSettings = {
     slide_speed: 5000,
@@ -229,36 +166,18 @@ export const DayAtRajMandir = () => {
         );
       });
 
-      // Events reveal
-      gsap.utils.toArray(".event-card").forEach((card: any) => {
-        gsap.fromTo(
-          card,
-          { opacity: 0, y: 40 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 1.1,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: card,
-              start: "top 90%",
-            },
-          }
-        );
-      });
-
       setTimeout(() => {
         ScrollTrigger.refresh();
       }, 200);
     }, containerRef);
 
     return () => ctx.revert();
-  }, [activities, eventsList]);
+  }, [activities]);
 
   return (
     <PageShell
-      title="A Day at Raj Mandir — Heritage Palace Experience & Events Jodhpur"
-      description="Discover how a complete day unfolds at Raj Mandir Hotel and explore our luxury heritage event spaces for weddings, private dinners, and celebrations."
+      title="A Day at Raj Mandir — Heritage Palace Experience Jodhpur"
+      description="Discover how a complete day unfolds at Raj Mandir Hotel from a peaceful morning chai to dinner beneath the starry Jodhpur sky."
     >
       {/* PAGE HERO */}
       <PageHero
@@ -392,179 +311,6 @@ export const DayAtRajMandir = () => {
               </div>
             );
           })}
-
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* NEW SECTION: EVENTS AT RAJ MANDIR                         */}
-      {/* ========================================================= */}
-      <section ref={eventsRef} className="relative py-28 md:py-36 px-6 bg-gradient-night text-ivory overflow-hidden border-t border-gold/20">
-        <div className="absolute inset-0 lattice-pattern opacity-10 pointer-events-none" />
-        <div className="absolute inset-0 stone-texture opacity-30 pointer-events-none" />
-        <DustParticles count={20} />
-
-        <div className="relative max-w-7xl mx-auto">
-          {/* SECTION HEADER */}
-          <div className="text-center max-w-3xl mx-auto mb-20 space-y-4">
-            <div className="eyebrow flex items-center justify-center gap-3 text-gold">
-              <span>★ CELEBRATIONS & GATHERINGS ★</span>
-            </div>
-            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-ivory leading-tight font-bold">
-              Events at <span className="italic text-gold-gradient">Raj Mandir</span>
-            </h2>
-            <div className="divider-gold max-w-md mx-auto"><span className="text-gold">❖</span></div>
-            <p className="font-serif italic text-xl text-ivory/80 leading-relaxed">
-              From intimate heritage weddings beneath stone arches to private candlelit rooftop feasts — forge timeless memories in Jodhpur.
-            </p>
-          </div>
-
-          {/* EVENTS GRID */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {eventsList.map((evt, idx) => {
-              const images = evt.event_images || [];
-              const hasMultipleImages = images.length > 1;
-
-              return (
-                <div
-                  key={evt.id || idx}
-                  className="event-card bg-card/60 backdrop-blur-md border border-gold/30 shadow-frame hover:border-gold/60 transition-all duration-500 rounded-sm flex flex-col overflow-hidden group"
-                >
-                  {/* SLIDER / IMAGE CONTAINER */}
-                  <div className="relative aspect-[16/10] bg-royal-deep overflow-hidden border-b border-gold/20">
-                    {hasMultipleImages ? (
-                      <UnifiedSlider
-                        settings={sliderSettings}
-                        className="w-full h-full"
-                        slides={images.map((img: any, i: number) => (
-                          <div key={i} className="relative w-full h-full">
-                            <img
-                              src={img.image_url}
-                              alt={img.alt_text || evt.title}
-                              className="w-full h-full object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/80 via-transparent to-transparent pointer-events-none" />
-                          </div>
-                        ))}
-                      />
-                    ) : images.length === 1 ? (
-                      <div className="relative w-full h-full">
-                        <img
-                          src={images[0].image_url}
-                          alt={images[0].alt_text || evt.title}
-                          className="w-full h-full object-cover transition-transform duration-[1.8s] group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-royal-deep/80 via-transparent to-transparent pointer-events-none" />
-                      </div>
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gold/40 font-serif italic text-sm">
-                        Event Photography
-                      </div>
-                    )}
-
-                    {/* Category Pill */}
-                    <div className="absolute top-3 left-3 z-10">
-                      <span className="font-serif-sc text-[9px] tracking-widest text-gold bg-royal-deep/90 px-3 py-1 border border-gold/40 shadow-md uppercase">
-                        {evt.category || "CELEBRATION"}
-                      </span>
-                    </div>
-
-                    {/* Corner accents */}
-                    <div className="absolute top-2 right-2 w-3 h-3 border-t border-r border-gold/60 pointer-events-none" />
-                    <div className="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-gold/60 pointer-events-none" />
-                  </div>
-
-                  {/* CARD BODY */}
-                  <div className="p-6 md:p-8 flex-1 flex flex-col justify-between space-y-6">
-                    <div className="space-y-3">
-                      <h3 className="font-display text-2xl text-ivory font-bold leading-snug group-hover:text-gold transition-colors">
-                        {evt.title}
-                      </h3>
-
-                      <p className="font-serif italic text-base text-gold-gradient leading-relaxed">
-                        {evt.short_description}
-                      </p>
-
-                      {evt.full_description && (
-                        <p className="font-serif text-sm text-ivory/70 line-clamp-3 leading-relaxed pt-1">
-                          {evt.full_description}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* DETAILS GRID */}
-                    <div className="space-y-4 pt-4 border-t border-gold/15">
-                      <div className="grid grid-cols-2 gap-3 text-xs font-serif text-ivory/80">
-                        {evt.venue && (
-                          <div className="flex items-center gap-2 col-span-2">
-                            <MapPin size={14} className="text-gold shrink-0" />
-                            <span className="truncate">{evt.venue}</span>
-                          </div>
-                        )}
-                        {evt.capacity && (
-                          <div className="flex items-center gap-2">
-                            <Users size={14} className="text-gold shrink-0" />
-                            <span>{evt.capacity}</span>
-                          </div>
-                        )}
-                        {evt.starting_price && (
-                          <div className="flex items-center gap-2">
-                            <IndianRupee size={14} className="text-gold shrink-0" />
-                            <span>{evt.starting_price}</span>
-                          </div>
-                        )}
-                        {evt.event_time && (
-                          <div className="flex items-center gap-2">
-                            <Clock size={14} className="text-gold shrink-0" />
-                            <span>{evt.event_time}</span>
-                          </div>
-                        )}
-                        {evt.event_date && (
-                          <div className="flex items-center gap-2">
-                            <Calendar size={14} className="text-gold shrink-0" />
-                            <span>{evt.event_date}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* CTA BUTTON */}
-                      <div className="pt-2">
-                        <Link
-                          to={evt.cta_link || "/contact"}
-                          className="w-full inline-flex items-center justify-center gap-2 font-serif-sc tracking-[0.25em] text-xs px-6 py-3.5 bg-gradient-gold text-royal-deep font-bold rounded-sm shadow-gold hover:scale-[1.02] transition-all duration-500"
-                        >
-                          {evt.cta_text || "ENQUIRE NOW"} <ChevronRight size={14} />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* PLANNING A CELEBRATION CTA */}
-          <div className="relative max-w-4xl mx-auto mt-28 p-10 md:p-16 bg-card/80 border border-gold/40 shadow-gold text-center text-ivory overflow-hidden rounded-sm">
-            <div className="absolute inset-0 lattice-pattern opacity-10 pointer-events-none" />
-            <div className="relative z-10 space-y-6">
-              <div className="font-serif-sc text-gold tracking-[0.5em] text-xs font-bold flex items-center justify-center gap-2">
-                <HeartHandshake size={16} /> PLANNING A CELEBRATION?
-              </div>
-              <h3 className="font-display text-4xl md:text-5xl text-ivory font-bold">Host Your Event at Raj Mandir</h3>
-              <div className="divider-gold max-w-md mx-auto"><span className="text-gold">❖</span></div>
-              <p className="font-serif italic text-xl text-ivory/80 max-w-2xl mx-auto leading-relaxed">
-                From grand heritage weddings to intimate family feasts — our courtyards, terraces, and royal hospitality team await your special occasions.
-              </p>
-              <div className="pt-6">
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center gap-3 font-serif-sc tracking-[0.3em] text-xs px-10 py-5 bg-gradient-gold text-royal-deep font-bold rounded-sm shadow-gold hover:scale-[1.03] transition-all duration-700"
-                >
-                  ENQUIRE ABOUT EVENTS <ChevronRight size={16} />
-                </Link>
-              </div>
-            </div>
-          </div>
 
         </div>
       </section>

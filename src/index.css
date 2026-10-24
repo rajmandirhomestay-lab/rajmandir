@@ -118,6 +118,13 @@
       radial-gradient(ellipse at bottom, hsl(var(--royal) / 0.06), transparent 60%);
   }
 
+  h1, h2, h3, h4, h5, h6,
+  h1 *, h2 *, h3 *, h4 *, h5 *, h6 *,
+  .font-display,
+  .font-heading {
+    text-transform: uppercase;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading), 'Cinzel', serif;
     letter-spacing: 0.02em;
