@@ -120,48 +120,58 @@ export default function PageHeroesCMS() {
   };
 
   const handleVideoUpload = async (slug: string, file: File) => {
+    let toastId = "";
     try {
       setSaving(slug);
       const originalMb = (file.size / (1024 * 1024)).toFixed(1);
-      const toastId = toast.loading(`Compressing video (${originalMb}MB)... bandwidth optimization in progress.`);
+      toastId = toast.loading(`Compressing video (${originalMb}MB)... bandwidth optimization in progress.`);
 
-      const compressedFile = await compressVideo(file, {
-        maxWidth: 1280,
-        maxHeight: 720,
-        targetBitrate: 1800000,
-        onProgress: (p) => {
-          toast.loading(`Compressing video: ${p}%`, { id: toastId });
-        }
-      });
+      let compressedFile = file;
+      try {
+        compressedFile = await compressVideo(file, {
+          maxWidth: 1280,
+          maxHeight: 720,
+          targetBitrate: 1800000,
+          onProgress: (p) => {
+            if (toastId) toast.loading(`Compressing video: ${p}%`, { id: toastId });
+          }
+        });
+      } catch (cErr) {
+        console.warn("Video compression error, using original:", cErr);
+        compressedFile = file;
+      }
 
       const compressedMb = (compressedFile.size / (1024 * 1024)).toFixed(1);
-      toast.loading(`Uploading compressed video (${compressedMb}MB)...`, { id: toastId });
+      toast.loading(`Uploading video (${compressedMb}MB)...`, { id: toastId });
 
       const fileExt = compressedFile.name.split('.').pop() || "webm";
       const fileName = `${Date.now()}-${slug}.${fileExt}`;
       const filePath = `hero/${fileName}`;
+      const cleanContentType = (compressedFile.type || 'video/webm').split(';')[0].trim();
 
       const { error: uploadError } = await supabase.storage
         .from('hero-assets')
-        .upload(filePath, compressedFile, { upsert: true, contentType: compressedFile.type || 'video/webm' });
+        .upload(filePath, compressedFile, { upsert: true, contentType: cleanContentType });
 
       let finalUrl = "";
       if (uploadError) {
+        console.warn("hero-assets upload failed, trying brand-assets fallback:", uploadError);
         const { error: fallbackError } = await supabase.storage
-          .from('content')
-          .upload(filePath, compressedFile, { upsert: true, contentType: compressedFile.type || 'video/webm' });
+          .from('brand-assets')
+          .upload(filePath, compressedFile, { upsert: true, contentType: cleanContentType });
 
-        if (fallbackError) throw fallbackError;
+        if (fallbackError) throw uploadError || fallbackError;
 
-        finalUrl = supabase.storage.from('content').getPublicUrl(filePath).data.publicUrl;
+        finalUrl = supabase.storage.from('brand-assets').getPublicUrl(filePath).data.publicUrl;
       } else {
         finalUrl = supabase.storage.from('hero-assets').getPublicUrl(filePath).data.publicUrl;
       }
 
       handleChange(slug, "image_url", finalUrl);
-      toast.success(`Video compressed (${originalMb}MB → ${compressedMb}MB) and ready! Save hero to apply.`, { id: toastId });
+      toast.success(`Video ready (${originalMb}MB → ${compressedMb}MB)! Save hero to apply.`, { id: toastId });
     } catch (error: any) {
-      toast.error("Error uploading video: " + error.message);
+      console.error("Error uploading video:", error);
+      toast.error("Error uploading video: " + (error.message || "Failed"), { id: toastId });
     } finally {
       setSaving(null);
     }

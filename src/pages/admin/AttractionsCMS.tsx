@@ -133,13 +133,19 @@ export default function AttractionsCMS() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Delete this attraction?")) return;
+    if (!window.confirm("Delete this attraction? This action cannot be undone.")) return;
     try {
-      await supabase.from("attractions").delete().eq("id", id);
+      const { error: imgErr } = await supabase.from("attraction_images").delete().eq("attraction_id", id);
+      if (imgErr) console.warn("Delete attraction images warning:", imgErr);
+
+      const { error } = await supabase.from("attractions").delete().eq("id", id);
+      if (error) throw error;
+
       toast.success("Attraction removed.");
       fetchItems();
     } catch (error: any) {
-      toast.error("Delete failed.");
+      console.error("Delete attraction error:", error);
+      toast.error("Delete failed: " + (error.message || "Unknown error"));
     }
   };
 

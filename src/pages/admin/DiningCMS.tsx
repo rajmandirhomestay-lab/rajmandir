@@ -116,18 +116,61 @@ export default function DiningCMS() {
     if (!editingDish?.name) return;
     setSaving(true);
     try {
+      const dishData = {
+        name: editingDish.name,
+        price: editingDish.price,
+        description: editingDish.description,
+        category: editingDish.category || "Veg",
+        image_url: editingDish.image_url || "",
+      };
+
       if (editingDish.id) {
-        await supabase.from("dishes").update(editingDish).eq("id", editingDish.id);
+        const { error } = await supabase.from("dishes").update(dishData).eq("id", editingDish.id);
+        if (error) throw error;
+        toast.success("Dish updated.");
       } else {
-        await supabase.from("dishes").insert([editingDish]);
+        const { error } = await supabase.from("dishes").insert([dishData]);
+        if (error) throw error;
+        toast.success("Dish added to menu.");
       }
-      toast.success("Dish added to the royal menu.");
+
       setEditingDish(null);
       fetchData();
     } catch (e: any) {
-      toast.error("Save failed: " + e.message);
+      toast.error("Failed to save dish: " + e.message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDeleteArea = async (id: string) => {
+    if (!window.confirm("Permanently delete this dining area?")) return;
+    try {
+      const { error: imgErr } = await supabase.from("dining_area_images").delete().eq("dining_area_id", id);
+      if (imgErr) console.warn("Failed to delete dining images:", imgErr);
+
+      const { error } = await supabase.from("dining_areas").delete().eq("id", id);
+      if (error) throw error;
+
+      toast.success("Dining area removed.");
+      fetchData();
+    } catch (e: any) {
+      console.error("Delete area error:", e);
+      toast.error("Failed to delete area: " + (e.message || "Unknown error"));
+    }
+  };
+
+  const handleDeleteDish = async (id: string) => {
+    if (!window.confirm("Permanently remove this dish from the menu?")) return;
+    try {
+      const { error } = await supabase.from("dishes").delete().eq("id", id);
+      if (error) throw error;
+
+      toast.success("Dish removed from menu.");
+      fetchData();
+    } catch (e: any) {
+      console.error("Delete dish error:", e);
+      toast.error("Failed to delete dish: " + (e.message || "Unknown error"));
     }
   };
 
@@ -188,7 +231,7 @@ export default function DiningCMS() {
                       <button onClick={() => setEditingArea(area)} className="p-2 bg-royal-deep/80 text-gold backdrop-blur-sm border border-gold/20 hover:bg-gold hover:text-royal-deep transition-all">
                         <Edit2 size={14} />
                       </button>
-                      <button onClick={() => {}} className="p-2 bg-red-900/80 text-white backdrop-blur-sm border border-red-500/20 hover:bg-red-600 transition-all">
+                      <button onClick={() => handleDeleteArea(area.id)} className="p-2 bg-red-900/80 text-white backdrop-blur-sm border border-red-500/20 hover:bg-red-600 transition-all">
                         <Trash2 size={14} />
                       </button>
                     </div>
@@ -265,6 +308,9 @@ export default function DiningCMS() {
                          <div className="absolute top-2 right-2 flex gap-1">
                             <button onClick={() => setEditingDish(dish)} className="p-2 bg-royal-deep/80 text-gold backdrop-blur-sm border border-gold/20 hover:bg-gold hover:text-royal-deep transition-all">
                                <Edit2 size={12} />
+                            </button>
+                            <button onClick={() => handleDeleteDish(dish.id)} className="p-2 bg-red-900/80 text-white backdrop-blur-sm border border-red-500/20 hover:bg-red-600 transition-all">
+                               <Trash2 size={12} />
                             </button>
                          </div>
                       </div>

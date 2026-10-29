@@ -145,21 +145,20 @@ export const Hero = ({ start }: { start: boolean }) => {
   const hasAnimatedRef = useRef(false);
 
   useEffect(() => {
-    if (!cmsData.isVisible || hasAnimatedRef.current) return;
+    if (!start || !cmsData.isVisible || hasAnimatedRef.current) return;
 
     hasAnimatedRef.current = true;
 
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    tl.fromTo(imgRef.current, { scale: 1.1, opacity: 0.8 }, { scale: 1, opacity: 1, duration: 1.8 })
-      .fromTo(archRef.current, { scaleY: 0, transformOrigin: "top" }, { scaleY: 1, duration: 1.2 }, "-=1.2")
+    tl.fromTo(imgRef.current, { scale: 1.08, opacity: 0.85 }, { scale: 1, opacity: 1, duration: 1.6 })
       .fromTo(
-        titleRef.current?.querySelectorAll(".reveal-char") || [],
-        { yPercent: 110, opacity: 0 },
-        { yPercent: 0, opacity: 1, duration: 1.0, stagger: 0.04 },
-        "-=0.6"
+        titleRef.current,
+        { opacity: 0, y: 25 },
+        { opacity: 1, y: 0, duration: 1.0 },
+        "-=1.1"
       )
-      .fromTo(subRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8 }, "-=0.3")
-      .fromTo(ctaRef.current, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.7 }, "-=0.3");
+      .fromTo(subRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8 }, "-=0.6")
+      .fromTo(ctaRef.current, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.7 }, "-=0.5");
   }, [start, cmsData.isVisible]);
 
   if (!cmsData.isVisible) return null;
@@ -198,14 +197,6 @@ export const Hero = ({ start }: { start: boolean }) => {
 
       {/* Central hero content */}
       <div ref={containerRef} className="relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-6 text-center">
-        <div
-          ref={archRef}
-          className="mx-auto mb-8 w-28 h-16 jharokha bg-gradient-heritage opacity-95 shadow-lg relative"
-        >
-          <div className="absolute inset-[3px] jharokha bg-royal-deep" />
-          <div className="absolute inset-0 jharokha animate-glow-pulse bg-gradient-heritage opacity-30" />
-        </div>
-
         <div className="font-serif-sc text-heritage-orange tracking-[0.5em] text-xs sm:text-sm mb-6 font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
           ★ {cmsData.eyebrow ? cmsData.eyebrow.toUpperCase() : "HERITAGE HOTEL · JODHPUR"} ★
         </div>
@@ -216,18 +207,7 @@ export const Hero = ({ start }: { start: boolean }) => {
             style={{ fontSize: `${fontSize}px` }}
             className="font-display leading-[1.08] text-white font-bold drop-shadow-[0_8px_30px_rgba(0,0,0,0.8)] whitespace-nowrap text-center select-none max-w-full px-2"
           >
-            {title.split(" ").map((word, wordIndex, wordsArr) => (
-              <span key={wordIndex} className="inline-block whitespace-nowrap">
-                {word.split("").map((c, charIndex) => (
-                  <span key={charIndex} className="reveal-char inline-block">
-                    {c}
-                  </span>
-                ))}
-                {wordIndex < wordsArr.length - 1 && (
-                  <span className="reveal-char inline-block">&nbsp;</span>
-                )}
-              </span>
-            ))}
+            {title}
           </h1>
         </div>
 

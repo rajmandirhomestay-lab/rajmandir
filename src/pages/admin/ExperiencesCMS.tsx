@@ -38,11 +38,11 @@ export default function ExperiencesCMS() {
 
       const formatted = data?.map((item: any) => ({
         ...item,
-        short_description: item.description || "",
-        full_description: "",
-        type: "ROYAL EXPERIENCE",
-        featured: false,
-        active: item.is_available !== false,
+        short_description: item.short_description || item.description || "",
+        full_description: item.full_description || item.description || "",
+        type: item.type || "ROYAL EXPERIENCE",
+        featured: item.featured ?? false,
+        active: item.active ?? (item.is_available !== false),
         images: item.experience_images?.map((img: any) => img.image_url) || []
       })) || [];
 
@@ -61,7 +61,13 @@ export default function ExperiencesCMS() {
     try {
       const mainData = {
         title: editingItem.title,
-        description: editingItem.short_description,
+        slug: editingItem.slug || editingItem.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+        description: editingItem.short_description || editingItem.description || "",
+        short_description: editingItem.short_description || editingItem.description || "",
+        full_description: editingItem.full_description || "",
+        type: editingItem.type || "ROYAL EXPERIENCE",
+        featured: !!editingItem.featured,
+        active: editingItem.active !== false,
         is_available: editingItem.active !== false,
         sort_order: editingItem.sort_order ?? items.length,
       };
@@ -69,8 +75,17 @@ export default function ExperiencesCMS() {
       let itemId = editingItem.id;
 
       if (itemId) {
-        await supabase.from("experiences").update(mainData).eq("id", itemId);
-        await supabase.from("experience_images").delete().eq("experience_id", itemId);
+        const { error: updErr } = await supabase.from("experiences").update(mainData).eq("id", itemId);
+        if (updErr) {
+          console.warn("Direct update failed (trigger missing updated_at), using clean re-insert fallback:", updErr);
+          await supabase.from("experience_images").delete().eq("experience_id", itemId);
+          await supabase.from("experiences").delete().eq("id", itemId);
+          const { error: insErr } = await supabase.from("experiences").insert([{ id: itemId, ...mainData }]);
+          if (insErr) throw insErr;
+        } else {
+          const { error: imgDelErr } = await supabase.from("experience_images").delete().eq("experience_id", itemId);
+          if (imgDelErr) console.warn("Failed to clear old images:", imgDelErr);
+        }
       } else {
         const { data, error } = await supabase.from("experiences").insert([mainData]).select().single();
         if (error) throw error;
@@ -83,27 +98,37 @@ export default function ExperiencesCMS() {
           image_url: url,
           sort_order: idx
         }));
-        await supabase.from("experience_images").insert(imageInserts);
+        const { error: imgInsErr } = await supabase.from("experience_images").insert(imageInserts);
+        if (imgInsErr) throw imgInsErr;
       }
       
       toast.success("Experience commissioned.");
       setEditingItem(null);
       fetchItems();
     } catch (error: any) {
-      toast.error("Error saving: " + error.message);
+      console.error("Save experience error:", error);
+      toast.error("Error saving: " + (error.message || "Unknown error"));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Delete this experience?")) return;
+    if (!window.confirm("Delete this experience? This action cannot be undone.")) return;
     try {
-      await supabase.from("experiences").delete().eq("id", id);
+      // 1. Delete associated images first to satisfy foreign key constraint
+      const { error: imgErr } = await supabase.from("experience_images").delete().eq("experience_id", id);
+      if (imgErr) console.warn("Delete experience images warning:", imgErr);
+
+      // 2. Delete experience
+      const { error } = await supabase.from("experiences").delete().eq("id", id);
+      if (error) throw error;
+
       toast.success("Experience deleted.");
       fetchItems();
     } catch (error: any) {
-      toast.error("Delete failed.");
+      console.error("Delete experience error:", error);
+      toast.error("Delete failed: " + (error.message || "Unknown error"));
     }
   };
 

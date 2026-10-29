@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { isVideoUrl } from "@/lib/videoCompression";
 
 interface PageHeroProps {
   eyebrow?: string;
@@ -28,7 +29,6 @@ export const PageHero = ({
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
       tl.fromTo(imgRef.current, { scale: 1.1, opacity: 0.8 }, { scale: 1, opacity: 1, duration: 1.8 })
         .fromTo(".ph-eyebrow", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1.0 }, "-=1.2")
-        .fromTo(".ph-arch", { scaleY: 0, transformOrigin: "top" }, { scaleY: 1, duration: 1.0 }, "-=0.8")
         .fromTo(".ph-title > *", { yPercent: 110, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 1.0, stagger: 0.04 }, "-=0.6")
         .fromTo(".ph-sub", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8 }, "-=0.4");
 
@@ -58,15 +58,24 @@ export const PageHero = ({
     safeTitle.toLowerCase().includes("amenities") || safeTitle.toLowerCase().includes("comfort") ||
     safeAccent.toLowerCase().includes("amenities") || safeAccent.toLowerCase().includes("comfort");
 
-  const badgeBg = isGoldTheme ? "bg-gradient-gold" : "bg-gradient-heritage";
   const textColor = isGoldTheme ? "text-gold" : "text-heritage-orange";
   const dividerClass = isGoldTheme ? "divider-gold" : "divider-heritage";
 
   return (
     <section ref={ref} className="relative min-h-[70vh] lg:min-h-[80vh] w-full overflow-hidden flex items-center justify-center pt-32 pb-20">
-      {/* Background Image Container */}
+      {/* Background Image / Video Container */}
       <div ref={imgRef} className="absolute inset-0 will-change-transform">
-        {image ? (
+        {isVideoUrl(image) ? (
+          <video
+            src={image}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="h-full w-full object-cover filter brightness-[0.9] contrast-[1.05]"
+          />
+        ) : image ? (
           <img src={image} alt={alt || safeTitle} className="h-full w-full object-cover filter brightness-[0.9] contrast-[1.05]" width={1920} height={1280} />
         ) : (
           <div className="h-full w-full bg-royal-deep" />
@@ -75,9 +84,6 @@ export const PageHero = ({
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-        <div className={`ph-arch mx-auto mb-8 w-24 h-14 jharokha ${badgeBg} opacity-90 shadow-gold relative`}>
-          <div className="absolute inset-[3px] jharokha bg-royal-deep" />
-        </div>
         <div className={`ph-eyebrow font-serif-sc ${textColor} tracking-[0.5em] text-xs sm:text-sm mb-6 font-bold drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]`}>
           ★ {safeEyebrow} ★
         </div>

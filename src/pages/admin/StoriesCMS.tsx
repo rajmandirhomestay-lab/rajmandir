@@ -99,6 +99,23 @@ export default function StoriesCMS() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Permanently delete this story from the palace archives?")) return;
+    try {
+      const { error: imgErr } = await supabase.from("travel_story_images").delete().eq("travel_story_id", id);
+      if (imgErr) console.warn("Delete story images warning:", imgErr);
+
+      const { error } = await supabase.from("travel_stories").delete().eq("id", id);
+      if (error) throw error;
+
+      toast.success("Chronicle deleted from archives.");
+      fetchStories();
+    } catch (error: any) {
+      console.error("Delete failed:", error);
+      toast.error("Failed to delete story: " + (error.message || "Unknown error"));
+    }
+  };
+
   const generateSlug = (text: string) => {
     return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
   };
@@ -186,7 +203,7 @@ export default function StoriesCMS() {
                  </div>
                  <div className="flex flex-col gap-2 justify-center">
                     <button onClick={() => setEditingStory(story)} className="p-3 border border-gold/20 text-gold hover:bg-gold hover:text-royal-deep transition-all"><Edit2 size={16} /></button>
-                    <button onClick={() => {}} className="p-3 border border-red-900/20 text-red-400 hover:bg-red-900/40 transition-all"><Trash2 size={16} /></button>
+                    <button onClick={() => handleDelete(story.id)} className="p-3 border border-red-900/20 text-red-400 hover:bg-red-900/40 transition-all"><Trash2 size={16} /></button>
                  </div>
               </div>
            ))}

@@ -104,11 +104,20 @@ export const About = () => {
 
           <div className="stats-row mt-12 grid grid-cols-3 gap-6 border-t border-gold/20 pt-10">
             {[
-              { n: "130+", l: "YEARS OF LEGACY" },
-              { n: "12", l: "ROYAL CHAMBERS" },
-              { n: "4.9", l: "GUEST RATING" },
-            ].map((s) => (
-              <div key={s.l} className="about-stat text-center">
+              { 
+                n: storySection?.content?.stat1_num ?? "130+", 
+                l: storySection?.content?.stat1_label ?? "YEARS OF LEGACY" 
+              },
+              { 
+                n: storySection?.content?.stat2_num ?? "12", 
+                l: storySection?.content?.stat2_label ?? "ROYAL CHAMBERS" 
+              },
+              { 
+                n: storySection?.content?.stat3_num ?? "4.9", 
+                l: storySection?.content?.stat3_label ?? "GUEST RATING" 
+              },
+            ].map((s, idx) => (
+              <div key={idx} className="about-stat text-center">
                 <div className="font-display text-4xl md:text-5xl text-primary font-bold">{s.n}</div>
                 <div className="mt-2 font-serif-sc text-[10px] tracking-[0.3em] text-gold font-bold">{s.l}</div>
               </div>

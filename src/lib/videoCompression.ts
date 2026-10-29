@@ -8,6 +8,11 @@ export const isVideoUrl = (url?: string | null): boolean => {
   if (!url) return false;
   const clean = url.split("?")[0].toLowerCase();
   return (
+    clean.includes(".mp4") ||
+    clean.includes(".webm") ||
+    clean.includes(".ogg") ||
+    clean.includes(".mov") ||
+    clean.includes(".m4v") ||
     clean.endsWith(".mp4") ||
     clean.endsWith(".webm") ||
     clean.endsWith(".ogg") ||
@@ -45,8 +50,8 @@ export const compressVideo = async (
     onProgress
   } = options;
 
-  // If the file is already small (under 3.5 MB) and in webm format, return as is
-  if (file.size <= 3.5 * 1024 * 1024 && file.type.includes("webm")) {
+  // If the file is already small (under 15 MB) and in webm/mp4 format, return as is (instant upload)
+  if (file.size <= 15 * 1024 * 1024 && (file.type.includes("webm") || file.type.includes("mp4") || file.name.match(/\.(mp4|webm)$/i))) {
     return file;
   }
 
@@ -156,8 +161,9 @@ export const compressVideo = async (
 
         recorder.onstop = () => {
           cleanup();
-          const ext = selectedMime.includes("mp4") ? "mp4" : "webm";
-          const blob = new Blob(chunks, { type: selectedMime });
+          const cleanMime = (selectedMime || "video/webm").split(";")[0].trim();
+          const ext = cleanMime.includes("mp4") ? "mp4" : "webm";
+          const blob = new Blob(chunks, { type: cleanMime });
           
           // If compressed is somehow larger than original, return original
           if (blob.size >= file.size) {
@@ -167,7 +173,7 @@ export const compressVideo = async (
 
           const baseName = file.name.replace(/\.[^/.]+$/, "");
           const compressedFile = new File([blob], `${baseName}-compressed.${ext}`, {
-            type: selectedMime,
+            type: cleanMime,
             lastModified: Date.now()
           });
 

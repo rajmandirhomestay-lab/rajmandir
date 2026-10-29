@@ -80,7 +80,7 @@ const Experiences = () => {
               <div className="experience-grid grid md:grid-cols-2 gap-12 lg:gap-20">
                  {experiences?.map((exp: any) => (
                     <div key={exp.id} className="experience-card group">
-                       <div className="aspect-[16/10] mb-8 overflow-hidden shadow-frame border border-gold/20 relative">
+                       <div className="aspect-[16/11] mb-8 jharokha-frame relative overflow-hidden group-hover:shadow-gold transition-all duration-700">
                              <UnifiedSlider 
                                 images={exp.experience_images?.length > 0 ? exp.experience_images.map((img: any) => img.image_url) : [heroImgFallbackCurrent]} 
                                 settings={finalSliderSettings as unknown as SliderSettings}

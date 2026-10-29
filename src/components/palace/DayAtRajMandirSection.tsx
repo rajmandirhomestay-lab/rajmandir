@@ -88,17 +88,17 @@ export const DayAtRajMandirSection = () => {
           </p>
 
           {/* Quick Highlights Row */}
-          <div className="grid grid-cols-3 gap-4 pt-4 border-t border-heritage-brown/20">
-            <div className="text-center p-3 bg-heritage-brown text-white font-bold rounded-sm shadow-md border border-heritage-brown/40 hover:bg-heritage-orange transition-all duration-300">
-              <Coffee size={18} className="mx-auto text-heritage-orange mb-1" />
+          <div className="grid grid-cols-3 gap-4 pt-4 border-t border-heritage-orange/30">
+            <div className="text-center p-3 bg-heritage-orange text-white font-bold rounded-sm shadow-md border border-heritage-orange/80 hover:bg-heritage-brown transition-all duration-300 group">
+              <Coffee size={18} className="mx-auto text-white mb-1 group-hover:scale-110 transition-transform" />
               <div className="font-serif-sc text-[10px] tracking-wider text-white font-bold">MORNING CHAI</div>
             </div>
-            <div className="text-center p-3 bg-heritage-brown text-white font-bold rounded-sm shadow-md border border-heritage-brown/40 hover:bg-heritage-orange transition-all duration-300">
-              <Sun size={18} className="mx-auto text-heritage-orange mb-1" />
+            <div className="text-center p-3 bg-heritage-orange text-white font-bold rounded-sm shadow-md border border-heritage-orange/80 hover:bg-heritage-brown transition-all duration-300 group">
+              <Sun size={18} className="mx-auto text-white mb-1 group-hover:scale-110 transition-transform" />
               <div className="font-serif-sc text-[10px] tracking-wider text-white font-bold">GOLDEN HOUR</div>
             </div>
-            <div className="text-center p-3 bg-heritage-brown text-white font-bold rounded-sm shadow-md border border-heritage-brown/40 hover:bg-heritage-orange transition-all duration-300">
-              <Sparkles size={18} className="mx-auto text-heritage-orange mb-1" />
+            <div className="text-center p-3 bg-heritage-orange text-white font-bold rounded-sm shadow-md border border-heritage-orange/80 hover:bg-heritage-brown transition-all duration-300 group">
+              <Sparkles size={18} className="mx-auto text-white mb-1 group-hover:scale-110 transition-transform" />
               <div className="font-serif-sc text-[10px] tracking-wider text-white font-bold">ROOFTOP DINING</div>
             </div>
           </div>
@@ -106,7 +106,7 @@ export const DayAtRajMandirSection = () => {
           <div className="pt-4">
             <Link
               to="/day-at-raj-mandir"
-              className="inline-flex items-center gap-3 font-serif-sc tracking-[0.3em] text-xs px-8 py-4 bg-heritage-brown text-white font-bold rounded-sm shadow-md hover:bg-heritage-orange hover:scale-[1.02] transition-all duration-500 uppercase"
+              className="inline-flex items-center gap-3 font-serif-sc tracking-[0.3em] text-xs px-8 py-4 bg-heritage-orange text-white font-bold rounded-sm shadow-md hover:bg-heritage-brown hover:scale-[1.02] transition-all duration-500 uppercase"
             >
               EXPLORE YOUR DAY <ArrowRight size={16} />
             </Link>

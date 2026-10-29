@@ -230,47 +230,57 @@ export default function HomepageCMS() {
   };
 
   const handleVideoUpload = async (file: File) => {
+    let toastId = "";
     try {
       setSaving(true);
       const origMb = (file.size / (1024 * 1024)).toFixed(1);
-      const toastId = toast.loading(`Compressing video (${origMb}MB)... saving bandwidth.`);
+      toastId = toast.loading(`Compressing video (${origMb}MB)... saving bandwidth.`);
 
-      const compressed = await compressVideo(file, {
-        maxWidth: 1280,
-        maxHeight: 720,
-        targetBitrate: 1800000,
-        onProgress: (p) => {
-          toast.loading(`Compressing video: ${p}%`, { id: toastId });
-        }
-      });
+      let fileToUpload = file;
+      try {
+        fileToUpload = await compressVideo(file, {
+          maxWidth: 1280,
+          maxHeight: 720,
+          targetBitrate: 1800000,
+          onProgress: (p) => {
+            if (toastId) toast.loading(`Compressing video: ${p}%`, { id: toastId });
+          }
+        });
+      } catch (cErr) {
+        console.warn("Video compression error, using original:", cErr);
+        fileToUpload = file;
+      }
 
-      const compMb = (compressed.size / (1024 * 1024)).toFixed(1);
-      toast.loading(`Uploading compressed video (${compMb}MB)...`, { id: toastId });
+      const compMb = (fileToUpload.size / (1024 * 1024)).toFixed(1);
+      toast.loading(`Uploading video (${compMb}MB)...`, { id: toastId });
 
-      const fileExt = compressed.name.split('.').pop() || "webm";
+      const fileExt = fileToUpload.name.split('.').pop() || "webm";
       const fileName = `homepage-${activeSection}-${Date.now()}.${fileExt}`;
       const filePath = `homepage-${activeSection}/${fileName}`;
+      const cleanContentType = (fileToUpload.type || 'video/webm').split(';')[0].trim();
 
-      const bucket = activeNavItem?.bucket || "brand-assets";
+      const bucket = "hero-assets";
       const { error: uploadError } = await supabase.storage
         .from(bucket)
-        .upload(filePath, compressed, { upsert: true, contentType: compressed.type || 'video/webm' });
+        .upload(filePath, fileToUpload, { upsert: true, contentType: cleanContentType });
 
       let finalUrl = "";
       if (uploadError) {
+        console.warn("hero-assets upload failed, trying brand-assets fallback:", uploadError);
         const { error: fallbackErr } = await supabase.storage
-          .from("content")
-          .upload(filePath, compressed, { upsert: true, contentType: compressed.type || 'video/webm' });
-        if (fallbackErr) throw fallbackErr;
-        finalUrl = supabase.storage.from("content").getPublicUrl(filePath).data.publicUrl;
+          .from("brand-assets")
+          .upload(filePath, fileToUpload, { upsert: true, contentType: cleanContentType });
+        if (fallbackErr) throw uploadError || fallbackErr;
+        finalUrl = supabase.storage.from("brand-assets").getPublicUrl(filePath).data.publicUrl;
       } else {
         finalUrl = supabase.storage.from(bucket).getPublicUrl(filePath).data.publicUrl;
       }
 
       handleUpdateContent(activeSection, { image_url: finalUrl, video_url: finalUrl });
-      toast.success(`Video compressed (${origMb}MB → ${compMb}MB) and attached! Click Save Section to publish.`, { id: toastId });
+      toast.success(`Video attached (${origMb}MB → ${compMb}MB)! Click Save Section to publish.`, { id: toastId });
     } catch (err: any) {
-      toast.error("Video upload failed: " + err.message);
+      console.error("Video upload failed:", err);
+      toast.error("Video upload failed: " + (err.message || "Failed"), { id: toastId });
     } finally {
       setSaving(false);
     }
@@ -579,6 +589,92 @@ export default function HomepageCMS() {
                   className="w-full bg-background border border-gold/20 focus:border-gold outline-none px-4 py-3 font-serif text-foreground transition-all duration-300 resize-none"
                 />
               </div>
+
+              {activeSection === "story" && (
+                <div className="p-4 rounded-sm border border-gold/30 bg-gold/5 space-y-4">
+                  <div className="flex items-center justify-between border-b border-gold/20 pb-2">
+                    <div>
+                      <h4 className="font-serif-sc text-xs tracking-widest text-gold font-bold uppercase">
+                        Homepage About Us Stats (Numbers & Labels)
+                      </h4>
+                      <p className="font-serif text-[11px] text-muted-foreground mt-0.5">
+                        Change the 3 highlight metrics displayed on the homepage About section (legacy years, chambers/rooms, guest rating).
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2 p-3 bg-background border border-gold/20 rounded-sm">
+                      <label className="block font-serif-sc text-[10px] tracking-widest text-gold font-bold">
+                        STAT 1: NUMBER
+                      </label>
+                      <input
+                        type="text"
+                        value={currentSection.content?.stat1_num ?? "130+"}
+                        onChange={(e) => handleUpdateContent(activeSection, { stat1_num: e.target.value })}
+                        placeholder="130+"
+                        className="w-full bg-background border border-gold/20 px-3 py-1.5 text-sm font-display font-bold text-foreground outline-none focus:border-gold"
+                      />
+                      <label className="block font-serif-sc text-[10px] tracking-widest text-muted-foreground">
+                        STAT 1: LABEL
+                      </label>
+                      <input
+                        type="text"
+                        value={currentSection.content?.stat1_label ?? "YEARS OF LEGACY"}
+                        onChange={(e) => handleUpdateContent(activeSection, { stat1_label: e.target.value })}
+                        placeholder="YEARS OF LEGACY"
+                        className="w-full bg-background border border-gold/20 px-3 py-1.5 text-xs font-serif text-foreground outline-none focus:border-gold"
+                      />
+                    </div>
+
+                    <div className="space-y-2 p-3 bg-background border border-gold/20 rounded-sm">
+                      <label className="block font-serif-sc text-[10px] tracking-widest text-gold font-bold">
+                        STAT 2: NUMBER (ROOMS)
+                      </label>
+                      <input
+                        type="text"
+                        value={currentSection.content?.stat2_num ?? "12"}
+                        onChange={(e) => handleUpdateContent(activeSection, { stat2_num: e.target.value })}
+                        placeholder="12"
+                        className="w-full bg-background border border-gold/20 px-3 py-1.5 text-sm font-display font-bold text-foreground outline-none focus:border-gold"
+                      />
+                      <label className="block font-serif-sc text-[10px] tracking-widest text-muted-foreground">
+                        STAT 2: LABEL
+                      </label>
+                      <input
+                        type="text"
+                        value={currentSection.content?.stat2_label ?? "ROYAL CHAMBERS"}
+                        onChange={(e) => handleUpdateContent(activeSection, { stat2_label: e.target.value })}
+                        placeholder="ROYAL CHAMBERS"
+                        className="w-full bg-background border border-gold/20 px-3 py-1.5 text-xs font-serif text-foreground outline-none focus:border-gold"
+                      />
+                    </div>
+
+                    <div className="space-y-2 p-3 bg-background border border-gold/20 rounded-sm">
+                      <label className="block font-serif-sc text-[10px] tracking-widest text-gold font-bold">
+                        STAT 3: NUMBER (RATING / GUESTS)
+                      </label>
+                      <input
+                        type="text"
+                        value={currentSection.content?.stat3_num ?? "4.9"}
+                        onChange={(e) => handleUpdateContent(activeSection, { stat3_num: e.target.value })}
+                        placeholder="4.9"
+                        className="w-full bg-background border border-gold/20 px-3 py-1.5 text-sm font-display font-bold text-foreground outline-none focus:border-gold"
+                      />
+                      <label className="block font-serif-sc text-[10px] tracking-widest text-muted-foreground">
+                        STAT 3: LABEL
+                      </label>
+                      <input
+                        type="text"
+                        value={currentSection.content?.stat3_label ?? "GUEST RATING"}
+                        onChange={(e) => handleUpdateContent(activeSection, { stat3_label: e.target.value })}
+                        placeholder="GUEST RATING"
+                        className="w-full bg-background border border-gold/20 px-3 py-1.5 text-xs font-serif text-foreground outline-none focus:border-gold"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Text Color & Background Override Controls */}
               <div className="grid grid-cols-2 gap-4 pt-2 border-t border-gold/10">

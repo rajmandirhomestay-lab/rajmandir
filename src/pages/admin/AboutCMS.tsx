@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { Plus, Trash2, GripVertical, Image as ImageIcon, Save, CheckCircle2, Video as VideoIcon } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Trash2, GripVertical, Image as ImageIcon, Save, CheckCircle2, Video as VideoIcon, BarChart3, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAboutContent, useAboutFeatures, useAboutGallery } from "@/lib/api";
 import { compressImage } from "@/lib/imageCompression";
 import { compressVideo, isVideoUrl } from "@/lib/videoCompression";
@@ -10,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 const ICONS = ["MapPin", "Heart", "Utensils", "BedDouble", "Coffee", "Wifi", "Star", "Camera", "Wind", "Sun", "Moon", "Compass", "Palmtree"];
 
 export default function AboutCMS() {
+  const queryClient = useQueryClient();
   const { data: aboutContent, refetch: refetchContent } = useAboutContent();
   const { data: features, refetch: refetchFeatures } = useAboutFeatures();
   const { data: gallery, refetch: refetchGallery } = useAboutGallery();
@@ -17,6 +19,73 @@ export default function AboutCMS() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [editingContent, setEditingContent] = useState<any>(null);
   const [editingFeature, setEditingFeature] = useState<any>(null);
+
+  const [stats, setStats] = useState({
+    stat1_num: "130+",
+    stat1_label: "YEARS OF LEGACY",
+    stat2_num: "12",
+    stat2_label: "ROYAL CHAMBERS",
+    stat3_num: "4.9",
+    stat3_label: "GUEST RATING",
+  });
+  const [isSavingStats, setIsSavingStats] = useState(false);
+
+  useEffect(() => {
+    supabase
+      .from("homepage_sections")
+      .select("*")
+      .or("section_key.eq.story,section_key.eq.about")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.content) {
+          setStats({
+            stat1_num: data.content.stat1_num ?? "130+",
+            stat1_label: data.content.stat1_label ?? "YEARS OF LEGACY",
+            stat2_num: data.content.stat2_num ?? "12",
+            stat2_label: data.content.stat2_label ?? "ROYAL CHAMBERS",
+            stat3_num: data.content.stat3_num ?? "4.9",
+            stat3_label: data.content.stat3_label ?? "GUEST RATING",
+          });
+        }
+      });
+  }, []);
+
+  const handleSaveStats = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setIsSavingStats(true);
+    try {
+      const { data: existing } = await supabase
+        .from("homepage_sections")
+        .select("*")
+        .or("section_key.eq.story,section_key.eq.about")
+        .maybeSingle();
+
+      const existingContent = existing?.content || {};
+      const { error } = await supabase
+        .from("homepage_sections")
+        .upsert({
+          section_key: existing?.section_key || "story",
+          content: {
+            ...existingContent,
+            stat1_num: stats.stat1_num,
+            stat1_label: stats.stat1_label,
+            stat2_num: stats.stat2_num,
+            stat2_label: stats.stat2_label,
+            stat3_num: stats.stat3_num,
+            stat3_label: stats.stat3_label,
+          },
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'section_key' });
+
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ["homepage_sections"] });
+      toast.success("Homepage About Us stats updated successfully!");
+    } catch (err: any) {
+      toast.error("Failed to update stats: " + err.message);
+    } finally {
+      setIsSavingStats(false);
+    }
+  };
 
   const handleImageUpload = async (file: File, isGallery: boolean) => {
     try {
@@ -53,45 +122,69 @@ export default function AboutCMS() {
   };
 
   const handleVideoUpload = async (file: File) => {
+    let toastId = "";
     try {
       setIsProcessing(true);
       const origMb = (file.size / (1024 * 1024)).toFixed(1);
-      const toastId = toast.loading(`Compressing video (${origMb}MB)... saving bandwidth.`);
+      toastId = toast.loading(`Compressing video (${origMb}MB)... saving bandwidth.`);
 
-      const compressed = await compressVideo(file, {
-        maxWidth: 1280,
-        maxHeight: 720,
-        targetBitrate: 1800000,
-        onProgress: (p) => {
-          toast.loading(`Compressing video: ${p}%`, { id: toastId });
-        }
-      });
+      let fileToUpload: File = file;
+      try {
+        fileToUpload = await compressVideo(file, {
+          maxWidth: 1280,
+          maxHeight: 720,
+          targetBitrate: 1800000,
+          onProgress: (p) => {
+            if (toastId) toast.loading(`Compressing video: ${p}%`, { id: toastId });
+          }
+        });
+      } catch (cErr) {
+        console.warn("Video compression error, falling back to original file:", cErr);
+        fileToUpload = file;
+      }
 
-      const compMb = (compressed.size / (1024 * 1024)).toFixed(1);
-      toast.loading(`Uploading compressed video (${compMb}MB)...`, { id: toastId });
+      const compMb = (fileToUpload.size / (1024 * 1024)).toFixed(1);
+      toast.loading(`Uploading video (${compMb}MB)...`, { id: toastId });
 
-      const fileExt = compressed.name.split('.').pop() || "webm";
-      const fileName = `video-${Date.now()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("gallery-images")
-        .upload(fileName, compressed, { contentType: compressed.type || 'video/webm' });
+      const fileExt = fileToUpload.name.split('.').pop() || "webm";
+      const fileName = `about-video-${Date.now()}.${fileExt}`;
+      const filePath = `hero/${fileName}`;
+      const cleanContentType = (fileToUpload.type || 'video/webm').split(';')[0].trim();
 
       let finalUrl = "";
-      if (uploadError) {
-        const { error: fallbackErr } = await supabase.storage
-          .from("content")
-          .upload(fileName, compressed, { contentType: compressed.type || 'video/webm' });
-        if (fallbackErr) throw fallbackErr;
-        finalUrl = supabase.storage.from("content").getPublicUrl(fileName).data.publicUrl;
+      // Upload to hero-assets (which allows video MIME types)
+      const { error: heroErr } = await supabase.storage
+        .from("hero-assets")
+        .upload(filePath, fileToUpload, { upsert: true, contentType: cleanContentType });
+
+      if (!heroErr) {
+        finalUrl = supabase.storage.from("hero-assets").getPublicUrl(filePath).data.publicUrl;
       } else {
-        finalUrl = supabase.storage.from("gallery-images").getPublicUrl(fileName).data.publicUrl;
+        console.warn("hero-assets upload failed, trying brand-assets fallback:", heroErr);
+        const { error: brandErr } = await supabase.storage
+          .from("brand-assets")
+          .upload(filePath, fileToUpload, { upsert: true, contentType: cleanContentType });
+
+        if (!brandErr) {
+          finalUrl = supabase.storage.from("brand-assets").getPublicUrl(filePath).data.publicUrl;
+        } else {
+          console.warn("brand-assets upload failed, trying gallery-images fallback:", brandErr);
+          const { error: galleryErr } = await supabase.storage
+            .from("gallery-images")
+            .upload(fileName, fileToUpload, { upsert: true, contentType: cleanContentType });
+
+          if (galleryErr) {
+            throw new Error(heroErr.message || brandErr.message || galleryErr.message);
+          }
+          finalUrl = supabase.storage.from("gallery-images").getPublicUrl(fileName).data.publicUrl;
+        }
       }
 
       setEditingContent({ ...editingContent, image_url: finalUrl });
-      toast.success(`Video compressed (${origMb}MB → ${compMb}MB) and ready! Save changes to apply.`, { id: toastId });
+      toast.success(`Video attached (${origMb}MB → ${compMb}MB) and ready! Save changes to apply.`, { id: toastId });
     } catch (err: any) {
-      toast.error("Video upload failed: " + err.message);
+      console.error("Video upload failed:", err);
+      toast.error("Video upload failed: " + (err.message || "Unknown error"), { id: toastId });
     } finally {
       setIsProcessing(false);
     }
@@ -226,6 +319,100 @@ export default function AboutCMS() {
       <div>
         <h1 className="font-display text-4xl text-royal-deep">About Page CMS</h1>
         <p className="font-serif text-muted-foreground mt-2">Manage the boutique about page content, features, and gallery.</p>
+      </div>
+
+      {/* HOMEPAGE ABOUT US STATS (ROOMS, RATING, YEARS) */}
+      <div className="bg-white border border-gold/30 p-6 rounded shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gold/20 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 border border-gold/40 flex items-center justify-center bg-gold/10 text-gold rounded">
+              <BarChart3 size={20} />
+            </div>
+            <div>
+              <h2 className="font-display text-2xl text-royal-deep">Homepage "About Us" Stats Counters</h2>
+              <p className="font-serif text-xs text-muted-foreground mt-0.5">
+                Update the numbers and labels displayed on the homepage About Us section (Years, Chambers/Rooms, Rating).
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => handleSaveStats()}
+            disabled={isSavingStats}
+            className="flex items-center gap-2 px-6 py-2.5 bg-gold text-royal-deep font-serif-sc text-xs tracking-widest rounded hover:bg-gold-glow transition-colors uppercase font-bold shadow-sm disabled:opacity-60"
+          >
+            {isSavingStats ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+            {isSavingStats ? "SAVING..." : "SAVE HOMEPAGE STATS"}
+          </button>
+        </div>
+
+        <form onSubmit={handleSaveStats} className="grid sm:grid-cols-3 gap-6">
+          <div className="p-4 bg-[#faf6f0] border border-gold/20 rounded space-y-2">
+            <span className="text-[10px] font-serif-sc tracking-widest text-gold font-bold uppercase block">
+              STAT 1 — LEGACY YEARS
+            </span>
+            <label className="text-xs font-serif text-muted-foreground block">Number Value</label>
+            <input
+              type="text"
+              value={stats.stat1_num}
+              onChange={(e) => setStats({ ...stats, stat1_num: e.target.value })}
+              placeholder="130+"
+              className="w-full bg-white border border-gold/20 px-3 py-2 text-xl font-display font-bold text-royal-deep rounded outline-none focus:border-gold"
+            />
+            <label className="text-xs font-serif text-muted-foreground block pt-1">Stat Label</label>
+            <input
+              type="text"
+              value={stats.stat1_label}
+              onChange={(e) => setStats({ ...stats, stat1_label: e.target.value })}
+              placeholder="YEARS OF LEGACY"
+              className="w-full bg-white border border-gold/20 px-3 py-1.5 text-xs font-serif-sc tracking-wider text-foreground rounded outline-none focus:border-gold uppercase font-bold"
+            />
+          </div>
+
+          <div className="p-4 bg-[#faf6f0] border border-gold/20 rounded space-y-2">
+            <span className="text-[10px] font-serif-sc tracking-widest text-gold font-bold uppercase block">
+              STAT 2 — ROOMS / CHAMBERS
+            </span>
+            <label className="text-xs font-serif text-muted-foreground block">Number Value</label>
+            <input
+              type="text"
+              value={stats.stat2_num}
+              onChange={(e) => setStats({ ...stats, stat2_num: e.target.value })}
+              placeholder="12"
+              className="w-full bg-white border border-gold/20 px-3 py-2 text-xl font-display font-bold text-royal-deep rounded outline-none focus:border-gold"
+            />
+            <label className="text-xs font-serif text-muted-foreground block pt-1">Stat Label</label>
+            <input
+              type="text"
+              value={stats.stat2_label}
+              onChange={(e) => setStats({ ...stats, stat2_label: e.target.value })}
+              placeholder="ROYAL CHAMBERS"
+              className="w-full bg-white border border-gold/20 px-3 py-1.5 text-xs font-serif-sc tracking-wider text-foreground rounded outline-none focus:border-gold uppercase font-bold"
+            />
+          </div>
+
+          <div className="p-4 bg-[#faf6f0] border border-gold/20 rounded space-y-2">
+            <span className="text-[10px] font-serif-sc tracking-widest text-gold font-bold uppercase block">
+              STAT 3 — RATING / CUSTOMERS
+            </span>
+            <label className="text-xs font-serif text-muted-foreground block">Number Value</label>
+            <input
+              type="text"
+              value={stats.stat3_num}
+              onChange={(e) => setStats({ ...stats, stat3_num: e.target.value })}
+              placeholder="4.9"
+              className="w-full bg-white border border-gold/20 px-3 py-2 text-xl font-display font-bold text-royal-deep rounded outline-none focus:border-gold"
+            />
+            <label className="text-xs font-serif text-muted-foreground block pt-1">Stat Label</label>
+            <input
+              type="text"
+              value={stats.stat3_label}
+              onChange={(e) => setStats({ ...stats, stat3_label: e.target.value })}
+              placeholder="GUEST RATING"
+              className="w-full bg-white border border-gold/20 px-3 py-1.5 text-xs font-serif-sc tracking-wider text-foreground rounded outline-none focus:border-gold uppercase font-bold"
+            />
+          </div>
+        </form>
       </div>
 
       {/* CONTENT SECTIONS */}

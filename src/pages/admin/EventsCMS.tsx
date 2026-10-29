@@ -136,6 +136,9 @@ export default function EventsCMS() {
   const handleDelete = async (id: string) => {
     if (!window.confirm("Permanently delete this event and all associated images?")) return;
     try {
+      const { error: imgErr } = await supabase.from("event_images").delete().eq("event_id", id);
+      if (imgErr) console.warn("Delete event images warning:", imgErr);
+
       const { error } = await supabase.from("events").delete().eq("id", id);
       if (error) throw error;
       toast.success("Event deleted successfully!");
